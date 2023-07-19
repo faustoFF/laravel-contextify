@@ -1,0 +1,39 @@
+{
+    "name": "faustoff/laravel-loggable",
+    "description": "Contextual logging in Laravel",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Faustoff\\Loggable\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "faustoFF",
+            "email": "kulakov89@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "nesbot/carbon": "^2.0",
+        "monolog/monolog": "^2.0",
+        "illuminate/log": "^8.0|^9.0|^10",
+        "illuminate/notifications": "^8.0|^9.0|^10",
+        "illuminate/support": "^8.0|^9.0|^10"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Faustoff\\Loggable\\LoggableServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.22"
+    },
+    "scripts": {
+        "cs": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix"
+    }
+}
