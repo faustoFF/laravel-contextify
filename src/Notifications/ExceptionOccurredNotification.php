@@ -13,7 +13,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\App;
 
-class ExceptionOccurred extends Notification implements ShouldQueue
+class ExceptionOccurredNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     use Loggable;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Faustoff\Loggable\Console;
 
+// TODO: add to README
 trait LoggableOutput
 {
     use Loggable;

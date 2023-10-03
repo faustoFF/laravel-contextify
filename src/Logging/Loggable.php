@@ -17,20 +17,24 @@ trait Loggable
 
     public function logStart(): void
     {
-        $this->timeStarted = microtime(true);
-        $this->reservedMemory = str_repeat(' ', 20 * 1024);
+        if (config('loggable.enabled')) {
+            $this->timeStarted = microtime(true);
+            $this->reservedMemory = str_repeat(' ', 20 * 1024);
+        }
     }
 
     public function logFinish(): void
     {
-        // Освобождаем зарезервированную память для завершения работы скрипта
-        $this->reservedMemory = null;
+        if (config('loggable.enabled')) {
+            // Освобождаем зарезервированную память для завершения работы скрипта
+            $this->reservedMemory = null;
 
-        $executionTime = round(microtime(true) - $this->timeStarted, 3);
-        $this->logDebug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
+            $executionTime = round(microtime(true) - $this->timeStarted, 3);
+            $this->logDebug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
 
-        $memoryPeak = $this->formatBytes(memory_get_peak_usage(true));
-        $this->logDebug("Peak memory usage: {$memoryPeak}.");
+            $memoryPeak = $this->formatBytes(memory_get_peak_usage(true));
+            $this->logDebug("Peak memory usage: {$memoryPeak}.");
+        }
     }
 
     public function logError(string $message, mixed $context = [], bool $notify = false): void
@@ -75,11 +79,13 @@ trait Loggable
 
     protected function log(string $message, $level = 'info', mixed $context = []): void
     {
-        Log::log(
-            $level,
-            $this->formatMessage($message),
-            is_array($context) ? $context : [$context instanceof \Throwable ? "{$context}" : $context]
-        );
+        if (config('loggable.enabled')) {
+            Log::log(
+                $level,
+                $this->formatMessage($message),
+                is_array($context) ? $context : [$context instanceof \Throwable ? "{$context}" : $context]
+            );
+        }
     }
 
     protected function formatMessage(string $message): string
@@ -102,17 +108,19 @@ trait Loggable
 
     protected function sendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
-        Notification::route('mail', config('loggable.mail_addresses'))
-            ->notify(new LogNotification(
-                get_class($this),
-                getmypid() ?: null,
-                $this->getUid(),
-                $message,
-                $level,
-                $context
-            ))
-        ;
-        // TODO: add debug to log with info about notification dispatched to queue
+        if (config('loggable.enabled')) {
+            Notification::route('mail', config('loggable.mail_addresses'))
+                ->notify(new LogNotification(
+                    get_class($this),
+                    getmypid() ?: null,
+                    $this->getUid(),
+                    $message,
+                    $level,
+                    $context
+                ));
+
+            // TODO: add debug to log with info about notification dispatched to queue
+        }
     }
 
     protected function getUid(): string

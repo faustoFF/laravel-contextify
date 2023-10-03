@@ -1,6 +1,18 @@
 <?php
 
 return [
+   /*
+   |--------------------------------------------------------------------------
+   | Loggable Master Switch
+   |--------------------------------------------------------------------------
+   |
+   | This option may be used to disable all Telescope watchers regardless
+   | of their individual configuration, which simply provides a single
+   | and convenient way to enable or disable Telescope data storage.
+   |
+   */
+    'enabled' => env('LOGGABLE_ENABLED', true),
+
     /*
     |--------------------------------------------------------------------------
     | Email addresses
@@ -9,7 +21,7 @@ return [
     | Recipients of email notifications.
     |
     */
-    'mail_addresses' => explode(',', env('LOGGABLE_ADDRESSES', '')),
+    'mail_addresses' => explode(',', env('LOGGABLE_MAIL_ADDRESSES', '')),
 
     /*
     |--------------------------------------------------------------------------

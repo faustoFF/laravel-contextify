@@ -27,7 +27,7 @@ In addition, this package adds the ability to:
 
 ## Configuration
 
-_Optionally_, if you want to send log/exception notifications to email you should configure `LOGGABLE_ADDRESSES` environment variable. This variable should be comma separated string of email addresses. Also, you should now that any of notifications will be queued. You can configure `LOGGABLE_LOG_QUEUE` and `LOGGABLE_EXCEPTION_QUEUE` environment variables to override default queues.
+_Optionally_, if you want to send log/exception notifications to email you should configure `LOGGABLE_MAIL_ADDRESSES` environment variable. This variable should be comma separated string of email addresses. Also, you should now that any of notifications will be queued. You can configure `LOGGABLE_LOG_QUEUE` and `LOGGABLE_EXCEPTION_QUEUE` environment variables to override default queues.
 
 ## Usage
 
@@ -139,8 +139,8 @@ class OrderService
 
 namespace App\Http\Controllers;
 
-use App\Logging\Loggable;
-use App\Logging\LoggableInterface;
+use Faustoff\Loggable\Console\Loggable;
+use Faustoff\Loggable\Logging\LoggableInterface;
 use App\Services\OrderService;
 use Illuminate\Routing\Controller;
 
@@ -173,7 +173,7 @@ _Optionally_, if you want to send exception notifications to email, you should r
 
 namespace App\Exceptions;
 
-use App\Notifications\ExceptionOccurred;
+use Faustoff\Loggable\Notifications\ExceptionOccurredNotification;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -192,7 +192,7 @@ class Handler extends ExceptionHandler
             if (!App::environment('testing')) {
                 try {
                     Notification::route('mail', config('loggable.mail_addresses'))
-                        ->notify(new ExceptionOccurred($e))
+                        ->notify(new ExceptionOccurredNotification($e))
                     ;
                 } catch (\Throwable $e) {
                     Log::error("Unable to queue exception occurred notification: {$e}");
