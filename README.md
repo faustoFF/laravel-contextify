@@ -31,7 +31,7 @@ In addition, this package adds the ability to:
 
 ## Configuration
 
-_Optionally_, if you want to send log/exception notifications you should configure `LOGGABLE_MAIL_ADDRESSES` and `LOGGABLE_TELEGRAM_CHAT_ID` environment variables. Also, you should now that any of notifications will be queued. You can configure `LOGGABLE_MAIL_QUEUE` and `LOGGABLE_TELEGRAM_QUEUE` environment variables to override default queues.
+If you want to send log/exception notifications you should configure `LOGGABLE_MAIL_ADDRESSES` and `LOGGABLE_TELEGRAM_CHAT_ID` environment variables. Also, you should now that any of notifications will be queued. You can configure `LOGGABLE_MAIL_QUEUE` and `LOGGABLE_TELEGRAM_QUEUE` environment variables to override default queues.
 
 ## Usage
 
