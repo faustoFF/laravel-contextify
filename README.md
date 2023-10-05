@@ -158,7 +158,7 @@ Log:
 [2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
 ```
 
-### Use Parent Context
+### Parent Context
 
 If you have multiple levels of logging context you can pass "parent" loggable to "child" by using `HasLog` trait.
 
