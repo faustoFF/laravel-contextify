@@ -4,7 +4,7 @@
 
 Usually, when your Laravel application has become quite large and complex, you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
 
-When you are facing some problem in your application and trying to figure out, it can be difficult to track by log entries the process of the application execution when processing the user request (or, for example, processing a console command).
+When you found problem in your application and trying to figure out, it can be difficult to track/debug by log entries the process of the application execution when processing the user request (or, for example, processing a console command).
 
 The main purpose of this package is to add execution content to applications logs. It also provides some improvements in logging and notifications.
 
