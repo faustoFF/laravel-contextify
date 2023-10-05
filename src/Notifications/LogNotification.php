@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace Faustoff\Loggable\Notifications;
 
 use Carbon\Carbon;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
+use Monolog\Utils;
+use NotificationChannels\Telegram\TelegramMessage;
 
-class LogNotification extends Notification implements ShouldQueue
+class LogNotification extends AbstractNotification
 {
-    use Queueable;
-
     public const ERROR = 'error';
     public const WARNING = 'warning';
     public const SUCCESS = 'success';
@@ -32,16 +30,9 @@ class LogNotification extends Notification implements ShouldQueue
         protected string $level,
         protected mixed $context = []
     ) {
-        $this->onQueue(config('loggable.log_queue'));
-
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
-    }
-
-    public function via(mixed $notifiable): array
-    {
-        return ['mail'];
     }
 
     public function toMail(mixed $notifiable): MailMessage
@@ -59,5 +50,31 @@ class LogNotification extends Notification implements ShouldQueue
                 'context' => $this->context,
             ])
         ;
+    }
+
+    public function toTelegram(mixed $notifiable): TelegramMessage
+    {
+        return TelegramMessage::create(
+            Str::limit($this->message, 512)
+            . "\n\nENV: {$this->env}"
+            . "\nLevel: {$this->level}"
+            . "\nDatetime: {$this->datetime}"
+            . "\nLog context: {$this->callContext}"
+            . "\nPID: {$this->callContextPid}"
+            . "\nUID: {$this->callContextUid}"
+            . Str::limit(
+                $this->context
+                    ? "\nContext: " . (
+                    is_string($this->context)
+                        ? $this->context
+                        : Utils::jsonEncode($this->context, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT)
+                    )
+                    : '',
+                512
+            )
+        )->options([
+            'parse_mode' => '',
+            'disable_web_page_preview' => true,
+        ]);
     }
 }

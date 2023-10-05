@@ -25,21 +25,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log queue
+    | Telegram chat id
     |--------------------------------------------------------------------------
     |
-    | The name of the queue to which the queued log notifications will be sent.
+    | Recipient of telegram notifications.
     |
     */
-    'log_queue' => env('LOGGABLE_LOG_QUEUE', 'default'),
+    'telegram_chat_id' => explode(',', env('LOGGABLE_TELEGRAM_CHAT_ID', '')),
 
     /*
     |--------------------------------------------------------------------------
-    | Log queue
+    | Mail queue
     |--------------------------------------------------------------------------
     |
-    | The name of the queue to which the queued exceptions notifications will be sent.
+    | The name of the queue to which the queued mail notifications will be sent.
     |
     */
-    'exception_queue' => env('LOGGABLE_EXCEPTION_QUEUE', 'default')
+    'mail_queue' => env('LOGGABLE_MAIL_QUEUE', 'default'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Telegram queue
+    |--------------------------------------------------------------------------
+    |
+    | The name of the queue to which the queued telegram notifications will be sent.
+    |
+    */
+    'telegram_queue' => env('LOGGABLE_TELEGRAM_QUEUE', 'default')
 ];

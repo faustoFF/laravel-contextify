@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable\Logging;
+namespace Faustoff\Loggable;
 
 trait HasLog
 {

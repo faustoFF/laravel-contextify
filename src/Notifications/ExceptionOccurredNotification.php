@@ -6,16 +6,14 @@ namespace Faustoff\Loggable\Notifications;
 
 use Carbon\Carbon;
 use Faustoff\Loggable\Exceptions\ExceptionOccurredNotificationFailedException;
-use Faustoff\Loggable\Logging\Loggable;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Faustoff\Loggable\Loggable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
+use NotificationChannels\Telegram\TelegramMessage;
 
-class ExceptionOccurredNotification extends Notification implements ShouldQueue
+class ExceptionOccurredNotification extends AbstractNotification
 {
-    use Queueable;
     use Loggable;
 
     protected string $env;
@@ -25,17 +23,10 @@ class ExceptionOccurredNotification extends Notification implements ShouldQueue
 
     public function __construct(\Throwable $exception)
     {
-        $this->onQueue(config('loggable.exception_queue'));
-
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
         $this->exception = "{$exception}";
-    }
-
-    public function via(mixed $notifiable): array
-    {
-        return ['mail'];
     }
 
     public function toMail(mixed $notifiable): MailMessage
@@ -51,7 +42,18 @@ class ExceptionOccurredNotification extends Notification implements ShouldQueue
         ;
     }
 
-    // TODO: add toTelegram()
+    public function toTelegram(mixed $notifiable): TelegramMessage
+    {
+        return TelegramMessage::create(
+            Str::limit($this->exception, 1024)
+            . "\n\nENV: {$this->env}"
+            . "\nDatetime: {$this->datetime}"
+            . "\nPID: {$this->pid}"
+        )->options([
+            'parse_mode' => '',
+            'disable_web_page_preview' => true,
+        ]);
+    }
 
     public function failed(\Throwable $e)
     {

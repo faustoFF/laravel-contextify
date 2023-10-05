@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 trait Loggable
 {
-    use \Faustoff\Loggable\Logging\Loggable;
+    use \Faustoff\Loggable\Loggable;
 
     public function initialize(InputInterface $input, OutputInterface $output): void
     {
