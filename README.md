@@ -6,7 +6,7 @@ Usually, when your Laravel application has become quite large and complex, you s
 
 When you found problem in your application and trying to figure out, it can be difficult to track/debug by log entries the process of the application execution when processing the user request (or, for example, processing a console command).
 
-The main purpose of this package is to add execution content to applications logs. It also provides some improvements in logging and notifications.
+The main purpose of this package is to add execution context to applications logs. It also provides some improvements in logging and notifications.
 
 ## What It Actually Does
 
@@ -118,7 +118,7 @@ Log:
 [2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
 ```
 
-Also, you can capture regular Laravel console command output, produced by info() like method, and store it to logs by adding `Faustoff\Loggable\Console\LoggableOutput` trait to your command like this:
+Also, you can capture regular Laravel console command output, produced by `info()`-like methods, and store it to logs by adding `Faustoff\Loggable\Console\LoggableOutput` trait to your command like this:
 
 ```php
 <?php
