@@ -1,5 +1,5 @@
 {
-    "name": "faustoff/laravel-loggable",
+    "name": "faustoff/laravel-contextual-logging",
     "description": "Contextual logging in Laravel",
     "type": "library",
     "license": "MIT",

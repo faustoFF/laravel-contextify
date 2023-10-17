@@ -1,4 +1,4 @@
-# Laravel Loggable
+# Laravel Contextual Logging
 
 > Contextual logging in Laravel.
 
@@ -27,7 +27,7 @@ In addition, this package adds the ability to:
 
 ## Installation
 
-`composer require faustoff/laravel-loggable`
+`composer require faustoff/laravel-contextual-logging`
 
 ## Configuration
 
