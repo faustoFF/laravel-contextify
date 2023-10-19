@@ -4,7 +4,7 @@
 
 Usually, when your Laravel application has become quite large and complex, you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
 
-When you found problem in your application and trying to figure out, it can be difficult to track/debug by lange number of log entries.
+When you found problem in your application and trying to figure out, it can be difficult to track/debug by large number of log entries.
 
 The main purpose of package is to add execution context to logs that helps you just by looking at the entry easier understand where log entry exactly comes from. It also provides some improvements in logging and notifications.
 
