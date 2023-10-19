@@ -14,4 +14,12 @@ class LoggableServiceProvider extends \Illuminate\Support\ServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'loggable');
     }
+
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/loggable.php',
+            'loggable'
+        );
+    }
 }
