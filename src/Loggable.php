@@ -6,7 +6,6 @@ namespace Faustoff\Loggable;
 
 use Carbon\CarbonInterval;
 use Faustoff\Loggable\Notifications\LogNotification;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
@@ -15,15 +14,9 @@ trait Loggable
     protected float $timeStarted;
     protected ?string $reservedMemory;
     protected ?string $uid = null;
-    protected static ?array $channels = null;
 
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
-        // TODO: move to Console\Loggable
-        if (self::shouldWriteConsoleOutput()) {
-            parent::line($message);
-        }
-
         $this->log($message, 'debug', $context);
 
         if ($notify) {
@@ -33,10 +26,6 @@ trait Loggable
 
     public function logInfo(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
-            parent::line($message, 'comment');
-        }
-
         $this->log($message, 'info', $context);
 
         if ($notify) {
@@ -47,10 +36,6 @@ trait Loggable
     // TODO: rename to logNotice to be compatible with monolog
     public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
-            parent::line($message, 'info');
-        }
-
         $this->log($message, 'notice', $context);
 
         if ($notify) {
@@ -60,10 +45,6 @@ trait Loggable
 
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
-            parent::line($message, 'warning');
-        }
-
         $this->log($message, 'warning', $context);
 
         if ($notify) {
@@ -73,10 +54,6 @@ trait Loggable
 
     public function logError(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
-            parent::line($message, 'error');
-        }
-
         $this->log($message, 'error', $context);
 
         if ($notify) {
@@ -161,25 +138,5 @@ trait Loggable
         }
 
         return $this->uid;
-    }
-
-    protected static function shouldWriteConsoleOutput(): bool
-    {
-        if (!config('loggable.enabled')) {
-            return false;
-        }
-
-        if (!App::runningInConsole()) {
-            return false;
-        }
-
-        if (null === self::$channels) {
-            // Force init log driver
-            Log::driver();
-
-            self::$channels = array_keys(Log::getChannels());
-        }
-
-        return !in_array('stderr', self::$channels);
     }
 }

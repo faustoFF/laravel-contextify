@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Faustoff\Loggable\Console;
 
-trait LoggableOutput
+trait Outputable
 {
-    use \Faustoff\Loggable\Loggable;
+    use Loggable;
 
     public function line($string, $style = null, $verbosity = null): void
     {

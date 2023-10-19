@@ -87,13 +87,13 @@ If you wants to add contextual logging in to application console commands, you c
 
 namespace App\Console\Commands;
 
-use Faustoff\Loggable\Console\Loggable;
+use Faustoff\Loggable\Console\Trackable;
 use Faustoff\Loggable\LoggableInterface;
 use Illuminate\Console\Command;
 
 class SyncData extends Command implements LoggableInterface
 {
-    use Loggable;
+    use Trackable;
 
     protected $signature = 'data:sync';
 
@@ -125,15 +125,15 @@ Also, you can capture regular Laravel console command output, produced by `info(
 
 namespace App\Console\Commands;
 
-use Faustoff\Loggable\Console\Loggable;
-use Faustoff\Loggable\Console\LoggableOutput;
+use Faustoff\Loggable\Console\Trackable;
+use Faustoff\Loggable\Console\Outputable;
 use Faustoff\Loggable\LoggableInterface;
 use Illuminate\Console\Command;
 
 class SyncData extends Command implements LoggableInterface
 {
-    use Loggable;
-    use LoggableOutput;
+    use Trackable;
+    use Outputable;
 
     protected $signature = 'data:sync';
 
@@ -190,13 +190,13 @@ class OrderService
 namespace App\Http\Controllers;
 
 use App\Services\OrderService;
-use Faustoff\Loggable\Console\Loggable;
+use Faustoff\Loggable\Console\Trackable;
 use Faustoff\Loggable\LoggableInterface;
 use Illuminate\Routing\Controller;
 
 class OrderController extends Controller implements LoggableInterface
 {
-    use Loggable;
+    use Trackable;
     
     public function store()
     {

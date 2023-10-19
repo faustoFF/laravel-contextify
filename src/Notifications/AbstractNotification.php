@@ -13,8 +13,7 @@ class AbstractNotification extends \Illuminate\Notifications\Notification implem
     {
         return config('loggable.telegram_chat_id')
             ? ['mail', 'telegram']
-            : ['mail']
-        ;
+            : ['mail'];
     }
 
     public function viaQueues(): array

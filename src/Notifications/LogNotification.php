@@ -65,7 +65,7 @@ class LogNotification extends AbstractNotification
             . Str::limit(
                 $this->context
                     ? "\nContext: " . (
-                    is_string($this->context)
+                        is_string($this->context)
                         ? $this->context
                         : Utils::jsonEncode($this->context, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT)
                     )
