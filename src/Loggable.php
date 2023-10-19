@@ -15,6 +15,7 @@ trait Loggable
     protected float $timeStarted;
     protected ?string $reservedMemory;
     protected ?string $uid = null;
+    protected static ?array $channels = null;
 
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
@@ -145,7 +146,8 @@ trait Loggable
                     $message,
                     $level,
                     $context
-                ));
+                ))
+            ;
 
             // TODO: add debug to log with info about notification dispatched to queue
         }

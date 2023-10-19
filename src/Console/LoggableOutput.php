@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Faustoff\Loggable\Console;
 
-// TODO: add to README
 trait LoggableOutput
 {
-    use Loggable;
+    use \Faustoff\Loggable\Loggable;
 
     public function line($string, $style = null, $verbosity = null): void
     {
