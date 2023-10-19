@@ -10,6 +10,10 @@ trait LoggableOutput
 
     public function line($string, $style = null, $verbosity = null): void
     {
+        if (!config('loggable.enabled')) {
+            parent::line($string, $style, $verbosity);
+        }
+
         if (null === $style) {
             $string = strip_tags($string);
         }

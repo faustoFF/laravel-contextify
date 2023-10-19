@@ -19,6 +19,7 @@ trait Loggable
 
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
+        // TODO: move to Console\Loggable
         if (self::shouldWriteConsoleOutput()) {
             parent::line($message);
         }
@@ -164,14 +165,21 @@ trait Loggable
 
     protected static function shouldWriteConsoleOutput(): bool
     {
+        if (!config('loggable.enabled')) {
+            return false;
+        }
+
         if (!App::runningInConsole()) {
             return false;
         }
 
         if (null === self::$channels) {
+            // Force init log driver
+            Log::driver();
+
             self::$channels = array_keys(Log::getChannels());
         }
 
-        return !config('loggable.enabled') || !in_array('stderr', self::$channels);
+        return !in_array('stderr', self::$channels);
     }
 }
