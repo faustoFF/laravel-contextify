@@ -13,7 +13,7 @@ The main purpose of package is to add execution context to logs that helps you j
 This package adds to the log entries:
 - **execution context** of the application
 - **process id (PID)** (combines all log entries corresponding to the specific process like queue worker, daemon etc.)
-- **unique identifier** (combines all log entries corresponding to the processing of a single user request, or, for example, the execution of a single console command)
+- **unique identifier (UID)** (combines all log entries corresponding to the processing of a single user request, or, for example, the execution of a single console command)
 
 Log entries will be looks like this:
 
