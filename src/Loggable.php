@@ -15,6 +15,7 @@ trait Loggable
     protected ?string $reservedMemory;
     protected ?string $uid = null;
 
+    // TODO: add notify channels
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->log($message, 'debug', $context);
@@ -24,6 +25,7 @@ trait Loggable
         }
     }
 
+    // TODO: add notify channels
     public function logInfo(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->log($message, 'info', $context);
@@ -33,6 +35,7 @@ trait Loggable
         }
     }
 
+    // TODO: add notify channels
     // TODO: rename to logNotice to be compatible with monolog
     public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
     {
@@ -43,6 +46,7 @@ trait Loggable
         }
     }
 
+    // TODO: add notify channels
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->log($message, 'warning', $context);
@@ -52,6 +56,7 @@ trait Loggable
         }
     }
 
+    // TODO: add notify channels
     public function logError(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->log($message, 'error', $context);
