@@ -1,6 +1,6 @@
 # Laravel Contextual Logging
 
-This package allows you to add execution context (**class name**, **PID**, **UID**) to your Laravel application log records and provides some other improvements to Laravel Logging.
+This package allows you to add execution context (**class name**, **PID** and **UID**) to your Laravel application log records and provides some other improvements to Laravel Logging.
 
 Adding execution context to logs very helpful when your application has become quite large and complex, and you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
 
