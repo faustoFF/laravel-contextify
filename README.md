@@ -6,9 +6,9 @@ Adding execution context to logs very helpful when your application has grown in
 
 By examining the **class** of a log record, you can easily determine its source. It also groups together all log records associated with that class.
 
-The PID groups all log records related to a specific process, such as a queue worker or daemon. 
+The **PID** groups all log records related to a specific process, such as a queue worker or daemon. 
 
-The UID combines all log records associated with the processing of a single user request or, for instance, the execution of a single console command.
+The **UID** combines all log records associated with the processing of a single user request or, for instance, the execution of a single console command.
 
 Log records will be looks like this:
 
