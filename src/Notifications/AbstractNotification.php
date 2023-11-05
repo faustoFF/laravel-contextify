@@ -1,6 +1,6 @@
 <?php
 
-namespace Faustoff\Loggable\Notifications;
+namespace Faustoff\Contextify\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +11,7 @@ class AbstractNotification extends \Illuminate\Notifications\Notification implem
 
     public function via(mixed $notifiable): array
     {
-        return config('loggable.telegram_chat_id')
+        return config('contextify.telegram_chat_id')
             ? ['mail', 'telegram']
             : ['mail'];
     }
@@ -19,8 +19,8 @@ class AbstractNotification extends \Illuminate\Notifications\Notification implem
     public function viaQueues(): array
     {
         return [
-            'mail' => config('loggable.mail_queue'),
-            'telegram' => config('loggable.telegram_queue'),
+            'mail' => config('contextify.mail_queue'),
+            'telegram' => config('contextify.telegram_queue'),
         ];
     }
 }

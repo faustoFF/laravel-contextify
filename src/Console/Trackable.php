@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable\Console;
+namespace Faustoff\Contextify\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

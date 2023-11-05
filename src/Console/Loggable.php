@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable\Console;
+namespace Faustoff\Contextify\Console;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 trait Loggable
 {
-    use \Faustoff\Loggable\Loggable {
+    use \Faustoff\Contextify\Loggable {
         logError as baseLogError;
         logWarning as baseLogWarning;
         logSuccess as baseLogSuccess;
@@ -67,7 +67,7 @@ trait Loggable
 
     protected static function shouldWriteConsoleOutput(): bool
     {
-        if (!config('loggable.enabled')) {
+        if (!config('contextify.enabled')) {
             return false;
         }
 

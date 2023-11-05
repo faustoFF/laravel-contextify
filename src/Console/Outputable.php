@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable\Console;
+namespace Faustoff\Contextify\Console;
 
 trait Outputable
 {
@@ -10,7 +10,7 @@ trait Outputable
 
     public function line($string, $style = null, $verbosity = null): void
     {
-        if (!config('loggable.enabled')) {
+        if (!config('contextify.enabled')) {
             parent::line($string, $style, $verbosity);
         }
 

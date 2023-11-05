@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable;
+namespace Faustoff\Contextify;
 
 use Carbon\CarbonInterval;
-use Faustoff\Loggable\Notifications\LogNotification;
+use Faustoff\Contextify\Notifications\LogNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
@@ -68,7 +68,7 @@ trait Loggable
 
     public function logStart(): void
     {
-        if (config('loggable.enabled')) {
+        if (config('contextify.enabled')) {
             $this->timeStarted = microtime(true);
             $this->reservedMemory = str_repeat(' ', 20 * 1024);
         }
@@ -76,7 +76,7 @@ trait Loggable
 
     public function logFinish(): void
     {
-        if (config('loggable.enabled')) {
+        if (config('contextify.enabled')) {
             // Освобождаем зарезервированную память для завершения работы скрипта
             $this->reservedMemory = null;
 
@@ -90,7 +90,7 @@ trait Loggable
 
     protected function log(string $message, $level = 'info', mixed $context = []): void
     {
-        if (config('loggable.enabled')) {
+        if (config('contextify.enabled')) {
             Log::log(
                 $level,
                 $this->formatMessage($message),
@@ -120,9 +120,9 @@ trait Loggable
 
     protected function sendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
-        if (config('loggable.enabled')) {
-            Notification::route('mail', config('loggable.mail_addresses'))
-                ->route('telegram', config('loggable.telegram_chat_id'))
+        if (config('contextify.enabled')) {
+            Notification::route('mail', config('contextify.mail_addresses'))
+                ->route('telegram', config('contextify.telegram_chat_id'))
                 ->notify(new LogNotification(
                     get_class($this),
                     getmypid() ?: null,
