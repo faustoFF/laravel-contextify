@@ -24,7 +24,7 @@ In addition, this package allows to:
 
 ## Installation
 
-`composer require faustoff/laravel-contextual-logging`
+`composer require faustoff/laravel-contextify`
 
 ## Configuration
 
