@@ -1,14 +1,14 @@
 # Laravel Contextual Logging
 
-This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, and **UID**, directly from your application PHP-classes. It provides a PHP-trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
+This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, and **UID**, directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
 
-Adding execution context to logs very helpful when your application has become quite large and complex, and you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
+Adding execution context to logs very helpful when your application has grown in size and complexity, and you begin to facing a large number of logs originating from various parts of the application, including multiple processes such as queue workers and daemons.
 
-Just by looking at **class** of log record you can easily determine where this record was produced. It also combines all log records corresponding to this class.
+By examining the **class** of a log record, you can easily determine its source. It also groups together all log records associated with that class.
 
-**PID** combines all log records corresponding to the specific process like queue worker, daemon etc. 
+The PID groups all log records related to a specific process, such as a queue worker or daemon. 
 
-**UID** combines all log records corresponding to the processing of a single user request, or, for example, the execution of a single console command.
+The UID combines all log records associated with the processing of a single user request or, for instance, the execution of a single console command.
 
 Log records will be looks like this:
 
