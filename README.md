@@ -1,26 +1,21 @@
 # Laravel Contextual Logging
 
-> Contextual logging in Laravel.
+This package allows you to add execution context (**class name**, **PID**, **UID**) to your Laravel application log records and provides some other improvements to Laravel Logging.
 
-Usually, when your Laravel application has become quite large and complex, you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
+Adding execution context to logs very helpful when your application has become quite large and complex, and you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
 
-When you found problem in your application and trying to figure out, it can be difficult to track/debug by large number of log entries.
+Just by looking at **class name** of log record you can easily determine where this record was produced. It also combines all log records corresponding to this class.
 
-The main purpose of package is to add execution context to logs that helps you just by looking at the entry easier understand where log entry exactly comes from. It also provides some improvements in logging and notifications.
+**PID** combines all log records corresponding to the specific process like queue worker, daemon etc. 
 
-## What It Actually Does
+**UID** combines all log records corresponding to the processing of a single user request, or, for example, the execution of a single console command.
 
-This package adds to the log entries:
-- **execution context** of the application
-- **process id (PID)** (combines all log entries corresponding to the specific process like queue worker, daemon etc.)
-- **unique identifier (UID)** (combines all log entries corresponding to the processing of a single user request, or, for example, the execution of a single console command)
-
-Log entries will be looks like this:
+Log records will be looks like this:
 
 `[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created`
 
 In addition, this package adds the ability to:
-- send log entries as notifications via Email and Telegram
+- send specific log records as notifications via Email and Telegram channels
 - capture [console command output](https://laravel.com/docs/9.x/artisan#writing-output) and write it to logs
 - send notification when exceptions occurred
 
