@@ -101,6 +101,7 @@ trait Loggable
 
     protected function formatMessage(string $message): string
     {
+        // TODO: add notified marker if this log record was notified
         return '[' . get_class($this) . '] [PID:' . getmypid() . "] [UID:{$this->getUid()}] " . $message;
     }
 
