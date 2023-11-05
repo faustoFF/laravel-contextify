@@ -18,7 +18,7 @@ In addition, this package allows to:
 - [track Console Command execution](#console-command-tracking)
 - [capture regular Laravel Console Command output and write it to logs](#console-command-output-capture)
 - [send specific log records as notifications via Email and Telegram channels](#log-notifications)
-- [send exception notification with execution context](#exception-notifications)
+- [send exception notification](#exception-notifications)
 
 ## Installation
 
