@@ -14,10 +14,11 @@ Log records will be looks like this:
 
 `[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created`
 
-In addition, this package adds the ability to:
-- send specific log records as notifications via Email and Telegram channels
-- capture [console command output](https://laravel.com/docs/9.x/artisan#writing-output) and write it to logs
-- send notification when exceptions occurred
+In addition, this package allows to:
+- [track Console Command execution](#console-command-tracking)
+- [capture regular Laravel Console Command output and write it to logs](#console-command-output-capture)
+- [send specific log records as notifications via Email and Telegram channels](#log-notifications)
+- [send exception notification with execution context](#exception-notifications)
 
 ## Installation
 
@@ -71,129 +72,6 @@ Log:
 [2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created {"key":"value"}
 ```
 
-### Console Commands
-
-If you wants to add contextual logging in to console commands, you can use `Faustoff\Loggable\Console\Loggable` trait. It extends common `Faustoff\Loggable\Loggable` by writing logs to console output (terminal).
-
-```php
-<?php
-
-namespace App\Console\Commands;
-
-use Illuminate\Console\Command;
-use Faustoff\Loggable\Console\Loggable;
-
-class SyncData extends Command
-{
-    use Loggable;
-
-    protected $signature = 'data:sync';
-
-    public function handle(): int
-    {
-        $this->logSuccess('Data was synced');
-
-        return self::SUCCESS;
-    }
-}
-
-```
-
-Log:
-
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
-```
-
-Terminal output:
-
-```
-Data was synced
-```
-
-Also, you can track console command execution by using `Faustoff\Loggable\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time and peak memory usage.
-
-```php
-<?php
-
-namespace App\Console\Commands;
-
-use Faustoff\Loggable\Console\Trackable;
-use Illuminate\Console\Command;
-
-class SyncData extends Command
-{
-    use Trackable;
-
-    protected $signature = 'data:sync';
-
-    public function handle(): int
-    {
-        // You business logic here
-        
-        $this->logSuccess('Data was synced');
-
-        return self::SUCCESS;
-    }
-}
-
-```
-
-Log:
-
-```
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Run with arguments {"command":"data:sync"}
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Execution time: 1 second
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
-```
-
-Terminal output:
-
-```
-Data was synced
-```
-
-Also, you can capture [regular Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Loggable\Console\Outputable` trait:
-
-```php
-<?php
-
-namespace App\Console\Commands;
-
-use Faustoff\Loggable\Console\Outputable;
-use Illuminate\Console\Command;
-
-class SyncData extends Command
-{
-    use Outputable;
-
-    protected $signature = 'data:sync';
-
-    public function handle(): int
-    {
-        // You business logic here
-        
-        $this->info('Data was synced');
-
-        return self::SUCCESS;
-    }
-}
-
-```
-
-Log:
-
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
-```
-
-Terminal output:
-
-```
-Data was synced
-```
-
 ### Parent Context
 
 If you have multiple levels of logging context you can pass "parent" loggable to "child" by using `Faustoff\Loggable\HasLog` trait.
@@ -245,6 +123,159 @@ Log:
 
 ```
 [2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] Order was created
+```
+
+### Console Commands
+
+If you wants to add contextual logging in to console commands, you can use `Faustoff\Loggable\Console\Loggable` trait. It extends common `Faustoff\Loggable\Loggable` by writing logs to console output (terminal).
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Faustoff\Loggable\Console\Loggable;
+
+class SyncData extends Command
+{
+    use Loggable;
+
+    protected $signature = 'data:sync';
+
+    public function handle(): int
+    {
+        $this->logSuccess('Data was synced');
+
+        return self::SUCCESS;
+    }
+}
+
+```
+
+Log:
+
+```
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
+```
+
+Terminal output:
+
+```
+Data was synced
+```
+
+#### Console Command Tracking
+
+Also, you can track console command execution by using `Faustoff\Loggable\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time and peak memory usage.
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Faustoff\Loggable\Console\Trackable;
+use Illuminate\Console\Command;
+
+class SyncData extends Command
+{
+    use Trackable;
+
+    protected $signature = 'data:sync';
+
+    public function handle(): int
+    {
+        // You business logic here
+        
+        $this->logSuccess('Data was synced');
+
+        return self::SUCCESS;
+    }
+}
+
+```
+
+Log:
+
+```
+[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Run with arguments {"command":"data:sync"}
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
+[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Execution time: 1 second
+[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
+```
+
+Terminal output:
+
+```
+Data was synced
+```
+
+#### Console Command Output Capture
+
+Also, you can capture [regular Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Loggable\Console\Outputable` trait:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Faustoff\Loggable\Console\Outputable;
+use Illuminate\Console\Command;
+
+class SyncData extends Command
+{
+    use Outputable;
+
+    protected $signature = 'data:sync';
+
+    public function handle(): int
+    {
+        // You business logic here
+        
+        $this->info('Data was synced');
+
+        return self::SUCCESS;
+    }
+}
+
+```
+
+Log:
+
+```
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
+```
+
+Terminal output:
+
+```
+Data was synced
+```
+
+### Log Notifications
+
+To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
+
+```php
+<?php
+
+namespace App\Services;
+
+use Faustoff\Loggable\Loggable;
+
+class OrderService
+{
+    use Loggable;
+
+    public function order(): void
+    {
+        // You business logic here
+        
+        // Log message and notification with context data
+        $this->logSuccess('Order was created', ['key' => 'value'], true);
+    }
+}
+
 ```
 
 ### Exception Notifications
