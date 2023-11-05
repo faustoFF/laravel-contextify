@@ -1,10 +1,10 @@
 # Laravel Contextual Logging
 
-This package allows you to add execution context (**class name**, **PID** and **UID**) to your Laravel application log records and provides some other improvements to Laravel Logging.
+This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, and **UID**, directly from your application PHP-classes. It provides a PHP-trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
 
 Adding execution context to logs very helpful when your application has become quite large and complex, and you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
 
-Just by looking at **class name** of log record you can easily determine where this record was produced. It also combines all log records corresponding to this class.
+Just by looking at **class** of log record you can easily determine where this record was produced. It also combines all log records corresponding to this class.
 
 **PID** combines all log records corresponding to the specific process like queue worker, daemon etc. 
 
@@ -16,7 +16,7 @@ Log records will be looks like this:
 
 In addition, this package allows to:
 - [track Console Command execution](#console-command-tracking)
-- [capture regular Laravel Console Command output and write it to logs](#console-command-output-capture)
+- [capture native Laravel Console Command output and write it to logs](#console-command-output-capture)
 - [send specific log records as notifications via Email and Telegram channels](#log-notifications)
 - [send exception notification](#exception-notifications)
 
@@ -212,7 +212,7 @@ Data was synced
 
 #### Console Command Output Capture
 
-Also, you can capture [regular Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Loggable\Console\Outputable` trait:
+Also, you can capture [native Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Loggable\Console\Outputable` trait:
 
 ```php
 <?php
