@@ -21,7 +21,7 @@ trait Loggable
 
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
+        if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message);
         }
 
@@ -30,7 +30,7 @@ trait Loggable
 
     public function logInfo(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
+        if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'comment');
         }
 
@@ -40,7 +40,7 @@ trait Loggable
     // TODO: rename to logNotice to be compatible with monolog
     public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
+        if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'info');
         }
 
@@ -49,7 +49,7 @@ trait Loggable
 
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
+        if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'warning');
         }
 
@@ -58,14 +58,14 @@ trait Loggable
 
     public function logError(string $message, mixed $context = [], bool $notify = false): void
     {
-        if (self::shouldWriteConsoleOutput()) {
+        if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'error');
         }
 
         $this->baseLogError($message, $context, $notify);
     }
 
-    protected static function shouldWriteConsoleOutput(): bool
+    protected static function contextifyShouldWriteConsoleOutput(): bool
     {
         if (!config('contextify.enabled')) {
             return false;

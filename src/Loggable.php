@@ -18,20 +18,20 @@ trait Loggable
     // TODO: add notify channels
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
-        $this->log($message, 'debug', $context);
+        $this->contextifyLog($message, 'debug', $context);
 
         if ($notify) {
-            $this->sendNotification($message, LogNotification::DEBUG, $context);
+            $this->contextifySendNotification($message, LogNotification::DEBUG, $context);
         }
     }
 
     // TODO: add notify channels
     public function logInfo(string $message, mixed $context = [], bool $notify = false): void
     {
-        $this->log($message, 'info', $context);
+        $this->contextifyLog($message, 'info', $context);
 
         if ($notify) {
-            $this->sendNotification($message, LogNotification::INFO, $context);
+            $this->contextifySendNotification($message, LogNotification::INFO, $context);
         }
     }
 
@@ -39,30 +39,30 @@ trait Loggable
     // TODO: rename to logNotice to be compatible with monolog
     public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
     {
-        $this->log($message, 'notice', $context);
+        $this->contextifyLog($message, 'notice', $context);
 
         if ($notify) {
-            $this->sendNotification($message, LogNotification::SUCCESS, $context);
+            $this->contextifySendNotification($message, LogNotification::SUCCESS, $context);
         }
     }
 
     // TODO: add notify channels
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
-        $this->log($message, 'warning', $context);
+        $this->contextifyLog($message, 'warning', $context);
 
         if ($notify) {
-            $this->sendNotification($message, LogNotification::WARNING, $context);
+            $this->contextifySendNotification($message, LogNotification::WARNING, $context);
         }
     }
 
     // TODO: add notify channels
     public function logError(string $message, mixed $context = [], bool $notify = false): void
     {
-        $this->log($message, 'error', $context);
+        $this->contextifyLog($message, 'error', $context);
 
         if ($notify) {
-            $this->sendNotification($message, LogNotification::ERROR, $context);
+            $this->contextifySendNotification($message, LogNotification::ERROR, $context);
         }
     }
 
@@ -83,30 +83,30 @@ trait Loggable
             $executionTime = round(microtime(true) - $this->timeStarted, 3);
             $this->logDebug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
 
-            $memoryPeak = $this->formatBytes(memory_get_peak_usage(true));
+            $memoryPeak = $this->contextifyFormatBytes(memory_get_peak_usage(true));
             $this->logDebug("Peak memory usage: {$memoryPeak}.");
         }
     }
 
-    protected function log(string $message, $level = 'info', mixed $context = []): void
+    protected function contextifyLog(string $message, $level = 'info', mixed $context = []): void
     {
         if (config('contextify.enabled')) {
             Log::log(
                 $level,
-                $this->formatMessage($message),
+                $this->contextifyFormatMessage($message),
                 is_array($context) ? $context : [$context instanceof \Throwable ? "{$context}" : $context]
             );
         }
     }
 
-    protected function formatMessage(string $message): string
+    protected function contextifyFormatMessage(string $message): string
     {
         // TODO: add notified marker if this log record was notified
-        return '[' . get_class($this) . '] [PID:' . getmypid() . "] [UID:{$this->getUid()}] " . $message;
+        return '[' . get_class($this) . '] [PID:' . getmypid() . "] [UID:{$this->contextifyGetUid()}] " . $message;
     }
 
     // TODO: use Symfony\Component\Console\Helper::formatMemory()
-    protected function formatBytes(int $bytes, int $precision = 2): string
+    protected function contextifyFormatBytes(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
@@ -118,7 +118,7 @@ trait Loggable
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
-    protected function sendNotification(string $message, string $level = 'info', mixed $context = []): void
+    protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
         if (config('contextify.enabled')) {
             Notification::route('mail', config('contextify.mail_addresses'))
@@ -126,7 +126,7 @@ trait Loggable
                 ->notify(new LogNotification(
                     get_class($this),
                     getmypid() ?: null,
-                    $this->getUid(),
+                    $this->contextifyGetUid(),
                     $message,
                     $level,
                     $context
@@ -137,7 +137,7 @@ trait Loggable
         }
     }
 
-    protected function getUid(): string
+    protected function contextifyGetUid(): string
     {
         if (!$this->uid) {
             $this->uid = uniqid();
