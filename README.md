@@ -28,7 +28,17 @@ In addition, this package allows to:
 
 ## Configuration
 
-If you want to send log/exception notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
+If you want to send mail notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable.
+
+If you want to send mail notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
+
+```php
+'telegram-bot-api' => [
+    'token' => env('TELEGRAM_BOT_TOKEN')
+],
+```
+
+Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
 
 ## Usage
 
@@ -106,9 +116,9 @@ class OrderService
 namespace App\Http\Controllers;
 
 use App\Services\OrderService;
+use Illuminate\Routing\Controller;
 use Faustoff\Contextify\Loggable;
 use Faustoff\Contextify\LoggableInterface;
-use Illuminate\Routing\Controller;
 
 class OrderController extends Controller implements LoggableInterface
 {
@@ -176,8 +186,8 @@ Also, you can track console command execution by using `Faustoff\Contextify\Cons
 
 namespace App\Console\Commands;
 
-use Faustoff\Contextify\Console\Trackable;
 use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Trackable;
 
 class SyncData extends Command
 {
@@ -221,8 +231,8 @@ Also, you can capture [native Laravel console command output](https://laravel.co
 
 namespace App\Console\Commands;
 
-use Faustoff\Contextify\Console\Outputable;
 use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Outputable;
 
 class SyncData extends Command
 {
@@ -289,11 +299,12 @@ If you want to send exception notifications, you should register exception handl
 
 namespace App\Exceptions;
 
-use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
+use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
 
 class Handler extends ExceptionHandler
 {

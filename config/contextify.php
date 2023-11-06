@@ -1,7 +1,7 @@
 <?php
 
 return [
-   /*
+    /*
    |--------------------------------------------------------------------------
    | Contextify Master Switch
    |--------------------------------------------------------------------------
@@ -51,5 +51,5 @@ return [
     | The name of the queue to which the queued telegram notifications will be sent.
     |
     */
-    'telegram_queue' => env('CONTEXTIFY_TELEGRAM_QUEUE', 'default')
+    'telegram_queue' => env('CONTEXTIFY_TELEGRAM_QUEUE', 'default'),
 ];
