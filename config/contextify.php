@@ -31,7 +31,7 @@ return [
     | Recipient of telegram notifications.
     |
     */
-    'telegram_chat_id' => explode(',', env('CONTEXTIFY_TELEGRAM_CHAT_ID', '')),
+    'telegram_chat_id' => env('CONTEXTIFY_TELEGRAM_CHAT_ID'),
 
     /*
     |--------------------------------------------------------------------------
