@@ -20,7 +20,7 @@ trait Trackable
 
             parent::initialize($input, $output);
 
-            $this->logDebug('Run with arguments' . json_encode($this->arguments()));
+            $this->logDebug('Run with arguments: ' . json_encode($this->arguments()));
         }
     }
 }
