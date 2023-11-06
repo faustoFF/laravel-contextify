@@ -13,11 +13,11 @@ class AbstractNotification extends \Illuminate\Notifications\Notification implem
     {
         $via = [];
 
-        if (config('contextify.mail_addresses')) {
+        if (config('contextify.mail_addresses')[0] ?? false) {
             $via[] = 'mail';
         }
 
-        if (config('contextify.telegram_chat_id')) {
+        if (config('contextify.telegram_chat_id')[0] ?? false) {
             $via[] = 'telegram';
         }
 
