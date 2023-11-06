@@ -11,9 +11,17 @@ class AbstractNotification extends \Illuminate\Notifications\Notification implem
 
     public function via(mixed $notifiable): array
     {
-        return config('contextify.telegram_chat_id')
-            ? ['mail', 'telegram']
-            : ['mail'];
+        $via = [];
+
+        if (config('contextify.mail_addresses')) {
+            $via[] = 'mail';
+        }
+
+        if (config('contextify.telegram_chat_id')) {
+            $via[] = 'telegram';
+        }
+
+        return $via;
     }
 
     public function viaQueues(): array
