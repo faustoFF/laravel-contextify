@@ -28,9 +28,9 @@ In addition, this package allows to:
 
 ## Configuration
 
-If you want to send mail notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable.
+If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
 
-If you want to send mail notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
+If you want to send Telegram notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
 
 ```php
 'telegram-bot-api' => [
