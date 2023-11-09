@@ -1,37 +1,44 @@
-# Laravel Contextual Logging
+# Laravel Contextify
 
-> Contextual logging in Laravel.
+> Contextual logging in Laravel
 
-Usually, when your Laravel application has become quite large and complex, you start to facing the problem of a large number of logs from different places of the application, and sometimes also from multiple processes (queue workers, daemons, etc.).
+This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, and **UID**, directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
 
-When you found problem in your application and trying to figure out, it can be difficult to track/debug by log entries the process of the application execution when processing the user request (or, for example, processing a console command).
+Adding execution context to logs very helpful when your application has grown in size and complexity, and you begin to facing a large number of logs originating from various parts of the application, including multiple processes such as queue workers and daemons.
 
-The main purpose of this package is to add execution context to applications logs. It also provides some improvements in logging and notifications.
+By examining the **class** of a log record, you can easily determine its source. It also groups together all log records associated with that class.
 
-## What It Actually Does
+The **PID** groups all log records related to a specific process, such as a queue worker or daemon. 
 
-This package adds to the log entries:
-- **execution context** of the application, so that helps you just by looking at the entry easier understand where log entry exactly comes from
-- **process id (PID)** that combines all log entries corresponding to the specific process (queue worker, daemon etc.)
-- **unique identifier** that combines all log entries corresponding to the processing of a single user request (or, for example, the execution of a single console command)
-- and other useful information
+The **UID** combines all log records associated with the processing of a single user request or, for instance, the execution of a single console command.
 
-Log entries will be looks like this:
+Log records will be looks like this:
 
 `[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created`
 
-In addition, this package adds the ability to:
-- easy to send log entries notifications via Email and Telegram
-- capture console command output and write it to logs
-- send notification when exceptions occurred
+In addition, this package allows to:
+- [track Console Command execution](#console-command-tracking)
+- [capture native Laravel Console Command output and write it to logs](#console-command-output-capture)
+- [send specific log records as notifications via Email and Telegram channels](#log-notifications)
+- [send exception notification](#exception-notifications)
 
 ## Installation
 
-`composer require faustoff/laravel-contextual-logging`
+`composer require faustoff/laravel-contextify`
 
 ## Configuration
 
-If you want to send log/exception notifications you should configure `LOGGABLE_MAIL_ADDRESSES` and `LOGGABLE_TELEGRAM_CHAT_ID` environment variables. Also, you should now that any of notifications will be queued. You can configure `LOGGABLE_MAIL_QUEUE` and `LOGGABLE_TELEGRAM_QUEUE` environment variables to override default queues.
+If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
+
+If you want to send Telegram notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
+
+```php
+'telegram-bot-api' => [
+    'token' => env('TELEGRAM_BOT_TOKEN')
+],
+```
+
+Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
 
 ## Usage
 
@@ -39,17 +46,16 @@ If you want to send log/exception notifications you should configure `LOGGABLE_M
 
 Suppose you have kind of `OrderService` in your application.
 
-To add contextual logging to `OrderService` this service should implements `LoggableInterface` and use `Faustoff\Loggable\Loggable` trait with methods like `$this->logInfo()` which this trait provides:
+To add contextual logging to `OrderService` use `Faustoff\Contextify\Loggable` trait and methods like `$this->logInfo()` which trait provides:
 
 ```php
 <?php
 
 namespace App\Services;
 
-use Faustoff\Loggable\Loggable;
-use Faustoff\Loggable\LoggableInterface;
+use Faustoff\Contextify\Loggable;
 
-class OrderService implements LoggableInterface
+class OrderService
 {
     use Loggable;
 
@@ -78,22 +84,114 @@ Log:
 [2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created {"key":"value"}
 ```
 
+### Parent Context
+
+If you have multiple levels of logging context you can pass "parent" loggable to "child" by using `Faustoff\Loggable\HasLog` trait.
+
+Suppose you have "parent" logging context `OrderController` and "child" `OrderService` and you want to pass `OrderController` logging context to `OrderService`.
+
+```php
+<?php
+
+namespace App\Services\OrderService;
+
+use Faustoff\Contextify\HasLog;
+
+class OrderService
+{
+    use HasLog;
+    
+    public function order()
+    {
+        // ...
+        
+        $this->log->logSuccess('Order was created');
+    }
+}
+```
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\OrderService;
+use Illuminate\Routing\Controller;
+use Faustoff\Contextify\Loggable;
+use Faustoff\Contextify\LoggableInterface;
+
+class OrderController extends Controller implements LoggableInterface
+{
+    use Loggable;
+    
+    public function store()
+    {
+        (new OrderService())->setLog($this)->order();
+    }
+}
+```
+
+Log:
+
+```
+[2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] Order was created
+```
+
 ### Console Commands
 
-If you wants to add contextual logging in to application console commands, you can use `Faustoff\Loggable\Console\Loggable` trait. It extends basic `Faustoff\Loggable\Loggable` with specific for console commands logging by adding additional debug log entries when console commands starts and finish with execution time and peak memory usage.
+If you wants to add contextual logging in to console commands, you can use `Faustoff\Contextify\Console\Loggable` trait. It extends common `Faustoff\Contextify\Loggable` by writing logs to console output (terminal).
 
 ```php
 <?php
 
 namespace App\Console\Commands;
 
-use Faustoff\Loggable\Console\Loggable;
-use Faustoff\Loggable\LoggableInterface;
 use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Loggable;
 
-class SyncData extends Command implements LoggableInterface
+class SyncData extends Command
 {
     use Loggable;
+
+    protected $signature = 'data:sync';
+
+    public function handle(): int
+    {
+        $this->logSuccess('Data was synced');
+
+        return self::SUCCESS;
+    }
+}
+
+```
+
+Log:
+
+```
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
+```
+
+Terminal output:
+
+```
+Data was synced
+```
+
+#### Console Command Tracking
+
+Also, you can track console command execution by using `Faustoff\Contextify\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time and peak memory usage.
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Trackable;
+
+class SyncData extends Command
+{
+    use Trackable;
 
     protected $signature = 'data:sync';
 
@@ -118,22 +216,27 @@ Log:
 [2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
 ```
 
-Also, you can capture regular Laravel console command output, produced by `info()`-like methods, and store it to logs by adding `Faustoff\Loggable\Console\LoggableOutput` trait to your command like this:
+Terminal output:
+
+```
+Data was synced
+```
+
+#### Console Command Output Capture
+
+Also, you can capture [native Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Contextify\Console\Outputable` trait:
 
 ```php
 <?php
 
 namespace App\Console\Commands;
 
-use Faustoff\Loggable\Console\Loggable;
-use Faustoff\Loggable\Console\LoggableOutput;
-use Faustoff\Loggable\LoggableInterface;
 use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Outputable;
 
-class SyncData extends Command implements LoggableInterface
+class SyncData extends Command
 {
-    use Loggable;
-    use LoggableOutput;
+    use Outputable;
 
     protected $signature = 'data:sync';
 
@@ -152,79 +255,56 @@ class SyncData extends Command implements LoggableInterface
 Log:
 
 ```
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Run with arguments {"command":"data:sync"}
 [2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Execution time: 1 second
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
 ```
 
-### Parent Context
+Terminal output:
 
-If you have multiple levels of logging context you can pass "parent" loggable to "child" by using `HasLog` trait.
+```
+Data was synced
+```
 
-Suppose you have "parent" logging context `OrderController` and "child" `OrderService` and you want to pass `OrderController` logging context to `OrderService`.
+### Log Notifications
+
+To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
 
 ```php
 <?php
 
-namespace App\Services\OrderService;
+namespace App\Services;
 
-use Faustoff\Loggable\HasLog;
+use Faustoff\Contextify\Loggable;
 
 class OrderService
 {
-    use HasLog;
-    
-    public function order()
-    {
-        // ...
-        
-        $this->log->logSuccess('Order was created');
-    }
-}
-```
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Services\OrderService;
-use Faustoff\Loggable\Console\Loggable;
-use Faustoff\Loggable\LoggableInterface;
-use Illuminate\Routing\Controller;
-
-class OrderController extends Controller implements LoggableInterface
-{
     use Loggable;
-    
-    public function store()
+
+    public function order(): void
     {
-        (new OrderService())->setLog($this)->order();
+        // You business logic here
+        
+        // Log message and notification with context data
+        $this->logSuccess('Order was created', ['key' => 'value'], true);
     }
 }
-```
 
-Log:
-
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] Order was created
 ```
 
 ### Exception Notifications
 
-If you want to send exception notifications, you should register exception handling callback and add `ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
+If you want to send exception notifications, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
 
 ```php
 <?php
 
 namespace App\Exceptions;
 
-use Faustoff\Loggable\Notifications\ExceptionOccurredNotification;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
+use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
 
 class Handler extends ExceptionHandler
 {
@@ -235,11 +315,10 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (\Throwable $e) {
-            // TODO: rewrite to LOGGABLE_ENABLED true/false in config
-            if (!App::environment('testing')) {
+            if (config('contextify.enabled')) {
                 try {
-                    Notification::route('mail', config('loggable.mail_addresses'))
-                        ->route('telegram', config('loggable.telegram_chat_id'))
+                    Notification::route('mail', config('contextify.mail_addresses'))
+                        ->route('telegram', config('contextify.telegram_chat_id'))
                         ->notify(new ExceptionOccurredNotification($e))
                     ;
                 } catch (\Throwable $e) {

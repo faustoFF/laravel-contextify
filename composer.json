@@ -1,11 +1,11 @@
 {
-    "name": "faustoff/laravel-contextual-logging",
+    "name": "faustoff/laravel-contextify",
     "description": "Contextual logging in Laravel",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Faustoff\\Loggable\\": "src/"
+            "Faustoff\\Contextify\\": "src/"
         }
     },
     "authors": [
@@ -26,7 +26,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Faustoff\\Loggable\\LoggableServiceProvider"
+                "Faustoff\\Contextify\\ContextifyServiceProvider"
             ]
         }
     },

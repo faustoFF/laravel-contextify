@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable\Notifications;
+namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -39,7 +39,7 @@ class LogNotification extends AbstractNotification
     {
         return (new MailMessage())
             ->subject(ucfirst($this->level) . ': ' . $this->message)
-            ->view('loggable::log', [
+            ->view('contextify::log', [
                 'env' => $this->env,
                 'datetime' => $this->datetime,
                 'callContext' => $this->callContext,
@@ -65,7 +65,7 @@ class LogNotification extends AbstractNotification
             . Str::limit(
                 $this->context
                     ? "\nContext: " . (
-                    is_string($this->context)
+                        is_string($this->context)
                         ? $this->context
                         : Utils::jsonEncode($this->context, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT)
                     )

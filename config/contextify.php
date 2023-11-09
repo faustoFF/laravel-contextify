@@ -1,9 +1,9 @@
 <?php
 
 return [
-   /*
+    /*
    |--------------------------------------------------------------------------
-   | Loggable Master Switch
+   | Contextify Master Switch
    |--------------------------------------------------------------------------
    |
    | This option may be used to disable all Telescope watchers regardless
@@ -11,7 +11,7 @@ return [
    | and convenient way to enable or disable Telescope data storage.
    |
    */
-    'enabled' => env('LOGGABLE_ENABLED', true),
+    'enabled' => env('CONTEXTIFY_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -21,7 +21,7 @@ return [
     | Recipients of email notifications.
     |
     */
-    'mail_addresses' => explode(',', env('LOGGABLE_MAIL_ADDRESSES', '')),
+    'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     | Recipient of telegram notifications.
     |
     */
-    'telegram_chat_id' => explode(',', env('LOGGABLE_TELEGRAM_CHAT_ID', '')),
+    'telegram_chat_id' => env('CONTEXTIFY_TELEGRAM_CHAT_ID'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     | The name of the queue to which the queued mail notifications will be sent.
     |
     */
-    'mail_queue' => env('LOGGABLE_MAIL_QUEUE', 'default'),
+    'mail_queue' => env('CONTEXTIFY_MAIL_QUEUE', 'default'),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,5 +51,5 @@ return [
     | The name of the queue to which the queued telegram notifications will be sent.
     |
     */
-    'telegram_queue' => env('LOGGABLE_TELEGRAM_QUEUE', 'default')
+    'telegram_queue' => env('CONTEXTIFY_TELEGRAM_QUEUE', 'default'),
 ];

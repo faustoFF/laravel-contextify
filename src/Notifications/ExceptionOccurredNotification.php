@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Faustoff\Loggable\Notifications;
+namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
-use Faustoff\Loggable\Exceptions\ExceptionOccurredNotificationFailedException;
-use Faustoff\Loggable\Loggable;
+use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
+use Faustoff\Contextify\Loggable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
@@ -33,7 +33,7 @@ class ExceptionOccurredNotification extends AbstractNotification
     {
         return (new MailMessage())
             ->subject('Exception')
-            ->view('loggable::exception', [
+            ->view('contextify::exception', [
                 'env' => $this->env,
                 'datetime' => $this->datetime,
                 'pid' => $this->pid,
