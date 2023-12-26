@@ -12,9 +12,11 @@ The **PID** groups all log records related to a specific process, such as a queu
 
 The **UID** combines all log records associated with the processing of a single user request or, for instance, the execution of a single console command.
 
+The **MEM** indicates the amount of memory allocated from system (including unused pages) to PHP at the time of adding a log record.
+
 Log records will be looks like this:
 
-`[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created`
+`[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created`
 
 In addition, this package allows to:
 - [track Console Command execution](#console-command-tracking)
@@ -79,9 +81,9 @@ class OrderService
 Log:
 
 ```
-[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created
-[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created {"key":"value"}
-[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] Order was created {"key":"value"}
+[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created
+[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created {"key":"value"}
+[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created {"key":"value"}
 ```
 
 ### Parent Context
@@ -134,7 +136,7 @@ class OrderController extends Controller implements LoggableInterface
 Log:
 
 ```
-[2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] Order was created
+[2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created
 ```
 
 ### Console Commands
@@ -168,7 +170,7 @@ class SyncData extends Command
 Log:
 
 ```
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Data was synced
 ```
 
 Terminal output:
@@ -210,10 +212,10 @@ class SyncData extends Command
 Log:
 
 ```
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Run with arguments {"command":"data:sync"}
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Execution time: 1 second
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Peak memory usage: 4 MB.
+[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Run with arguments {"command":"data:sync"}
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Data was synced
+[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Execution time: 1 second
+[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Peak memory usage: 4 MB.
 ```
 
 Terminal output:
@@ -255,7 +257,7 @@ class SyncData extends Command
 Log:
 
 ```
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] Data was synced
+[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Data was synced
 ```
 
 Terminal output:
