@@ -27,6 +27,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
         $this->exception = "{$exception}";
+        // TODO: add memory usage
     }
 
     public function toMail(mixed $notifiable): MailMessage

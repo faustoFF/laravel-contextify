@@ -33,6 +33,7 @@ class LogNotification extends AbstractNotification
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
+        // TODO: add memory usage
     }
 
     public function toMail(mixed $notifiable): MailMessage
