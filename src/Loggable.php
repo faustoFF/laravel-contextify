@@ -102,7 +102,7 @@ trait Loggable
     protected function contextifyFormatMessage(string $message): string
     {
         // TODO: add notified marker if this log record was notified
-        return '[' . get_class($this) . '] [PID:' . getmypid() . "] [UID:{$this->contextifyGetUid()}] " . $message;
+        return '[' . get_class($this) . '] [PID:' . getmypid() . "] [UID:{$this->contextifyGetUid()}] [MEM:" . memory_get_usage(true) . '] ' . $message;
     }
 
     // TODO: use Symfony\Component\Console\Helper::formatMemory()
