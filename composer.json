@@ -21,7 +21,7 @@
         "illuminate/log": "^8.0|^9.0|^10.0",
         "illuminate/notifications": "^8.0|^9.0|^10.0",
         "illuminate/support": "^8.0|^9.0|^10.0",
-        "laravel-notification-channels/telegram": "^3.0|^4.0"
+        "laravel-notification-channels/telegram": "^2.0|^3.0|^4.0"
     },
     "extra": {
         "laravel": {
