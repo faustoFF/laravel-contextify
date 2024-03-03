@@ -57,7 +57,7 @@ class OrderService
         // Log message with context data
         $this->logSuccess('Order was created', ['key' => 'value']);
         
-        // Log message and notification with context data
+        // Log message with context data both in log and notification
         $this->logSuccess('Order was created', ['key' => 'value'], true);
     }
 }
