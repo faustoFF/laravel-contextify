@@ -2,7 +2,7 @@
 
 > Contextual logging in Laravel
 
-This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, and **UID**, directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
+This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, **UID** (and more), directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
 
 Adding execution context to logs very helpful when your application has grown in size and complexity, and you begin to facing a large number of logs originating from various parts of the application, including multiple processes such as queue workers and daemons.
 
@@ -19,28 +19,14 @@ Log records will be looks like this:
 `[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created`
 
 In addition, this package allows to:
-- [track Console Command execution](#console-command-tracking)
-- [capture native Laravel Console Command output and write it to logs](#console-command-output-capture)
-- [send specific log records as notifications via Email and Telegram channels](#log-notifications)
-- [send exception notification](#exception-notifications)
+- [Track Console Command execution](#console-command-tracking)
+- [Capture native Laravel Console Command output and write it to logs](#console-command-output-capture)
+- [Send specific log records as notifications via mail, telegram and other channels](#log-notifications)
+- [Send exception notification](#exception-notifications)
 
 ## Installation
 
-`composer require faustoff/laravel-contextify`
-
-## Configuration
-
-If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
-
-If you want to send Telegram notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
-
-```php
-'telegram-bot-api' => [
-    'token' => env('TELEGRAM_BOT_TOKEN')
-],
-```
-
-Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
+`composer require faustoff/laravel-contextify:^2.0`
 
 ## Usage
 
@@ -266,7 +252,26 @@ Terminal output:
 Data was synced
 ```
 
-### Log Notifications
+## Notifications
+
+Out of the box, the notification can be sent via:
+
+- mail
+- Telegram
+
+If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
+
+If you want to send Telegram notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
+
+```php
+'telegram-bot-api' => [
+    'token' => env('TELEGRAM_BOT_TOKEN')
+],
+```
+
+Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
+
+### Log Notification
 
 To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
 
@@ -292,7 +297,7 @@ class OrderService
 
 ```
 
-### Exception Notifications
+### Exception Notification
 
 If you want to send exception notifications, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
 

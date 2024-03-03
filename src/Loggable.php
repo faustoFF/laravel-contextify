@@ -7,7 +7,6 @@ namespace Faustoff\Contextify;
 use Carbon\CarbonInterval;
 use Faustoff\Contextify\Notifications\LogNotification;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 
 trait Loggable
 {
@@ -120,20 +119,15 @@ trait Loggable
 
     protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
-        if (config('contextify.enabled')) {
-            Notification::route('mail', config('contextify.mail_addresses'))
-                ->route('telegram', config('contextify.telegram_chat_id'))
-                ->notify(new LogNotification(
-                    get_class($this),
-                    getmypid() ?: null,
-                    $this->contextifyGetUid(),
-                    $message,
-                    $level,
-                    $context
-                ))
-            ;
-
-            // TODO: add debug to log with info about notification dispatched to queue
+        if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
+            app(config('contextify.notifications.notifiable'))->notify(new LogNotification(
+                get_class($this),
+                getmypid() ?: null,
+                $this->contextifyGetUid(),
+                $message,
+                $level,
+                $context
+            ));
         }
     }
 

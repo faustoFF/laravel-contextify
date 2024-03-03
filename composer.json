@@ -20,8 +20,7 @@
         "monolog/monolog": "^2.0|^3.0",
         "illuminate/log": "^8.0|^9.0|^10.0",
         "illuminate/notifications": "^8.0|^9.0|^10.0",
-        "illuminate/support": "^8.0|^9.0|^10.0",
-        "laravel-notification-channels/telegram": "^2.0|^3.0|^4.0"
+        "illuminate/support": "^8.0|^9.0|^10.0"
     },
     "extra": {
         "laravel": {
@@ -31,7 +30,8 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.22"
+        "friendsofphp/php-cs-fixer": "^3.22",
+        "laravel-notification-channels/telegram": "^4.0"
     },
     "scripts": {
         "cs": "php-cs-fixer fix --dry-run --diff",
