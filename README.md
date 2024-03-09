@@ -261,15 +261,28 @@ Out of the box, the notification can be sent via:
 
 If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
 
-If you want to send Telegram notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
+If you want to send Telegram notifications you should [install](https://github.com/laravel-notification-channels/telegram#installation) and [configure](https://github.com/laravel-notification-channels/telegram#setting-up-your-telegram-bot) [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package. Then you should set `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variable with [retrieved Telegram Chat ID](https://github.com/laravel-notification-channels/telegram#retrieving-chat-id).
+
+Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/). 
+
+Also, you can override which queue (`default` queue by default) will be used to send a specific notification through a specific channel. This will be done in `contextify` config by key `notifications.list` like this:
 
 ```php
-'telegram-bot-api' => [
-    'token' => env('TELEGRAM_BOT_TOKEN')
+// in config/contextify.php
+
+'notifications' => [
+    // ...
+
+    'list' => [
+        \Faustoff\Contextify\Notifications\LogNotification::class => ['mail' => 'mail_queue1', 'telegram' => 'telegram_queue1'],
+        \Faustoff\Contextify\Notifications\ExceptionOccurredNotification::class =>  ['mail' => 'mail_queue2', 'telegram' => 'telegram_queue2'],
+    ],
+    
+    // ...
 ],
 ```
 
-Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
+You can completely disable notifications by `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable.
 
 ### Log Notification
 
@@ -299,7 +312,7 @@ class OrderService
 
 ### Exception Notification
 
-If you want to send exception notifications, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
+If you want to send exception notifications when exceptions occurs, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
 
 ```php
 <?php
@@ -322,14 +335,13 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (\Throwable $e) {
-            if (config('contextify.enabled')) {
+            if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
                 try {
-                    Notification::route('mail', config('contextify.mail_addresses'))
-                        ->route('telegram', config('contextify.telegram_chat_id'))
+                    app(config('contextify.notifications.notifiable'))
                         ->notify(new ExceptionOccurredNotification($e))
                     ;
                 } catch (\Throwable $e) {
-                    Log::error("Unable to queue exception occurred notification: {$e}");
+                    Log::error("Unable to send exception occurred notification: {$e}");
                 }
             }
         });
