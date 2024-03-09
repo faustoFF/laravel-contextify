@@ -29,4 +29,9 @@ class AbstractNotification extends \Illuminate\Notifications\Notification
 
         return $queues;
     }
+
+    public function shouldSend(Notifiable $notifiable, string $channel): bool
+    {
+        return config('contextify.notifications.enabled');
+    }
 }

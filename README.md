@@ -20,9 +20,9 @@ Log records will be looks like this:
 
 In addition, this package allows to:
 - [Track Console Command execution](#console-command-tracking)
-- [Capture native Laravel Console Command output and write it to logs](#console-command-output-capture)
-- [Send specific log records as notifications via mail, telegram and other channels](#log-notifications)
-- [Send exception notification](#exception-notifications)
+- [Capture native Console Command output and write it to logs](#console-command-output-capture)
+- [Send log records as notifications via mail, telegram and other channels](#log-notifications)
+- [Send exception notification via mail, telegram and other channels](#exception-notifications)
 
 ## Installation
 

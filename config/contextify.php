@@ -4,7 +4,7 @@ return [
     'enabled' => env('CONTEXTIFY_ENABLED', true),
 
     'notifications' => [
-        'enabled' => true,
+        'enabled' => env('CONTEXTIFY_NOTIFICATIONS_ENABLED', true),
 
         /*
          * Use ['mail' => 'mail_queue'] like syntax for queued notification
