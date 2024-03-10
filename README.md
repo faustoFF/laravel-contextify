@@ -2,7 +2,7 @@
 
 > Contextual logging in Laravel
 
-This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, and **UID**, directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
+This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, **UID** (and more), directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
 
 Adding execution context to logs very helpful when your application has grown in size and complexity, and you begin to facing a large number of logs originating from various parts of the application, including multiple processes such as queue workers and daemons.
 
@@ -19,28 +19,14 @@ Log records will be looks like this:
 `[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created`
 
 In addition, this package allows to:
-- [track Console Command execution](#console-command-tracking)
-- [capture native Laravel Console Command output and write it to logs](#console-command-output-capture)
-- [send specific log records as notifications via Email and Telegram channels](#log-notifications)
-- [send exception notification](#exception-notifications)
+- [Track Console Command execution](#console-command-tracking)
+- [Capture native Console Command output and write it to logs](#console-command-output-capture)
+- [Send log records as notifications via mail, telegram and other channels](#log-notifications)
+- [Send exception notification via mail, telegram and other channels](#exception-notifications)
 
 ## Installation
 
-`composer require faustoff/laravel-contextify`
-
-## Configuration
-
-If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
-
-If you want to send Telegram notifications you should configure `TELEGRAM_BOT_TOKEN` and `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variables. Then, you should add to `config/services.php`:
-
-```php
-'telegram-bot-api' => [
-    'token' => env('TELEGRAM_BOT_TOKEN')
-],
-```
-
-Also, you should now that any of notifications will be queued. You can configure `CONTEXTIFY_MAIL_QUEUE` and `CONTEXTIFY_TELEGRAM_QUEUE` environment variables to override default queues.
+`composer require faustoff/laravel-contextify:^2.0`
 
 ## Usage
 
@@ -71,7 +57,7 @@ class OrderService
         // Log message with context data
         $this->logSuccess('Order was created', ['key' => 'value']);
         
-        // Log message and notification with context data
+        // Log message with context data both in log and notification
         $this->logSuccess('Order was created', ['key' => 'value'], true);
     }
 }
@@ -266,7 +252,39 @@ Terminal output:
 Data was synced
 ```
 
-### Log Notifications
+## Notifications
+
+Out of the box, the notification can be sent via:
+
+- mail
+- Telegram
+
+If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can add multiple addresses by separating them with commas like this: "foo@test.com,bar@test.com"
+
+If you want to send Telegram notifications you should [install](https://github.com/laravel-notification-channels/telegram#installation) and [configure](https://github.com/laravel-notification-channels/telegram#setting-up-your-telegram-bot) [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package. Then you should set `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variable with [retrieved Telegram Chat ID](https://github.com/laravel-notification-channels/telegram#retrieving-chat-id).
+
+Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/). 
+
+Also, you can override which queue (`default` queue by default) will be used to send a specific notification through a specific channel. This will be done in `contextify` config by key `notifications.list` like this:
+
+```php
+// in config/contextify.php
+
+'notifications' => [
+    // ...
+
+    'list' => [
+        \Faustoff\Contextify\Notifications\LogNotification::class => ['mail' => 'mail_queue1', 'telegram' => 'telegram_queue1'],
+        \Faustoff\Contextify\Notifications\ExceptionOccurredNotification::class =>  ['mail' => 'mail_queue2', 'telegram' => 'telegram_queue2'],
+    ],
+    
+    // ...
+],
+```
+
+You can completely disable notifications by `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable.
+
+### Log Notification
 
 To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
 
@@ -292,9 +310,9 @@ class OrderService
 
 ```
 
-### Exception Notifications
+### Exception Notification
 
-If you want to send exception notifications, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
+If you want to send exception notifications when exceptions occurs, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
 
 ```php
 <?php
@@ -317,14 +335,13 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (\Throwable $e) {
-            if (config('contextify.enabled')) {
+            if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
                 try {
-                    Notification::route('mail', config('contextify.mail_addresses'))
-                        ->route('telegram', config('contextify.telegram_chat_id'))
+                    app(config('contextify.notifications.notifiable'))
                         ->notify(new ExceptionOccurredNotification($e))
                     ;
                 } catch (\Throwable $e) {
-                    Log::error("Unable to queue exception occurred notification: {$e}");
+                    Log::error("Unable to send exception occurred notification: {$e}");
                 }
             }
         });

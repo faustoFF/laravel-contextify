@@ -7,7 +7,6 @@ namespace Faustoff\Contextify;
 use Carbon\CarbonInterval;
 use Faustoff\Contextify\Notifications\LogNotification;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 
 trait Loggable
 {
@@ -15,7 +14,6 @@ trait Loggable
     protected ?string $reservedMemory;
     protected ?string $uid = null;
 
-    // TODO: add notify channels
     public function logDebug(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->contextifyLog($message, 'debug', $context);
@@ -25,7 +23,6 @@ trait Loggable
         }
     }
 
-    // TODO: add notify channels
     public function logInfo(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->contextifyLog($message, 'info', $context);
@@ -35,7 +32,6 @@ trait Loggable
         }
     }
 
-    // TODO: add notify channels
     // TODO: rename to logNotice to be compatible with monolog
     public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
     {
@@ -46,7 +42,6 @@ trait Loggable
         }
     }
 
-    // TODO: add notify channels
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->contextifyLog($message, 'warning', $context);
@@ -56,7 +51,6 @@ trait Loggable
         }
     }
 
-    // TODO: add notify channels
     public function logError(string $message, mixed $context = [], bool $notify = false): void
     {
         $this->contextifyLog($message, 'error', $context);
@@ -120,20 +114,15 @@ trait Loggable
 
     protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
-        if (config('contextify.enabled')) {
-            Notification::route('mail', config('contextify.mail_addresses'))
-                ->route('telegram', config('contextify.telegram_chat_id'))
-                ->notify(new LogNotification(
-                    get_class($this),
-                    getmypid() ?: null,
-                    $this->contextifyGetUid(),
-                    $message,
-                    $level,
-                    $context
-                ))
-            ;
-
-            // TODO: add debug to log with info about notification dispatched to queue
+        if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
+            app(config('contextify.notifications.notifiable'))->notify(new LogNotification(
+                get_class($this),
+                getmypid() ?: null,
+                $this->contextifyGetUid(),
+                $message,
+                $level,
+                $context
+            ));
         }
     }
 

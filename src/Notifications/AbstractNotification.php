@@ -1,34 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Faustoff\Contextify\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
-class AbstractNotification extends \Illuminate\Notifications\Notification implements ShouldQueue
+class AbstractNotification extends \Illuminate\Notifications\Notification
 {
-    use Queueable;
-
     public function via(mixed $notifiable): array
     {
-        $via = [];
+        $notificationsChannels = config('contextify.notifications.list.' . static::class);
 
-        if (config('contextify.mail_addresses')[0] ?? false) {
-            $via[] = 'mail';
+        $channels = [];
+        foreach ($notificationsChannels as $channel => $queue) {
+            $channels[] = is_string($channel) ? $channel : $queue;
         }
 
-        if (config('contextify.telegram_chat_id')[0] ?? false) {
-            $via[] = 'telegram';
-        }
-
-        return $via;
+        return $channels;
     }
 
     public function viaQueues(): array
     {
-        return [
-            'mail' => config('contextify.mail_queue'),
-            'telegram' => config('contextify.telegram_queue'),
-        ];
+        $notificationsChannels = config('contextify.notifications.list.' . static::class);
+
+        $queues = [];
+        foreach ($notificationsChannels as $channel => $queue) {
+            $queues[] = is_string($channel) ? $queue : 'default';
+        }
+
+        return $queues;
+    }
+
+    public function shouldSend(Notifiable $notifiable, string $channel): bool
+    {
+        return config('contextify.notifications.enabled');
     }
 }
