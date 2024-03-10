@@ -116,7 +116,7 @@ trait Loggable
     {
         if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
             $logNotification = null;
-            foreach ('contextify.notifications.list' as $notification => $channels) {
+            foreach (config('contextify.notifications.list') as $notification => $channels) {
                 if (is_subclass_of($notification, LogNotification::class)) {
                     $logNotification = $notification;
 
