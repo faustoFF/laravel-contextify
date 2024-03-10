@@ -115,7 +115,16 @@ trait Loggable
     protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
         if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
-            app(config('contextify.notifications.notifiable'))->notify(new LogNotification(
+            $logNotification = null;
+            foreach ('contextify.notifications.list' as $notification => $channels) {
+                if (is_subclass_of($notification, LogNotification::class)) {
+                    $logNotification = $notification;
+
+                    break;
+                }
+            }
+
+            app(config('contextify.notifications.notifiable'))->notify(new $logNotification(
                 get_class($this),
                 getmypid() ?: null,
                 $this->contextifyGetUid(),
