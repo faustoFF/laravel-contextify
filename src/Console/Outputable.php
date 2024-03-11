@@ -10,10 +10,6 @@ trait Outputable
 
     public function line($string, $style = null, $verbosity = null): void
     {
-        if (!config('contextify.enabled')) {
-            parent::line($string, $style, $verbosity);
-        }
-
         if (null === $style) {
             $string = strip_tags($string);
         }

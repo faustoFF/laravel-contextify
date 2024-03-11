@@ -62,35 +62,29 @@ trait Loggable
 
     public function logStart(): void
     {
-        if (config('contextify.enabled')) {
-            $this->timeStarted = microtime(true);
-            $this->reservedMemory = str_repeat(' ', 20 * 1024);
-        }
+        $this->timeStarted = microtime(true);
+        $this->reservedMemory = str_repeat(' ', 20 * 1024);
     }
 
     public function logFinish(): void
     {
-        if (config('contextify.enabled')) {
-            // Освобождаем зарезервированную память для завершения работы скрипта
-            $this->reservedMemory = null;
+        // Освобождаем зарезервированную память для завершения работы скрипта
+        $this->reservedMemory = null;
 
-            $executionTime = round(microtime(true) - $this->timeStarted, 3);
-            $this->logDebug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
+        $executionTime = round(microtime(true) - $this->timeStarted, 3);
+        $this->logDebug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
 
-            $memoryPeak = $this->contextifyFormatBytes(memory_get_peak_usage(true));
-            $this->logDebug("Peak memory usage: {$memoryPeak}.");
-        }
+        $memoryPeak = $this->contextifyFormatBytes(memory_get_peak_usage(true));
+        $this->logDebug("Peak memory usage: {$memoryPeak}.");
     }
 
     protected function contextifyLog(string $message, $level = 'info', mixed $context = []): void
     {
-        if (config('contextify.enabled')) {
-            Log::log(
-                $level,
-                $this->contextifyFormatMessage($message),
-                is_array($context) ? $context : [$context instanceof \Throwable ? "{$context}" : $context]
-            );
-        }
+        Log::log(
+            $level,
+            $this->contextifyFormatMessage($message),
+            is_array($context) ? $context : [$context instanceof \Throwable ? "{$context}" : $context]
+        );
     }
 
     protected function contextifyFormatMessage(string $message): string
@@ -114,7 +108,8 @@ trait Loggable
 
     protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
-        if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
+        if (config('contextify.notifications.enabled')) {
+            // TODO: move to function
             $logNotification = null;
             foreach (config('contextify.notifications.list') as $notification => $channels) {
                 if (is_subclass_of($notification, LogNotification::class)) {

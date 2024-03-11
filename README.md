@@ -28,6 +28,12 @@ In addition, this package allows to:
 
 `composer require faustoff/laravel-contextify:^2.0`
 
+### Publishing config file
+
+Optionally, you can publish the health config file with this command:
+
+`php artisan vendor:publish --tag="contextify-config"`
+
 ## Usage
 
 ### Contextual Logging
@@ -312,39 +318,20 @@ class OrderService
 
 ### Exception Notification
 
-If you want to send exception notifications when exceptions occurs, you should register exception handling callback and add `Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException` to ignore in `App\Exceptions\Handler` of your application to prevent infinite loop if exception notification becomes to fail:
+You will receive notifications about any unhandled reportable exceptions.
+
+To turn off, set empty value to `notifications.exception_handler.reportable` key of `contextify` configuration file.
 
 ```php
-<?php
+// in config/contextify.php
 
-namespace App\Exceptions;
+'notifications' => [
+    // ...
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
-use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
-use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
-
-class Handler extends ExceptionHandler
-{
-    protected $dontReport = [
-        ExceptionOccurredNotificationFailedException::class,
-    ];
+    'exception_handler' => [
+        'reportable' => null,
+    ],
     
-    public function register()
-    {
-        $this->reportable(function (\Throwable $e) {
-            if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
-                try {
-                    app(config('contextify.notifications.notifiable'))
-                        ->notify(new ExceptionOccurredNotification($e))
-                    ;
-                } catch (\Throwable $e) {
-                    Log::error("Unable to send exception occurred notification: {$e}");
-                }
-            }
-        });
-    }
-}
+    // ...
+],
 ```

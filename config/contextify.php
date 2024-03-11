@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'enabled' => env('CONTEXTIFY_ENABLED', true),
-
     'notifications' => [
         'enabled' => env('CONTEXTIFY_NOTIFICATIONS_ENABLED', true),
 
@@ -16,6 +14,15 @@ return [
         ],
 
         'notifiable' => \Faustoff\Contextify\Notifications\Notifiable::class,
+
+        'exception_handler' => [
+            'class' => 'App\Exceptions\Handler',
+
+            /**
+             * Set to empty value to disable exception notifications.
+             */
+            'reportable' => \Faustoff\Contextify\Exceptions\Reportable::class,
+        ],
 
         'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', 'your@example.com')),
 
