@@ -14,7 +14,7 @@ class ContextifyServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/contextify.php' => config_path('contextify.php'),
-        ]);
+        ], 'contextify-config');
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'contextify');
     }
