@@ -15,10 +15,14 @@ return [
 
         'notifiable' => \Faustoff\Contextify\Notifications\Notifiable::class,
 
-        /**
-         * Set to empty value to disable exception notifications.
-         */
-        'exception_handler_reportable' => \Faustoff\Contextify\Exceptions\Reportable::class,
+        'exception_handler' => [
+            'class' => 'App\Exceptions\Handler',
+
+            /**
+             * Set to empty value to disable exception notifications.
+             */
+            'reportable' => \Faustoff\Contextify\Exceptions\Reportable::class,
+        ],
 
         'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', 'your@example.com')),
 

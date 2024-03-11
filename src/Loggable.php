@@ -109,6 +109,7 @@ trait Loggable
     protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
         if (config('contextify.notifications.enabled')) {
+            // TODO: move to function
             $logNotification = null;
             foreach (config('contextify.notifications.list') as $notification => $channels) {
                 if (is_subclass_of($notification, LogNotification::class)) {

@@ -4,22 +4,14 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify;
 
-use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class ContextifyServiceProvider extends ServiceProvider
 {
-    public function boot(ExceptionHandler $exceptionHandler): void
+    public function boot(): void
     {
-        $exceptionHandler->ignore(ExceptionOccurredNotificationFailedException::class);
-
-        if (config('contextify.notifications.enabled')) {
-            if ($reportable = config('contextify.notifications.exception_handler_reportable')) {
-                $exceptionHandler->reportable(app($reportable)());
-            }
-        }
-
         $this->publishes([
             __DIR__ . '/../config/contextify.php' => config_path('contextify.php'),
         ]);
@@ -33,5 +25,16 @@ class ContextifyServiceProvider extends ServiceProvider
             __DIR__ . '/../config/contextify.php',
             'contextify'
         );
+
+        $this->app->resolving(ExceptionHandler::class, function (ExceptionHandler $handler, Application $app) {
+            if (
+                $handler::class === config('contextify.notifications.exception_handler.class')
+                && config('contextify.notifications.enabled')
+            ) {
+                if ($reportable = config('contextify.notifications.exception_handler.reportable')) {
+                    $handler->reportable(app($reportable)());
+                }
+            }
+        });
     }
 }
