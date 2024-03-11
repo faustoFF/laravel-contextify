@@ -24,7 +24,7 @@ class AbstractNotification extends \Illuminate\Notifications\Notification
 
         $queues = [];
         foreach ($notificationsChannels as $channel => $queue) {
-            $queues[] = is_string($channel) ? $queue : 'default';
+            $queues[$channel] = is_string($channel) ? $queue : 'default';
         }
 
         return $queues;
