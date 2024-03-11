@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Faustoff\Contextify;
 
 use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
-use Faustoff\Contextify\Exceptions\Reportable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 
 class ContextifyServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     public function boot(ExceptionHandler $exceptionHandler): void
     {
-        $exceptionHandler->ignore(ExceptionOccurredNotificationFailedException::class);
+        if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
+            $exceptionHandler->ignore(ExceptionOccurredNotificationFailedException::class);
 
-        /** @var Reportable|null $reportable */
-        if ($reportable = app(config('contextify.notifications.exception_handler_reportable'))) {
-            $exceptionHandler->reportable($reportable());
+            if ($reportable = config('contextify.notifications.exception_handler_reportable')) {
+                $exceptionHandler->reportable(app($reportable)());
+            }
         }
+
 
         $this->publishes([
             __DIR__ . '/../config/contextify.php' => config_path('contextify.php'),
