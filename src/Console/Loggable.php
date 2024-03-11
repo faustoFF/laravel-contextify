@@ -67,10 +67,6 @@ trait Loggable
 
     protected static function contextifyShouldWriteConsoleOutput(): bool
     {
-        if (!config('contextify.enabled')) {
-            return false;
-        }
-
         if (!App::runningInConsole()) {
             return false;
         }

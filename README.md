@@ -335,7 +335,7 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (\Throwable $e) {
-            if (config('contextify.enabled') && config('contextify.notifications.enabled')) {
+            if (config('contextify.notifications.enabled')) {
                 try {
                     app(config('contextify.notifications.notifiable'))
                         ->notify(new ExceptionOccurredNotification($e))

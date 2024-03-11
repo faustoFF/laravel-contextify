@@ -31,7 +31,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.22",
-        "laravel-notification-channels/telegram": "^4.0"
+        "laravel-notification-channels/telegram": "^2.0"
     },
     "scripts": {
         "cs": "php-cs-fixer fix --dry-run --diff",
