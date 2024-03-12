@@ -13,6 +13,10 @@ trait Trackable
 
     public function initialize(InputInterface $input, OutputInterface $output): void
     {
+        if (!config('contextify.enabled')) {
+            return;
+        }
+
         $this->logStart();
 
         register_shutdown_function([$this, 'logFinish']);

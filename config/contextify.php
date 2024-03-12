@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'enabled' => env('CONTEXTIFY_ENABLED', true),
+
     'notifications' => [
         'enabled' => env('CONTEXTIFY_NOTIFICATIONS_ENABLED', true),
 

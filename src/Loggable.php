@@ -62,12 +62,20 @@ trait Loggable
 
     public function logStart(): void
     {
+        if (!config('contextify.enabled')) {
+            return;
+        }
+
         $this->timeStarted = microtime(true);
         $this->reservedMemory = str_repeat(' ', 20 * 1024);
     }
 
     public function logFinish(): void
     {
+        if (!config('contextify.enabled')) {
+            return;
+        }
+
         // Освобождаем зарезервированную память для завершения работы скрипта
         $this->reservedMemory = null;
 
@@ -80,6 +88,10 @@ trait Loggable
 
     protected function contextifyLog(string $message, $level = 'info', mixed $context = []): void
     {
+        if (!config('contextify.enabled')) {
+            return;
+        }
+
         Log::log(
             $level,
             $this->contextifyFormatMessage($message),
@@ -108,26 +120,28 @@ trait Loggable
 
     protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
     {
-        if (config('contextify.notifications.enabled')) {
-            // TODO: move to function
-            $logNotification = null;
-            foreach (config('contextify.notifications.list') as $notification => $channels) {
-                if (is_subclass_of($notification, LogNotification::class)) {
-                    $logNotification = $notification;
-
-                    break;
-                }
-            }
-
-            app(config('contextify.notifications.notifiable'))->notify(new $logNotification(
-                get_class($this),
-                getmypid() ?: null,
-                $this->contextifyGetUid(),
-                $message,
-                $level,
-                $context
-            ));
+        if (!config('contextify.enabled') || !config('contextify.notifications.enabled')) {
+            return;
         }
+
+        // TODO: move to function
+        $logNotification = null;
+        foreach (config('contextify.notifications.list') as $notification => $channels) {
+            if (is_subclass_of($notification, LogNotification::class)) {
+                $logNotification = $notification;
+
+                break;
+            }
+        }
+
+        app(config('contextify.notifications.notifiable'))->notify(new $logNotification(
+            get_class($this),
+            getmypid() ?: null,
+            $this->contextifyGetUid(),
+            $message,
+            $level,
+            $context
+        ));
     }
 
     protected function contextifyGetUid(): string
