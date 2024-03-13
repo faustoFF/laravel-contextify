@@ -12,19 +12,17 @@ class Reportable
         return function (\Throwable $e) {
             try {
                 // TODO: move to function
-                $exceptionOccurredNotification = null;
                 foreach (config('contextify.notifications.list') as $notification => $channels) {
-                    if (is_subclass_of($notification, ExceptionOccurredNotification::class)) {
-                        $exceptionOccurredNotification = $notification;
+                    if (
+                        ExceptionOccurredNotification::class === $notification
+                        || is_subclass_of($notification, ExceptionOccurredNotification::class)
+                    ) {
+                        app(config('contextify.notifications.notifiable'))
+                            ->notify(new $notification($e))
+                        ;
 
                         break;
                     }
-                }
-
-                if ($exceptionOccurredNotification) {
-                    app(config('contextify.notifications.notifiable'))
-                        ->notify(new $exceptionOccurredNotification($e))
-                    ;
                 }
             } catch (\Throwable $e) {
                 Log::error("Unable to send exception occurred notification: {$e}");
