@@ -1,5 +1,6 @@
 <?php
 /**
+ * @var string $hostname
  * @var string $env
  * @var \Carbon\Carbon $datetime
  * @var string $callContext
@@ -19,6 +20,7 @@ use Monolog\Utils;
     <pre>{{ $msg }}</pre>
 
     <p>
+        <b>Hostname:</b> {{ $hostname }}<br>
         <b>ENV:</b> {{ $env }}<br>
         <b>Level:</b> {{ ucfirst($level) }}<br>
         <b>Datetime:</b> {{ $datetime->toDateTimeString() }}<br>

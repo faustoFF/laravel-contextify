@@ -6,6 +6,7 @@ namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
 use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
+use Faustoff\Contextify\HostnameProvider;
 use Faustoff\Contextify\Loggable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
@@ -16,6 +17,7 @@ class ExceptionOccurredNotification extends AbstractNotification
 {
     use Loggable;
 
+    protected string $hostname;
     protected string $env;
     protected Carbon $datetime;
     protected ?int $pid;
@@ -23,6 +25,7 @@ class ExceptionOccurredNotification extends AbstractNotification
 
     public function __construct(\Throwable $exception)
     {
+        $this->hostname = (new HostnameProvider())();
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
@@ -35,6 +38,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         return (new MailMessage())
             ->subject('Exception')
             ->view('contextify::exception', [
+                'hostname' => $this->hostname,
                 'env' => $this->env,
                 'datetime' => $this->datetime,
                 'pid' => $this->pid,
@@ -47,6 +51,7 @@ class ExceptionOccurredNotification extends AbstractNotification
     {
         return TelegramMessage::create(
             Str::limit($this->exception, 1024)
+            . "\n\nHostname: {$this->hostname}"
             . "\n\nENV: {$this->env}"
             . "\nDatetime: {$this->datetime}"
             . "\nPID: {$this->pid}"

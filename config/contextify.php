@@ -26,6 +26,8 @@ return [
             'reportable' => \Faustoff\Contextify\Exceptions\Reportable::class,
         ],
 
+        'hostname' => \Faustoff\Contextify\HostnameProvider::class,
+
         'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', 'your@example.com')),
 
         'telegram_chat_id' => env('CONTEXTIFY_TELEGRAM_CHAT_ID'),

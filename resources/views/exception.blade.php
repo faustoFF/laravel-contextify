@@ -13,6 +13,7 @@
     <pre>{{ $exception }}</pre>
 
     <p>
+        <b>Hostname:</b> {{ $env }}<br>
         <b>ENV:</b> {{ $env }}<br>
         <b>Datetime:</b> {{ $datetime->toDateTimeString() }}<br>
         <b>PID:</b> {{ $pid }}<br>

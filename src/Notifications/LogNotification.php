@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
+use Faustoff\Contextify\HostnameProvider;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
@@ -19,6 +20,7 @@ class LogNotification extends AbstractNotification
     public const INFO = 'info';
     public const DEBUG = 'debug';
 
+    protected string $hostname;
     protected string $env;
     protected Carbon $datetime;
 
@@ -30,6 +32,7 @@ class LogNotification extends AbstractNotification
         protected string $level,
         protected mixed $context = []
     ) {
+        $this->hostname = (new HostnameProvider())();
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
@@ -41,6 +44,7 @@ class LogNotification extends AbstractNotification
         return (new MailMessage())
             ->subject(ucfirst($this->level) . ': ' . $this->message)
             ->view('contextify::log', [
+                'hostname' => $this->hostname,
                 'env' => $this->env,
                 'datetime' => $this->datetime,
                 'callContext' => $this->callContext,
@@ -57,6 +61,7 @@ class LogNotification extends AbstractNotification
     {
         return TelegramMessage::create(
             Str::limit($this->message, 512)
+            . "\n\nHostname: {$this->hostname}"
             . "\n\nENV: {$this->env}"
             . "\nLevel: {$this->level}"
             . "\nDatetime: {$this->datetime}"
