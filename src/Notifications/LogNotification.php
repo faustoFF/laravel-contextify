@@ -32,7 +32,7 @@ class LogNotification extends AbstractNotification
         protected string $level,
         protected mixed $context = []
     ) {
-        $this->hostname = (new HostnameProvider())();
+        $this->hostname = app(config('contextify.notifications.hostname'))();
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
@@ -62,7 +62,7 @@ class LogNotification extends AbstractNotification
         return TelegramMessage::create(
             Str::limit($this->message, 512)
             . "\n\nHostname: {$this->hostname}"
-            . "\n\nENV: {$this->env}"
+            . "\nENV: {$this->env}"
             . "\nLevel: {$this->level}"
             . "\nDatetime: {$this->datetime}"
             . "\nLog context: {$this->callContext}"

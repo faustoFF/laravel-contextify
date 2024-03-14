@@ -25,7 +25,7 @@ class ExceptionOccurredNotification extends AbstractNotification
 
     public function __construct(\Throwable $exception)
     {
-        $this->hostname = (new HostnameProvider())();
+        $this->hostname = app(config('contextify.notifications.hostname'))();
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
@@ -52,7 +52,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         return TelegramMessage::create(
             Str::limit($this->exception, 1024)
             . "\n\nHostname: {$this->hostname}"
-            . "\n\nENV: {$this->env}"
+            . "\nENV: {$this->env}"
             . "\nDatetime: {$this->datetime}"
             . "\nPID: {$this->pid}"
         )->options([
