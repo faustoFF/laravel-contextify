@@ -6,7 +6,7 @@ namespace Faustoff\Contextify\Notifications;
 
 class AbstractNotification extends \Illuminate\Notifications\Notification
 {
-    private array $exceptChannels = [];
+    protected array $exceptChannels = [];
 
     public function via(mixed $notifiable): array
     {

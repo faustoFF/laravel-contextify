@@ -65,8 +65,7 @@ class ExceptionOccurredNotification extends AbstractNotification
     {
         $this->logError('Notification send failed', $e);
 
-        // To prevent infinite exception notification ExceptionOccurredNotificationFailedException should be
-        // added to ignore in application exception handler.
+        // To prevent infinite loop of exception notification
         throw new ExceptionOccurredNotificationFailedException('Notification failed', 0, $e);
     }
 }

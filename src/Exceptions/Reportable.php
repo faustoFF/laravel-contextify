@@ -3,7 +3,7 @@
 namespace Faustoff\Contextify\Exceptions;
 
 use Faustoff\Contextify\Contextify;
-use Faustoff\Contextify\Notifications\LogNotification;
+use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
 use Faustoff\Contextify\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
 
@@ -17,7 +17,7 @@ class Reportable
                     /** @var Notifiable $notifiable */
                     $notifiable = app(config('contextify.notifications.notifiable'));
 
-                    /** @var LogNotification $notification */
+                    /** @var ExceptionOccurredNotification $notification */
                     $notification = new $notification($e);
 
                     $notifiable->notify($notification);

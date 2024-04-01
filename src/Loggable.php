@@ -124,6 +124,7 @@ trait Loggable
             return;
         }
 
+        /** @var LogNotification $notification */
         if ($notification = Contextify::getLogNotificationClass()) {
             app(config('contextify.notifications.notifiable'))->notify(new $notification(
                 get_class($this),
