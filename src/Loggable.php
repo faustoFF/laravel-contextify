@@ -124,23 +124,15 @@ trait Loggable
             return;
         }
 
-        // TODO: move to function
-        foreach (config('contextify.notifications.list') as $notification => $channels) {
-            if (
-                LogNotification::class === $notification
-                || is_subclass_of($notification, LogNotification::class)
-            ) {
-                app(config('contextify.notifications.notifiable'))->notify(new $notification(
-                    get_class($this),
-                    getmypid() ?: null,
-                    $this->contextifyGetUid(),
-                    $message,
-                    $level,
-                    $context
-                ));
-
-                break;
-            }
+        if ($notification = Contextify::getLogNotificationClass()) {
+            app(config('contextify.notifications.notifiable'))->notify(new $notification(
+                get_class($this),
+                getmypid() ?: null,
+                $this->contextifyGetUid(),
+                $message,
+                $level,
+                $context
+            ));
         }
     }
 
