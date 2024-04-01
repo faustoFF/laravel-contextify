@@ -3,6 +3,8 @@
 namespace Faustoff\Contextify\Exceptions;
 
 use Faustoff\Contextify\Contextify;
+use Faustoff\Contextify\Notifications\LogNotification;
+use Faustoff\Contextify\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
 
 class Reportable
@@ -12,9 +14,13 @@ class Reportable
         return function (\Throwable $e) {
             try {
                 if ($notification = Contextify::getExceptionOccurredNotificationClass()) {
-                    app(config('contextify.notifications.notifiable'))
-                        ->notify(new $notification($e))
-                    ;
+                    /** @var Notifiable $notifiable */
+                    $notifiable = app(config('contextify.notifications.notifiable'));
+
+                    /** @var LogNotification $notification */
+                    $notification = new $notification($e);
+
+                    $notifiable->notify($notification);
                 }
             } catch (\Throwable $e) {
                 Log::error("Unable to send exception occurred notification: {$e}");

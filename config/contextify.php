@@ -7,8 +7,8 @@ return [
         'enabled' => env('CONTEXTIFY_NOTIFICATIONS_ENABLED', true),
 
         /*
-         * Use ['mail' => 'mail_queue'] like syntax for queued notification
-         * to override "default" queue name for specific channel.
+         * You can use extended syntax like ['mail' => 'queue'] for queued notifications
+         * to override "default" queue names for specific channels.
          */
         'list' => [
             \Faustoff\Contextify\Notifications\LogNotification::class => ['mail'],
@@ -19,10 +19,6 @@ return [
 
         'exception_handler' => [
             'class' => 'App\Exceptions\Handler',
-
-            /**
-             * Set to empty value to disable exception notifications.
-             */
             'reportable' => \Faustoff\Contextify\Exceptions\Reportable::class,
         ],
 
