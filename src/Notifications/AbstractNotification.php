@@ -8,26 +8,22 @@ class AbstractNotification extends \Illuminate\Notifications\Notification
 {
     public function via(mixed $notifiable): array
     {
-        $notificationsChannels = config('contextify.notifications.list.' . static::class);
-
-        $channels = [];
-        foreach ($notificationsChannels as $channel => $queue) {
-            $channels[] = is_string($channel) ? $channel : $queue;
+        $via = [];
+        foreach (config('contextify.notifications.list.' . static::class) as $channel => $queue) {
+            $via[] = is_string($channel) ? $channel : $queue;
         }
 
-        return $channels;
+        return $via;
     }
 
     public function viaQueues(): array
     {
-        $notificationsChannels = config('contextify.notifications.list.' . static::class);
-
-        $queues = [];
-        foreach ($notificationsChannels as $channel => $queue) {
-            $queues[$channel] = is_string($channel) ? $queue : 'default';
+        $viaQueues = [];
+        foreach (config('contextify.notifications.list.' . static::class) as $channel => $queue) {
+            $viaQueues[$channel] = is_string($channel) ? $queue : 'default';
         }
 
-        return $queues;
+        return $viaQueues;
     }
 
     public function shouldSend(Notifiable $notifiable, string $channel): bool

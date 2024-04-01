@@ -125,7 +125,6 @@ trait Loggable
         }
 
         // TODO: move to function
-        $logNotification = null;
         foreach (config('contextify.notifications.list') as $notification => $channels) {
             if (
                 LogNotification::class === $notification
