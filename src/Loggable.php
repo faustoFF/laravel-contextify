@@ -67,7 +67,7 @@ trait Loggable
         }
 
         $this->timeStarted = microtime(true);
-        $this->reservedMemory = str_repeat(' ', 20 * 1024);
+        $this->reservedMemory = str_repeat('x', 32 * 1024);
     }
 
     public function logFinish(): void
