@@ -12,6 +12,8 @@ trait Outputable
     {
         if (!config('contextify.enabled')) {
             parent::line($string, $style, $verbosity);
+
+            return;
         }
 
         if (null === $style) {
