@@ -13,6 +13,8 @@ trait Trackable
 
     public function initialize(InputInterface $input, OutputInterface $output): void
     {
+        parent::initialize($input, $output);
+
         if (!config('contextify.enabled')) {
             return;
         }
@@ -20,8 +22,6 @@ trait Trackable
         $this->logStart();
 
         register_shutdown_function([$this, 'logFinish']);
-
-        parent::initialize($input, $output);
 
         $this->logDebug('Run with arguments: ' . json_encode($this->arguments()));
     }
