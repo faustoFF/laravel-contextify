@@ -36,5 +36,9 @@
     "scripts": {
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix"
+    },
+    "suggest": {
+        "ext-pcntl": "Allows to use Faustoff\\Contextify\\Console\\Terminatable trait",
+        "laravel-notification-channels/telegram": "Allows to send Telegram notifications"
     }
 }

@@ -19,10 +19,11 @@ Log records will be looks like this:
 `[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created`
 
 In addition, this package allows to:
-- [Track Console Command execution](#console-command-tracking)
-- [Capture native Console Command output and write it to logs](#console-command-output-capture)
 - [Send log records as notifications via mail, telegram and other channels](#log-notifications)
 - [Send exception notification via mail, telegram and other channels](#exception-notifications)
+- [Track Console Command execution](#console-command-tracking)
+- [Capture native Console Command output and write it to logs](#console-command-output-capturing)
+- [Handle shutdown signals by Console Command](#console-command-handling-shutdown-signals)
 
 ## Installation
 
@@ -131,6 +132,52 @@ Log:
 [2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created
 ```
 
+### Log Notifications
+
+To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
+
+```php
+<?php
+
+namespace App\Services;
+
+use Faustoff\Contextify\Loggable;
+
+class OrderService
+{
+    use Loggable;
+
+    public function order(): void
+    {
+        // You business logic here
+        
+        // Log message and notification with context data
+        $this->logSuccess('Order was created', ['key' => 'value'], true);
+    }
+}
+
+```
+
+### Exception Notifications
+
+You will receive notifications about any unhandled reportable exceptions.
+
+To turn off, set empty value to `notifications.exception_handler.reportable` key of `contextify` configuration file.
+
+```php
+// in config/contextify.php
+
+'notifications' => [
+    // ...
+
+    'exception_handler' => [
+        'reportable' => null,
+    ],
+    
+    // ...
+],
+```
+
 ### Console Commands
 
 If you wants to add contextual logging in to console commands, you can use `Faustoff\Contextify\Console\Loggable` trait. It extends common `Faustoff\Contextify\Loggable` by writing logs to console output (terminal).
@@ -216,7 +263,7 @@ Terminal output:
 Data was synced
 ```
 
-#### Console Command Output Capture
+#### Console Command Output Capturing
 
 Also, you can capture [native Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Contextify\Console\Outputable` trait:
 
@@ -258,6 +305,40 @@ Terminal output:
 Data was synced
 ```
 
+#### Console Command Handling Shutdown Signals
+
+You can handle shutdown signals (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful shutdown command execution by using `Faustoff\Contextify\Console\Terminatable` trait and `Symfony\Component\Console\Command\SignalableCommandInterface` interface together:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Faustoff\Contextify\Console\Loggable;
+use Illuminate\Console\Command;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
+
+class ConsumeStats extends Command implements SignalableCommandInterface
+{
+    use Terminatable;
+
+    protected $signature = 'stats:consume';
+
+    public function handle(): void
+    {
+        while (true) {
+            // ...
+
+            if ($this->shouldTerminate) {
+                // Execution terminated by handle shutdown signal
+                break;
+            }
+        }
+    }
+}
+
+```
+
 ## Notifications
 
 Out of the box, the notification can be sent via:
@@ -293,49 +374,3 @@ Also, you can override which queue (`default` queue by default) will be used to 
 ```
 
 You can completely disable notifications by `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable.
-
-### Log Notification
-
-To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
-
-```php
-<?php
-
-namespace App\Services;
-
-use Faustoff\Contextify\Loggable;
-
-class OrderService
-{
-    use Loggable;
-
-    public function order(): void
-    {
-        // You business logic here
-        
-        // Log message and notification with context data
-        $this->logSuccess('Order was created', ['key' => 'value'], true);
-    }
-}
-
-```
-
-### Exception Notification
-
-You will receive notifications about any unhandled reportable exceptions.
-
-To turn off, set empty value to `notifications.exception_handler.reportable` key of `contextify` configuration file.
-
-```php
-// in config/contextify.php
-
-'notifications' => [
-    // ...
-
-    'exception_handler' => [
-        'reportable' => null,
-    ],
-    
-    // ...
-],
-```
