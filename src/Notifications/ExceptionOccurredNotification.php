@@ -6,7 +6,6 @@ namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
 use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
-use Faustoff\Contextify\HostnameProvider;
 use Faustoff\Contextify\Loggable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;

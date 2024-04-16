@@ -1,5 +1,11 @@
 <?php
 
+use Faustoff\Contextify\Exceptions\Reportable;
+use Faustoff\Contextify\HostnameProvider;
+use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
+use Faustoff\Contextify\Notifications\LogNotification;
+use Faustoff\Contextify\Notifications\Notifiable;
+
 return [
     'enabled' => env('CONTEXTIFY_ENABLED', true),
 
@@ -11,18 +17,18 @@ return [
          * to override "default" queue names for specific channels.
          */
         'list' => [
-            \Faustoff\Contextify\Notifications\LogNotification::class => ['mail'],
-            \Faustoff\Contextify\Notifications\ExceptionOccurredNotification::class => ['mail'],
+            LogNotification::class => ['mail'],
+            ExceptionOccurredNotification::class => ['mail'],
         ],
 
-        'notifiable' => \Faustoff\Contextify\Notifications\Notifiable::class,
+        'notifiable' => Notifiable::class,
 
         'exception_handler' => [
             'class' => 'App\Exceptions\Handler',
-            'reportable' => \Faustoff\Contextify\Exceptions\Reportable::class,
+            'reportable' => Reportable::class,
         ],
 
-        'hostname' => \Faustoff\Contextify\HostnameProvider::class,
+        'hostname' => HostnameProvider::class,
 
         'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', 'your@example.com')),
 

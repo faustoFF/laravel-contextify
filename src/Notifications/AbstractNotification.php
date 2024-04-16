@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Notifications;
 
-class AbstractNotification extends \Illuminate\Notifications\Notification
+use Illuminate\Notifications\Notification;
+
+class AbstractNotification extends Notification
 {
     protected array $exceptChannels = [];
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
-use Faustoff\Contextify\HostnameProvider;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
