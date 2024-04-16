@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Faustoff\Contextify;
 
 use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;

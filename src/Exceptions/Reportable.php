@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Faustoff\Contextify\Exceptions;
 
 use Faustoff\Contextify\Contextify;

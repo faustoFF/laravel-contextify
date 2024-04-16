@@ -19,7 +19,7 @@ class ContextifyServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'contextify');
     }
 
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(
             __DIR__ . '/../config/contextify.php',
