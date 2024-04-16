@@ -132,6 +132,42 @@ Log:
 [2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created
 ```
 
+## Notifications
+
+Out of the box, the notification can be sent via:
+
+- mail
+- Telegram
+
+If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can pass multiple addresses by separating them with commas like this:
+
+```
+CONTEXTIFY_MAIL_ADDRESSES=foo@test.com,bar@test.com
+```
+
+If you want to send Telegram notifications you should [install](https://github.com/laravel-notification-channels/telegram#installation) and [configure](https://github.com/laravel-notification-channels/telegram#setting-up-your-telegram-bot) [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package. Then you should set `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variable with [retrieved Telegram Chat ID](https://github.com/laravel-notification-channels/telegram#retrieving-chat-id).
+
+Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
+
+Also, you can override which queue (`default` queue by default) will be used to send a specific notification through a specific channel. This will be done in `contextify` config by key `notifications.list` like this:
+
+```php
+// in config/contextify.php
+
+'notifications' => [
+    // ...
+
+    'list' => [
+        \Faustoff\Contextify\Notifications\LogNotification::class => ['mail' => 'mail_queue1', 'telegram' => 'telegram_queue1'],
+        \Faustoff\Contextify\Notifications\ExceptionOccurredNotification::class =>  ['mail' => 'mail_queue2', 'telegram' => 'telegram_queue2'],
+    ],
+    
+    // ...
+],
+```
+
+You can completely disable notifications by `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable.
+
 ### Log Notifications
 
 To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
@@ -178,7 +214,7 @@ To turn off, set empty value to `notifications.exception_handler.reportable` key
 ],
 ```
 
-### Console Commands
+## Console Commands
 
 If you wants to add contextual logging in to console commands, you can use `Faustoff\Contextify\Console\Loggable` trait. It extends common `Faustoff\Contextify\Loggable` by writing logs to console output (terminal).
 
@@ -218,7 +254,7 @@ Terminal output:
 Data was synced
 ```
 
-#### Console Command Tracking
+### Console Command Tracking
 
 Also, you can track console command execution by using `Faustoff\Contextify\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time and peak memory usage.
 
@@ -263,7 +299,7 @@ Terminal output:
 Data was synced
 ```
 
-#### Console Command Output Capturing
+### Console Command Output Capturing
 
 Also, you can capture [native Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Contextify\Console\Outputable` trait:
 
@@ -305,7 +341,7 @@ Terminal output:
 Data was synced
 ```
 
-#### Console Command Handling Shutdown Signals
+### Console Command Handling Shutdown Signals
 
 You can handle shutdown signals (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful shutdown command execution by using `Faustoff\Contextify\Console\Terminatable` trait and `Symfony\Component\Console\Command\SignalableCommandInterface` interface together:
 
@@ -338,39 +374,3 @@ class ConsumeStats extends Command implements SignalableCommandInterface
 }
 
 ```
-
-## Notifications
-
-Out of the box, the notification can be sent via:
-
-- mail
-- Telegram
-
-If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can pass multiple addresses by separating them with commas like this:
-
-```
-CONTEXTIFY_MAIL_ADDRESSES=foo@test.com,bar@test.com
-```
-
-If you want to send Telegram notifications you should [install](https://github.com/laravel-notification-channels/telegram#installation) and [configure](https://github.com/laravel-notification-channels/telegram#setting-up-your-telegram-bot) [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package. Then you should set `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variable with [retrieved Telegram Chat ID](https://github.com/laravel-notification-channels/telegram#retrieving-chat-id).
-
-Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/). 
-
-Also, you can override which queue (`default` queue by default) will be used to send a specific notification through a specific channel. This will be done in `contextify` config by key `notifications.list` like this:
-
-```php
-// in config/contextify.php
-
-'notifications' => [
-    // ...
-
-    'list' => [
-        \Faustoff\Contextify\Notifications\LogNotification::class => ['mail' => 'mail_queue1', 'telegram' => 'telegram_queue1'],
-        \Faustoff\Contextify\Notifications\ExceptionOccurredNotification::class =>  ['mail' => 'mail_queue2', 'telegram' => 'telegram_queue2'],
-    ],
-    
-    // ...
-],
-```
-
-You can completely disable notifications by `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable.
