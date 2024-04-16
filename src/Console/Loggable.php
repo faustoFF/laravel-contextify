@@ -76,7 +76,7 @@ trait Loggable
         }
 
         if (null === self::$channels) {
-            // Force init log driver
+            // Warmup log driver to load channels
             Log::driver();
 
             self::$channels = array_keys(Log::getChannels());
