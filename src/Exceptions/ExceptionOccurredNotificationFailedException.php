@@ -8,6 +8,7 @@ class ExceptionOccurredNotificationFailedException extends \RuntimeException
 {
     public function report(): bool
     {
-        return false;
+        // Indicates that the exception needs custom reporting (actually don't report via Exception Handler)
+        return true;
     }
 }
