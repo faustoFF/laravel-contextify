@@ -4,7 +4,8 @@
  * @var string $env
  * @var \Carbon\Carbon $datetime
  * @var string $callContext
- * @var string $callContextPid
+ * @var ?int $callContextPid
+ * @var ?string $callContextCommand
  * @var string $callContextUid
  * @var string $msg
  * @var string $level
@@ -26,6 +27,7 @@ use Monolog\Utils;
         <b>Datetime:</b> {{ $datetime->toDateTimeString() }}<br>
         <b>Log context:</b> {{ $callContext }}<br>
         <b>PID:</b> {{ $callContextPid }}<br>
+        <b>Command:</b> {{ $callContextCommand }}<br>
         <b>UID:</b> {{ $callContextUid }}
         @if($context)
             <br>

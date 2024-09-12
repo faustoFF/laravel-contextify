@@ -26,6 +26,7 @@ class LogNotification extends AbstractNotification
     public function __construct(
         protected string $callContext,
         protected ?int $callContextPid,
+        protected ?string $callContextCommand,
         protected string $callContextUid,
         protected string $message,
         protected string $level,
@@ -48,6 +49,7 @@ class LogNotification extends AbstractNotification
                 'datetime' => $this->datetime,
                 'callContext' => $this->callContext,
                 'callContextPid' => $this->callContextPid,
+                'callContextCommand' => $this->callContextCommand,
                 'callContextUid' => $this->callContextUid,
                 'msg' => $this->message,
                 'level' => $this->level,
@@ -66,6 +68,7 @@ class LogNotification extends AbstractNotification
             . "\nDatetime: {$this->datetime}"
             . "\nLog context: {$this->callContext}"
             . "\nPID: {$this->callContextPid}"
+            . "\nCommand: {$this->callContextCommand}"
             . "\nUID: {$this->callContextUid}"
             . Str::limit(
                 $this->context

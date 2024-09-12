@@ -4,6 +4,7 @@
  * @var string $env
  * @var \Carbon\Carbon $datetime
  * @var ?int $pid
+ * @var ?string $command
  * @var string $exception
  */
 ?>
@@ -18,5 +19,6 @@
         <b>ENV:</b> {{ $env }}<br>
         <b>Datetime:</b> {{ $datetime->toDateTimeString() }}<br>
         <b>PID:</b> {{ $pid }}<br>
+        <b>Command:</b> {{ $command }}<br>
     </p>
 @endsection

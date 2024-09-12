@@ -129,6 +129,7 @@ trait Loggable
             app(config('contextify.notifications.notifiable'))->notify(new $notification(
                 get_class($this),
                 getmypid() ?: null,
+                getmypid() ? shell_exec('ps -p ' . getmypid() . ' -o command=') : null,
                 $this->contextifyGetUid(),
                 $message,
                 $level,

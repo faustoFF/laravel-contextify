@@ -20,6 +20,7 @@ class ExceptionOccurredNotification extends AbstractNotification
     protected string $env;
     protected Carbon $datetime;
     protected ?int $pid;
+    protected ?string $command;
     protected string $exception;
 
     public function __construct(\Throwable $exception)
@@ -28,6 +29,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
+        $this->command = $this->pid ? shell_exec("ps -p {$this->pid} -o command=") : null;
         $this->exception = "{$exception}";
         // TODO: add memory usage
     }
@@ -41,6 +43,7 @@ class ExceptionOccurredNotification extends AbstractNotification
                 'env' => $this->env,
                 'datetime' => $this->datetime,
                 'pid' => $this->pid,
+                'command' => $this->command,
                 'exception' => $this->exception,
             ])
         ;
@@ -54,6 +57,7 @@ class ExceptionOccurredNotification extends AbstractNotification
             . "\nENV: {$this->env}"
             . "\nDatetime: {$this->datetime}"
             . "\nPID: {$this->pid}"
+            . "\nCommand: {$this->command}"
         )->options([
             'parse_mode' => '',
             'disable_web_page_preview' => true,
