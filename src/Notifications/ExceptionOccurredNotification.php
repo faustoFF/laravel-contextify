@@ -21,6 +21,7 @@ class ExceptionOccurredNotification extends AbstractNotification
     protected Carbon $datetime;
     protected ?int $pid;
     protected ?string $command;
+    protected array $server;
     protected string $exception;
 
     public function __construct(\Throwable $exception)
@@ -30,6 +31,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
         $this->command = $this->pid ? shell_exec("ps -p {$this->pid} -o command=") : null;
+        $this->server = $this->getServerWithoutEnv();
         $this->exception = "{$exception}";
         // TODO: add memory usage
     }
@@ -44,6 +46,7 @@ class ExceptionOccurredNotification extends AbstractNotification
                 'datetime' => $this->datetime,
                 'pid' => $this->pid,
                 'command' => $this->command,
+                'server' => $this->server,
                 'exception' => $this->exception,
             ])
         ;
@@ -58,6 +61,7 @@ class ExceptionOccurredNotification extends AbstractNotification
             . "\nDatetime: {$this->datetime}"
             . "\nPID: {$this->pid}"
             . "\nCommand: {$this->command}"
+            . "\nServer: " . Str::limit(var_export($this->server, true), 2048)
         )->options([
             'parse_mode' => '',
             'disable_web_page_preview' => true,
@@ -70,5 +74,20 @@ class ExceptionOccurredNotification extends AbstractNotification
 
         // To prevent infinite loop of exception notification
         throw new ExceptionOccurredNotificationFailedException('Notification failed', 0, $e);
+    }
+
+    protected function getServerWithoutEnv(): array
+    {
+        $server = [];
+
+        foreach ($_SERVER as $key => $value) {
+            if ('APP_NAME' === $key) {
+                break;
+            }
+
+            $server[$key] = $value;
+        }
+
+        return $server;
     }
 }

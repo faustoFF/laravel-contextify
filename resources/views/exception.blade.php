@@ -5,6 +5,7 @@
  * @var \Carbon\Carbon $datetime
  * @var ?int $pid
  * @var ?string $command
+ * @var array $server
  * @var string $exception
  */
 ?>
@@ -20,5 +21,6 @@
         <b>Datetime:</b> {{ $datetime->toDateTimeString() }}<br>
         <b>PID:</b> {{ $pid }}<br>
         <b>Command:</b> {{ $command }}<br>
+        <b>Server:</b> {!! nl2br(var_export($server, true)) !!}<br>
     </p>
 @endsection
