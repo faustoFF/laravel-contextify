@@ -30,7 +30,9 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->env = App::environment();
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
-        $this->command = $this->pid ? shell_exec("ps -p {$this->pid} -o command=") : null;
+        $this->command = $this->pid && shell_exec('which ps')
+            ? shell_exec("ps -p {$this->pid} -o command=")
+            : null;
         $this->server = array_diff_key($_SERVER, $_ENV);
         $this->exception = "{$exception}";
         // TODO: add memory usage
