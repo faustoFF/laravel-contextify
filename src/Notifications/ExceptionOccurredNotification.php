@@ -31,7 +31,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->datetime = Carbon::now();
         $this->pid = getmypid() ?: null;
         $this->command = $this->pid ? shell_exec("ps -p {$this->pid} -o command=") : null;
-        $this->server = $this->getServerWithoutEnv();
+        $this->server = array_diff_key($_SERVER, $_ENV);
         $this->exception = "{$exception}";
         // TODO: add memory usage
     }
@@ -74,20 +74,5 @@ class ExceptionOccurredNotification extends AbstractNotification
 
         // To prevent infinite loop of exception notification
         throw new ExceptionOccurredNotificationFailedException('Notification failed', 0, $e);
-    }
-
-    protected function getServerWithoutEnv(): array
-    {
-        $server = [];
-
-        foreach ($_SERVER as $key => $value) {
-            if ('APP_NAME' === $key) {
-                break;
-            }
-
-            $server[$key] = $value;
-        }
-
-        return $server;
     }
 }
