@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Faustoff\Contextify\Notifications;
 
 use Carbon\Carbon;
+use Dotenv\Dotenv;
 use Faustoff\Contextify\Exceptions\ExceptionOccurredNotificationFailedException;
 use Faustoff\Contextify\Loggable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -33,7 +34,7 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->command = $this->pid && shell_exec('which ps')
             ? shell_exec("ps -p {$this->pid} -o command=")
             : null;
-        $this->server = array_diff_key($_SERVER, $_ENV);
+        $this->server = array_diff_key($_SERVER, Dotenv::createArrayBacked(base_path())->safeLoad());
         $this->exception = "{$exception}";
         // TODO: add memory usage
     }
