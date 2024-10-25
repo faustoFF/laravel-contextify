@@ -10,7 +10,7 @@
  */
 ?>
 
-@extends('layout')
+@extends('contextify::layout')
 
 @section('content')
     <pre>{{ $exception }}</pre>

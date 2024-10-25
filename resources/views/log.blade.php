@@ -15,7 +15,7 @@
 use Monolog\Utils;
 ?>
 
-@extends('layout')
+@extends('contextify::layout')
 
 @section('content')
     <pre>{{ $msg }}</pre>
