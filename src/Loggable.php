@@ -126,10 +126,14 @@ trait Loggable
 
         /** @var LogNotification $notification */
         if ($notification = Contextify::getLogNotificationClass()) {
+            $pid = getmypid();
+
             app(config('contextify.notifications.notifiable'))->notify(new $notification(
                 get_class($this),
-                getmypid() ?: null,
-                getmypid() ? shell_exec('ps -p ' . getmypid() . ' -o command=') : null,
+                $pid ?: null,
+                $pid && shell_exec('which ps')
+                    ? shell_exec("ps -p {$pid} -o command=")
+                    : null,
                 $this->contextifyGetUid(),
                 $message,
                 $level,
