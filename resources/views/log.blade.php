@@ -15,7 +15,7 @@
 use Monolog\Utils;
 ?>
 
-@extends('emails.layout')
+@extends('layout')
 
 @section('content')
     <pre>{{ $msg }}</pre>

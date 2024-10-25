@@ -10,7 +10,7 @@
  */
 ?>
 
-@extends('emails.layout')
+@extends('layout')
 
 @section('content')
     <pre>{{ $exception }}</pre>
