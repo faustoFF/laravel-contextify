@@ -32,7 +32,7 @@ In addition, this package allows to:
 
 ## Installation
 
-`composer require faustoff/laravel-contextify:^2.0`
+`composer require faustoff/laravel-contextify:^3.0`
 
 ### Publishing config file
 
