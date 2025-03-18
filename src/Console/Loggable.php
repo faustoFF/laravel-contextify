@@ -50,7 +50,7 @@ trait Loggable
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
-            parent::line($message, 'warning');
+            parent::warn($message);
         }
 
         $this->baseLogWarning($message, $context, $notify);
