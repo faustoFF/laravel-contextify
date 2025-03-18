@@ -6,6 +6,7 @@ namespace Faustoff\Contextify\Console;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 trait Loggable
 {
@@ -50,7 +51,17 @@ trait Loggable
     public function logWarning(string $message, mixed $context = [], bool $notify = false): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
-            parent::warn($message);
+            $output = $this->getOutput();
+
+            if (!$output->getFormatter()->hasStyle('warning')) {
+                $style = new OutputFormatterStyle('yellow');
+
+                $output->getFormatter()->setStyle('warning', $style);
+
+                $this->setOutput($output);
+            }
+
+            parent::line($message, 'warning');
         }
 
         $this->baseLogWarning($message, $context, $notify);
