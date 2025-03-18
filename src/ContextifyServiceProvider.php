@@ -35,7 +35,10 @@ class ContextifyServiceProvider extends ServiceProvider
                 && config('contextify.notifications.enabled')
                 && $handler::class === $appExceptionHandler
             ) {
-                if ($reportable = config('contextify.notifications.exception_handler.reportable')) {
+                $reportable = config('contextify.notifications.reportable')
+                    ?: config('contextify.notifications.exception_handler.reportable');
+
+                if ($reportable) {
                     $handler->reportable(app($reportable)());
                 }
             }
