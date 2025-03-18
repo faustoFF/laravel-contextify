@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Faustoff\Contextify;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class ContextifyServiceProvider extends ServiceProvider
@@ -26,11 +25,15 @@ class ContextifyServiceProvider extends ServiceProvider
             'contextify'
         );
 
-        $this->app->resolving(ExceptionHandler::class, function (ExceptionHandler $handler, Application $app) {
+        $appExceptionHandler = class_exists('App\Exceptions\Handler')
+            ? 'App\Exceptions\Handler' // Laravel < 11
+            : 'Illuminate\Foundation\Exceptions\Handler'; // Laravel >= 11
+
+        $this->app->resolving(ExceptionHandler::class, function (ExceptionHandler $handler) use ($appExceptionHandler) {
             if (
                 config('contextify.enabled')
                 && config('contextify.notifications.enabled')
-                && $handler::class === config('contextify.notifications.exception_handler.class')
+                && $handler::class === $appExceptionHandler
             ) {
                 if ($reportable = config('contextify.notifications.exception_handler.reportable')) {
                     $handler->reportable(app($reportable)());

@@ -23,10 +23,7 @@ return [
 
         'notifiable' => Notifiable::class,
 
-        'exception_handler' => [
-            'class' => 'App\Exceptions\Handler',
-            'reportable' => Reportable::class,
-        ],
+        'reportable' => Reportable::class,
 
         'hostname' => HostnameProvider::class,
 

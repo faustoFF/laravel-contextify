@@ -203,7 +203,7 @@ class OrderService
 
 You will receive notifications about any unhandled reportable exceptions.
 
-To turn off, set empty value to `notifications.exception_handler.reportable` key of `contextify` configuration file.
+To turn off, set empty value to `notifications.reportable` key of `contextify` configuration file.
 
 ```php
 // in config/contextify.php
@@ -211,9 +211,7 @@ To turn off, set empty value to `notifications.exception_handler.reportable` key
 'notifications' => [
     // ...
 
-    'exception_handler' => [
-        'reportable' => null,
-    ],
+    'reportable' => null,
     
     // ...
 ],
