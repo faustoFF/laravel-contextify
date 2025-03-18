@@ -26,7 +26,7 @@ trait Outputable
 
                 break;
 
-            case 'warn':
+            case 'warning':
                 $this->logWarning($string);
 
                 break;
