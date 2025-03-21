@@ -19,18 +19,18 @@ class LogNotification extends AbstractNotification
     public const INFO = 'info';
     public const DEBUG = 'debug';
 
-    protected string $hostname;
-    protected string $env;
-    protected Carbon $datetime;
+    public string $hostname;
+    public string $env;
+    public Carbon $datetime;
 
     public function __construct(
-        protected string $callContext,
-        protected ?int $callContextPid,
-        protected ?string $callContextCommand,
-        protected string $callContextUid,
-        protected string $message,
-        protected string $level,
-        protected mixed $context = []
+        public string $callContext,
+        public ?int $callContextPid,
+        public ?string $callContextCommand,
+        public string $callContextUid,
+        public string $message,
+        public string $level,
+        public mixed $context = []
     ) {
         $this->hostname = app(config('contextify.notifications.hostname'))();
         $this->env = App::environment();

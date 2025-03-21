@@ -17,13 +17,13 @@ class ExceptionOccurredNotification extends AbstractNotification
 {
     use Loggable;
 
-    protected string $hostname;
-    protected string $env;
-    protected Carbon $datetime;
-    protected ?int $pid;
-    protected ?string $command;
-    protected array $server;
-    protected string $exception;
+    public string $hostname;
+    public string $env;
+    public Carbon $datetime;
+    public ?int $pid;
+    public ?string $command;
+    public array $server;
+    public string $exception;
 
     public function __construct(\Throwable $exception)
     {
