@@ -7,7 +7,9 @@
 
 > Contextual logging in Laravel
 
-This package allows you to write log messages fitted with the execution context, including the **class**, **PID**, **UID** (and more), directly from your application PHP classes. It provides a PHP trait that allows you to achieve this. Additionally, it provides various enhancements to the native Laravel Logging functionality.
+This package allows you to add context (like class, PID or UID) to your Laravel application logs, which will help you figure out what is going on in your app by precisely identifying the source of logging, especially in large and complex apps with multiple queue workers or other daemons, working in parallel.
+
+It provides a PHP trait that allows you to contextual logging in your PHP classes. Additionally, it provides various enhancements to the native Laravel Logging functionality.
 
 Adding execution context to logs very helpful when your application has grown in size and complexity, and you begin to facing a large number of logs originating from various parts of the application, including multiple processes such as queue workers and daemons.
 
