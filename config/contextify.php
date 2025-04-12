@@ -44,6 +44,7 @@ return [
             'PHP_SHA256',
             'PHPIZE_DEPS',
             'PHP_INI_DIR',
+            'PHP_AUTH_PW',
             'SHELL_VERBOSITY',
             'PATH',
             'GPG_KEYS',
