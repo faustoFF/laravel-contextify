@@ -34,7 +34,11 @@ class ExceptionOccurredNotification extends AbstractNotification
         $this->command = $this->pid && shell_exec('which ps')
             ? shell_exec("ps -p {$this->pid} -o command=")
             : null;
-        $this->server = array_diff_key($_SERVER, Dotenv::createArrayBacked(base_path())->safeLoad());
+        $this->server = array_diff_key(
+            $_SERVER,
+            Dotenv::createArrayBacked(base_path())->safeLoad(), // exclude Laravel environment variables
+            array_flip(config('contextify.notifications.server_exclude', [])) // exclude custom variables
+        );
         $this->exception = "{$exception}";
         // TODO: add memory usage
     }
