@@ -36,7 +36,7 @@ In addition, this package allows to:
 
 ### Publishing config file
 
-Optionally, you can publish the health config file with this command:
+Optionally, you can publish the contextify config file with this command:
 
 `php artisan vendor:publish --tag="contextify-config"`
 
