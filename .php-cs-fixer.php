@@ -1,9 +1,17 @@
 <?php
 
-return (new PhpCsFixer\Config())
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
+
+return (new Config())
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setFinder(
-        PhpCsFixer\Finder::create()
-            ->in(__DIR__ . '/src')
+        Finder::create()
+            ->in([
+                __DIR__ . '/config',
+                __DIR__ . '/src',
+            ])
     )
     ->setRules([
         '@PhpCsFixer' => true,
