@@ -14,49 +14,49 @@ trait Loggable
     protected ?string $reservedMemory;
     protected ?string $uid = null;
 
-    public function logDebug(string $message, mixed $context = [], bool $notify = false): void
+    public function logDebug(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         $this->contextifyLog($message, 'debug', $context);
 
         if ($notify) {
-            $this->contextifySendNotification($message, LogNotification::DEBUG, $context);
+            $this->contextifySendNotification($message, LogNotification::DEBUG, $context, $exceptChannels);
         }
     }
 
-    public function logInfo(string $message, mixed $context = [], bool $notify = false): void
+    public function logInfo(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         $this->contextifyLog($message, 'info', $context);
 
         if ($notify) {
-            $this->contextifySendNotification($message, LogNotification::INFO, $context);
+            $this->contextifySendNotification($message, LogNotification::INFO, $context, $exceptChannels);
         }
     }
 
     // TODO: rename to logNotice to be compatible with monolog
-    public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
+    public function logSuccess(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         $this->contextifyLog($message, 'notice', $context);
 
         if ($notify) {
-            $this->contextifySendNotification($message, LogNotification::SUCCESS, $context);
+            $this->contextifySendNotification($message, LogNotification::SUCCESS, $context, $exceptChannels);
         }
     }
 
-    public function logWarning(string $message, mixed $context = [], bool $notify = false): void
+    public function logWarning(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         $this->contextifyLog($message, 'warning', $context);
 
         if ($notify) {
-            $this->contextifySendNotification($message, LogNotification::WARNING, $context);
+            $this->contextifySendNotification($message, LogNotification::WARNING, $context, $exceptChannels);
         }
     }
 
-    public function logError(string $message, mixed $context = [], bool $notify = false): void
+    public function logError(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         $this->contextifyLog($message, 'error', $context);
 
         if ($notify) {
-            $this->contextifySendNotification($message, LogNotification::ERROR, $context);
+            $this->contextifySendNotification($message, LogNotification::ERROR, $context, $exceptChannels);
         }
     }
 
@@ -120,8 +120,12 @@ trait Loggable
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
-    protected function contextifySendNotification(string $message, string $level = 'info', mixed $context = []): void
-    {
+    protected function contextifySendNotification(
+        string $message,
+        string $level = 'info',
+        mixed $context = [],
+        array $exceptChannels = []
+    ): void {
         if (!config('contextify.enabled') || !config('contextify.notifications.enabled')) {
             return;
         }
@@ -130,7 +134,7 @@ trait Loggable
         if ($notification = Contextify::getLogNotificationClass()) {
             $pid = getmypid();
 
-            app(config('contextify.notifications.notifiable'))->notify(new $notification(
+            app(config('contextify.notifications.notifiable'))->notify((new $notification(
                 get_class($this),
                 $pid ?: null,
                 $pid && shell_exec('which ps')
@@ -140,7 +144,7 @@ trait Loggable
                 $message,
                 $level,
                 $context
-            ));
+            ))->exceptChannels($exceptChannels));
         }
     }
 

@@ -20,35 +20,35 @@ trait Loggable
 
     protected static ?array $channels = null;
 
-    public function logDebug(string $message, mixed $context = [], bool $notify = false): void
+    public function logDebug(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message);
         }
 
-        $this->baseLogDebug($message, $context, $notify);
+        $this->baseLogDebug($message, $context, $notify, $exceptChannels);
     }
 
-    public function logInfo(string $message, mixed $context = [], bool $notify = false): void
+    public function logInfo(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'comment');
         }
 
-        $this->baseLogInfo($message, $context, $notify);
+        $this->baseLogInfo($message, $context, $notify, $exceptChannels);
     }
 
     // TODO: rename to logNotice to be compatible with monolog
-    public function logSuccess(string $message, mixed $context = [], bool $notify = false): void
+    public function logSuccess(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'info');
         }
 
-        $this->baseLogSuccess($message, $context, $notify);
+        $this->baseLogSuccess($message, $context, $notify, $exceptChannels);
     }
 
-    public function logWarning(string $message, mixed $context = [], bool $notify = false): void
+    public function logWarning(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
             $output = $this->getOutput();
@@ -64,16 +64,16 @@ trait Loggable
             parent::line($message, 'warning');
         }
 
-        $this->baseLogWarning($message, $context, $notify);
+        $this->baseLogWarning($message, $context, $notify, $exceptChannels);
     }
 
-    public function logError(string $message, mixed $context = [], bool $notify = false): void
+    public function logError(string $message, mixed $context = [], bool $notify = false, array $exceptChannels = []): void
     {
         if (self::contextifyShouldWriteConsoleOutput()) {
             parent::line($message, 'error');
         }
 
-        $this->baseLogError($message, $context, $notify);
+        $this->baseLogError($message, $context, $notify, $exceptChannels);
     }
 
     protected static function contextifyShouldWriteConsoleOutput(): bool
