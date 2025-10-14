@@ -39,9 +39,9 @@ class AbstractNotification extends Notification
         return config('contextify.notifications.enabled');
     }
 
-    public function exceptChannel(string $channel): static
+    public function exceptChannels(array $channels): static
     {
-        $this->exceptChannels[] = $channel;
+        $this->exceptChannels[] = $channels;
 
         return $this;
     }

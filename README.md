@@ -73,6 +73,9 @@ class OrderService
         
         // Log message with context data both in log and notification
         $this->logSuccess('Order was created', ['key' => 'value'], true);
+        
+        // Log message with notification, excluding specific notification channels
+        $this->logSuccess('Order was created', ['key' => 'value'], true, ['telegram']);
     }
 }
 
@@ -156,6 +159,8 @@ If you want to send Telegram notifications you should [install](https://github.c
 
 Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
 
+This is useful when you need to control which channels receive specific notifications, for example, to avoid spam in certain channels or to send sensitive information only through specific channels.
+
 Also, you can override which queue (`default` queue by default) will be used to send a specific notification through a specific channel. This will be done in `contextify` config by key `notifications.list` like this:
 
 ```php
@@ -200,6 +205,31 @@ class OrderService
 }
 
 ```
+
+### Excluding Notification Channels
+
+You can exclude specific notification channels when sending log notifications by passing an array of channel names as the fourth parameter to any `logInfo()`-like method:
+
+```php
+<?php
+
+namespace App\Services;
+
+use Faustoff\Contextify\Loggable;
+
+class OrderService
+{
+    use Loggable;
+
+    public function order(): void
+    {
+        // Send notification to all configured channels except Telegram
+        $this->logSuccess('Order was created', ['key' => 'value'], true, ['telegram']);
+    }
+}
+```
+
+This is useful when you need to control which channels receive specific notifications, for example, to avoid spam in certain channels or to send sensitive information only through specific channels.
 
 ### Exception Notifications
 
