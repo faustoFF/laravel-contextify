@@ -68,7 +68,7 @@ CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
 
 ### Basic Logging
 
-Use the `Contextify` facade just like Laravel's core `Log` facade to log messages with automatic extra context enrichment, provided by [Context Providers](#context-providers) defined in configuration file:
+Use the `Contextify` facade just like Laravel's core `Log` facade to log messages with automatic extra context enrichment:
 
 ```php
 use Faustoff\Contextify\Facades\Contextify;
