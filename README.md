@@ -5,7 +5,7 @@
 
 # Laravel Contextify
 
-**Contextual logging with inline notifications for Laravel.**
+> **Contextual logging with inline notifications for Laravel.**
 
 Laravel Contextify provides two main capabilities:
 - It allows you to **send notifications inline** with logging (eliminating the need to split your code into separate lines for storing the message, logging, and sending notifications).
