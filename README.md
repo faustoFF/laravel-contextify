@@ -174,7 +174,7 @@ class MemoryUsageContextProvider implements DynamicContextProviderInterface
 
 ### Registering Custom Providers
 
-Add your custom providers to the configuration file:
+Add your custom providers to the `config/contextify.php` configuration file:
 
 ```php
 <?php
