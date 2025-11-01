@@ -9,11 +9,11 @@
 
 Laravel Contextify provides two main capabilities:
 - It allows you to **send notifications inline** with logging (eliminating the need to split your code into separate lines for storing the message, logging, and sending notifications).
-- It **enriches your log entries** (and notifications) with [static](#static-context-providers) (like [trace ID](src/Context/Providers/TraceIdContextProvider.php), [process ID](src/Context/Providers/ProcessIdContextProvider.php), [hostname](src/Context/Providers/HostnameContextProvider.php), etc.) and [dynamic](#dynamic-context-providers) (like [caller file and line](src/Context/Providers/CallContextProvider.php), etc.) **extra contextual information**, provided by a set of [Context Providers](#context-providers).
+- It **enriches your log entries** (and notifications) with [static](#static-context-providers) (like [trace ID](src/Context/Providers/TraceIdContextProvider.php), [process ID](src/Context/Providers/ProcessIdContextProvider.php), [hostname](src/Context/Providers/HostnameContextProvider.php), etc.) and [dynamic](#dynamic-context-providers) (like [call file and line](src/Context/Providers/CallContextProvider.php), etc.) **extra contextual information**, provided by a set of [Context Providers](#context-providers).
 
 It is inspired by Laravel's core log context capabilities like [Contextual Information](https://laravel.com/docs/12.x/logging#contextual-information) (aka `Log::withContext()`) and extra [Context](https://laravel.com/docs/12.x/context#main-content) (aka `Context::add()`), but takes it a step further with automatic context providers and seamless notification integration.
 
-It seamlessly integrates with Laravel's logging and notification systems and provides a simple, clean, and fluent API.
+It seamlessly integrates with Laravel's [logging](https://laravel.com/docs/12.x/logging) and [notification](https://laravel.com/docs/12.x/notifications) systems and provides a [simple, clean, and fluent API](#usage).
 
 > **Note:** The name "Contextify" is formed by combining two words: **Context** and **Notify**, reflecting the package's dual purpose of enriching logs with contextual information and enabling notifications for log events.
 
@@ -54,11 +54,11 @@ Publish the configuration file:
 php artisan vendor:publish --tag=contextify-config
 ```
 
-This will create a `config/contextify.php` file where you can configure context providers and notification settings.
+This will create a `config/contextify.php` file where you can [configure context providers](#context-providers) and [notification](#notifications) settings.
 
 ### Environment Variables
 
-Add the following to your `.env` file to configure notification recipients:
+Add the following to your `.env` file to configure email notification recipients:
 
 ```env
 CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
@@ -84,7 +84,7 @@ Contextify::alert('Immediate action required');
 Contextify::emergency('System is down');
 ```
 
-Each log entry will automatically include context from configured providers (trace ID, process ID, caller information, etc.).
+Each log entry will automatically include extra context from [configured providers](#context-providers).
 
 ### Sending Notifications
 
@@ -111,16 +111,16 @@ Context providers add extra contextual information to your logs and notification
 
 Cached context at application boot per request/process.
 
-- **ProcessIdContextProvider**: Adds the current PHP process ID (`pid`)
-- **TraceIdContextProvider**: Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
-- **HostnameContextProvider**: Adds the server hostname (`hostname`)
-- **EnvironmentContextProvider**: Adds the application environment (`environment`)
+- [ProcessIdContextProvider](src/Context/Providers/ProcessIdContextProvider.php): Adds the current PHP process ID (`pid`)
+- [TraceIdContextProvider](src/Context/Providers/TraceIdContextProvider.php): Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
+- [HostnameContextProvider](src/Context/Providers/TraceIdContextProvider.php): Adds the server hostname (`hostname`)
+- [EnvironmentContextProvider](src/Context/Providers/TraceIdContextProvider.php): Adds the application environment (`environment`)
 
 #### Dynamic Context Providers
 
 Refreshing on Each Log Call
 
-- **CallContextProvider**: Adds the file path and line number of the calling code (`caller`)
+- [CallContextProvider](src/Context/Providers/CallContextProvider.php): Adds the file path and line number of the calling code
 
 ### Creating Custom Context Providers
 
