@@ -5,412 +5,322 @@
 
 # Laravel Contextify
 
-> Contextual logging in Laravel
+**Contextual logging with notifications in Laravel.**
 
-This package allows you to add context (like class, PID or UID) to your Laravel application logs, which will help you figure out what is going on in your app by precisely identifying the source of logging, especially in large and complex apps with multiple queue workers or other daemons, working in parallel.
+Laravel Contextify automatically enriches your log entries with contextual information (trace IDs, process IDs, hostnames, caller information, etc.) and enables you to send notifications for important log events. It seamlessly integrates with Laravel's logging system through Monolog processors and provides a clean, fluent API.
 
-It provides a PHP trait that allows you to easily add contextual logging in your PHP classes. Additionally, it provides various enhancements to the native Laravel Logging functionality.
+## Features
 
-Adding execution context to logs very helpful when your application has grown in size and complexity, and you begin to facing a large number of logs originating from various parts of the application, including multiple processes such as queue workers and daemons.
+- 🔍 **Automatic Context Enrichment**: Every log entry is automatically enriched with contextual data
+- 📧 **Notification Support**: Send email notifications (or any Laravel notification channel) for important log events
+- 🔌 **Pluggable Providers**: Built-in context providers and easy extensibility for custom providers
+- ⚡ **Performance Optimized**: Static context providers are cached, dynamic providers refresh on-demand
+- 🎯 **Group-Based Context**: Separate context providers for logs and notifications
+- 🔄 **Fluent API**: Chain methods for clean and readable code
 
-By examining the **class** of a log record, you can easily determine its source. It also groups together all log records associated with that class.
+## Requirements
 
-The **PID** groups all log records related to a specific process, such as a queue worker or daemon. 
-
-The **UID** combines all log records associated with the processing of a single user request or, for instance, the execution of a single console command.
-
-The **MEM** indicates the amount of memory allocated from system (including unused pages) to PHP at the time of adding a log record.
-
-Log records will be looks like this:
-
-`[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created`
-
-In addition, this package allows to:
-- [Send log records as notifications via mail, telegram and other channels](#log-notifications)
-- [Send exception notification via mail, telegram and other channels](#exception-notifications)
-- [Track Console Command execution](#console-command-tracking)
-- [Capture native Console Command output and write it to logs](#console-command-output-capturing)
-- [Handle shutdown signals by Console Command](#console-command-handling-shutdown-signals)
+- PHP 8.0 or higher
+- Laravel 8.0 or higher
+- Monolog 2.0 or higher
 
 ## Installation
 
-`composer require faustoff/laravel-contextify:^3.0`
+Install the package via Composer:
 
-### Publishing config file
+```bash
+composer require faustoff/laravel-contextify
+```
 
-Optionally, you can publish the contextify config file with this command:
+The package will automatically register its service provider.
 
-`php artisan vendor:publish --tag="contextify-config"`
+## Configuration
+
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --tag=contextify-config
+```
+
+This will create a `config/contextify.php` file where you can configure context providers and notification settings.
+
+### Environment Variables
+
+Add the following to your `.env` file to configure notification recipients:
+
+```env
+CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
+```
 
 ## Usage
 
-### Contextual Logging
+### Basic Logging
 
-Suppose you have kind of `OrderService` in your application.
+Use the `Contextify` facade to log messages with automatic context enrichment:
 
-To add contextual logging to `OrderService` use `Faustoff\Contextify\Loggable` trait and methods like `$this->logInfo()` which trait provides:
+```php
+use Faustoff\Contextify\Facades\Contextify;
+
+// All standard log levels are supported
+Contextify::debug('Debug message', ['key' => 'value']);
+Contextify::info('User logged in', ['user_id' => 123]);
+Contextify::notice('Important notice');
+Contextify::warning('Something unusual happened');
+Contextify::error('An error occurred', ['error_code' => 'E001']);
+Contextify::critical('Critical system failure');
+Contextify::alert('Immediate action required');
+Contextify::emergency('System is down');
+```
+
+Each log entry will automatically include context from configured providers (trace ID, process ID, caller information, etc.).
+
+### Sending Notifications
+
+Send notifications for logged events:
+
+```php
+// Send notification using all configured channels
+Contextify::error('Payment processing failed', ['order_id' => 456])->notify();
+
+// Send notification to specific channels only
+Contextify::critical('Database connection lost')->notify(['mail']);
+
+// Send notification excluding specific channels
+Contextify::alert('Security breach detected')->notify([], ['slack']);
+```
+
+### Using Throwable Exceptions
+
+You can pass exceptions as context:
+
+```php
+try {
+    // Some code that might throw
+} catch (\Exception $e) {
+    Contextify::error('Operation failed', $e)->notify();
+}
+```
+
+## Context Providers
+
+Context providers add contextual information to your logs and notifications. The package includes several built-in providers:
+
+### Built-in Providers
+
+#### Static Context Providers (Cached at Application Boot)
+
+- **ProcessIdContextProvider**: Adds the current PHP process ID (`pid`)
+- **TraceIdContextProvider**: Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
+- **HostnameContextProvider**: Adds the server hostname (`hostname`)
+- **EnvironmentContextProvider**: Adds the application environment (`environment`)
+
+#### Dynamic Context Providers (Refreshed on Each Log Call)
+
+- **CallContextProvider**: Adds the file path and line number of the calling code (`caller`)
+
+### Creating Custom Context Providers
+
+Create your own context provider by implementing one of the provider interfaces:
+
+#### Static Context Provider
+
+Static providers return data that remains constant throughout the application lifecycle. Data is cached at boot:
 
 ```php
 <?php
 
-namespace App\Services;
+namespace App\Context\Providers;
 
-use Faustoff\Contextify\Loggable;
+use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
 
-class OrderService
+class UserContextProvider implements StaticContextProviderInterface
 {
-    use Loggable;
-
-    public function order(): void
+    public function getContext(): array
     {
-        // You business logic here
-        
-        // Just a log message
-        $this->logSuccess('Order was created');
-        
-        // Log message with context data
-        $this->logSuccess('Order was created', ['key' => 'value']);
-        
-        // Log message with context data both in log and notification
-        $this->logSuccess('Order was created', ['key' => 'value'], true);
-        
-        // Log message with notification, excluding specific notification channels
-        $this->logSuccess('Order was created', ['key' => 'value'], true, ['telegram']);
+        return [
+            'user_id' => auth()->id(),
+            'username' => auth()->user()?->name,
+        ];
     }
 }
-
 ```
 
-Log:
+#### Dynamic Context Provider
 
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created
-[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created {"key":"value"}
-[2023-03-07 19:26:26] local.NOTICE: [App\Services\OrderService] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created {"key":"value"}
-```
-
-### Parent Context
-
-If you have multiple levels of logging context you can pass "parent" loggable to "child" by using `Faustoff\Loggable\HasLog` trait.
-
-Suppose you have "parent" logging context `OrderController` and "child" `OrderService` and you want to pass `OrderController` logging context to `OrderService`.
+Dynamic providers return data that may change on each invocation:
 
 ```php
 <?php
 
-namespace App\Services\OrderService;
+namespace App\Context\Providers;
 
-use Faustoff\Contextify\HasLog;
+use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
 
-class OrderService
+class RequestIdContextProvider implements DynamicContextProviderInterface
 {
-    use HasLog;
-    
-    public function order()
+    public function getContext(): array
     {
-        // ...
-        
-        $this->log->logSuccess('Order was created');
+        return [
+            'request_id' => request()->header('X-Request-ID', uniqid()),
+        ];
     }
 }
 ```
+
+### Registering Custom Providers
+
+Add your custom providers to the configuration file:
 
 ```php
-<?php
+// config/contextify.php
 
-namespace App\Http\Controllers;
+'logs' => [
+    'providers' => [
+        ProcessIdContextProvider::class,
+        TraceIdContextProvider::class,
+        CallContextProvider::class,
+        \App\Context\Providers\UserContextProvider::class,
+        \App\Context\Providers\RequestIdContextProvider::class,
+    ],
+],
 
-use App\Services\OrderService;
-use Illuminate\Routing\Controller;
-use Faustoff\Contextify\Loggable;
-use Faustoff\Contextify\LoggableInterface;
-
-class OrderController extends Controller implements LoggableInterface
-{
-    use Loggable;
-    
-    public function store()
-    {
-        (new OrderService())->setLog($this)->order();
-    }
-}
-```
-
-Log:
-
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Http\Controllers\OrderController] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Order was created
+'notifications' => [
+    'providers' => [
+        HostnameContextProvider::class,
+        ProcessIdContextProvider::class,
+        TraceIdContextProvider::class,
+        EnvironmentContextProvider::class,
+        CallContextProvider::class,
+        \App\Context\Providers\UserContextProvider::class,
+    ],
+],
 ```
 
 ## Notifications
 
-Out of the box, the notification can be sent via:
+### Configuration
 
-- mail
-- Telegram
-
-If you want to send Email notifications you should configure `CONTEXTIFY_MAIL_ADDRESSES` environment variable. You can pass multiple addresses by separating them with commas like this:
-
-```
-CONTEXTIFY_MAIL_ADDRESSES=foo@test.com,bar@test.com
-```
-
-If you want to send Telegram notifications you should [install](https://github.com/laravel-notification-channels/telegram#installation) and [configure](https://github.com/laravel-notification-channels/telegram#setting-up-your-telegram-bot) [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package. Then you should set `CONTEXTIFY_TELEGRAM_CHAT_ID` environment variable with [retrieved Telegram Chat ID](https://github.com/laravel-notification-channels/telegram#retrieving-chat-id).
-
-Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
-
-This is useful when you need to control which channels receive specific notifications, for example, to avoid spam in certain channels or to send sensitive information only through specific channels.
-
-Also, you can override which queue (`default` queue by default) will be used to send a specific notification through a specific channel. This will be done in `contextify` config by key `notifications.list` like this:
+Configure notification channels in `config/contextify.php`:
 
 ```php
-// in config/contextify.php
-
 'notifications' => [
-    // ...
-
-    'list' => [
-        \Faustoff\Contextify\Notifications\LogNotification::class => ['mail' => 'mail_queue1', 'telegram' => 'telegram_queue1'],
-        \Faustoff\Contextify\Notifications\ExceptionOccurredNotification::class =>  ['mail' => 'mail_queue2', 'telegram' => 'telegram_queue2'],
+    'channels' => ['mail'],
+    
+    // You can specify queue for each channel
+    'channels' => [
+        'mail' => 'queue',
+        'slack' => 'notifications',
     ],
     
-    // ...
+    'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
 ],
 ```
 
-You can completely disable notifications by `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable.
+### Custom Notification Class
 
-### Log Notifications
-
-To send log notification you should set third parameter of `logInfo()`-like methods to `true`:
+You can create a custom notification class by extending `LogNotification`:
 
 ```php
 <?php
 
-namespace App\Services;
+namespace App\Notifications;
 
-use Faustoff\Contextify\Loggable;
+use Faustoff\Contextify\Notifications\LogNotification;
 
-class OrderService
+class CustomLogNotification extends LogNotification
 {
-    use Loggable;
-
-    public function order(): void
-    {
-        // You business logic here
-        
-        // Log message and notification with context data
-        $this->logSuccess('Order was created', ['key' => 'value'], true);
-    }
-}
-
-```
-
-### Excluding Notification Channels
-
-You can exclude specific notification channels when sending log notifications by passing an array of channel names as the fourth parameter to any `logInfo()`-like method:
-
-```php
-<?php
-
-namespace App\Services;
-
-use Faustoff\Contextify\Loggable;
-
-class OrderService
-{
-    use Loggable;
-
-    public function order(): void
-    {
-        // Send notification to all configured channels except Telegram
-        $this->logSuccess('Order was created', ['key' => 'value'], true, ['telegram']);
-    }
+    // Override methods as needed
 }
 ```
 
-This is useful when you need to control which channels receive specific notifications, for example, to avoid spam in certain channels or to send sensitive information only through specific channels.
-
-### Exception Notifications
-
-You will receive notifications about any unhandled reportable exceptions.
-
-To turn off, set empty value to `notifications.reportable` key of `contextify` configuration file.
+Then update the configuration:
 
 ```php
-// in config/contextify.php
-
 'notifications' => [
-    // ...
-
-    'reportable' => null,
-    
-    // ...
+    'class' => \App\Notifications\CustomLogNotification::class,
 ],
 ```
 
-## Console Commands
+## Architecture
 
-If you wants to add contextual logging in to console commands, you can use `Faustoff\Contextify\Console\Loggable` trait. It extends common `Faustoff\Contextify\Loggable` by writing logs to console output (terminal).
+### How It Works
 
-```php
-<?php
+1. **Service Provider Boot**: During application boot, the service provider:
+   - Registers context providers for logs and notifications
+   - Initializes and categorizes providers (static vs dynamic)
+   - Updates static context once
+   - Registers a Monolog processor
 
-namespace App\Console\Commands;
+2. **Logging Process**:
+   - When you call `Contextify::info()` (or any log level), the dynamic context is refreshed
+   - The log entry is written through Laravel's Log facade
+   - The Monolog processor injects context from the 'log' group into the log record's `extra` field
 
-use Illuminate\Console\Command;
-use Faustoff\Contextify\Console\Loggable;
+3. **Notification Process**:
+   - After logging, you can call `notify()` to send a notification
+   - The notification includes context from the 'notification' group
+   - You can filter channels using `only()` and `except()` methods
 
-class SyncData extends Command
-{
-    use Loggable;
+### Component Overview
 
-    protected $signature = 'data:sync';
+- **Contextify**: Main logging service with fluent API
+- **Manager**: Manages context providers and groups
+- **Repository**: Centralized storage for context data
+- **Processor**: Monolog processor that injects context into log records
+- **Context Providers**: Classes that provide contextual data (static or dynamic)
+- **LogNotification**: Notification class for sending log events
+- **Notifiable**: Entity that receives notifications
 
-    public function handle(): int
-    {
-        $this->logSuccess('Data was synced');
+## Examples
 
-        return self::SUCCESS;
-    }
-}
-
-```
-
-Log:
-
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Data was synced
-```
-
-Terminal output:
-
-```
-Data was synced
-```
-
-### Console Command Tracking
-
-Also, you can track console command execution by using `Faustoff\Contextify\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time and peak memory usage.
+### Example 1: Application Error Tracking
 
 ```php
-<?php
+use Faustoff\Contextify\Facades\Contextify;
 
-namespace App\Console\Commands;
-
-use Illuminate\Console\Command;
-use Faustoff\Contextify\Console\Trackable;
-
-class SyncData extends Command
-{
-    use Trackable;
-
-    protected $signature = 'data:sync';
-
-    public function handle(): int
-    {
-        // You business logic here
-        
-        $this->logSuccess('Data was synced');
-
-        return self::SUCCESS;
-    }
+try {
+    $this->processPayment($order);
+} catch (PaymentException $e) {
+    Contextify::error('Payment processing failed', [
+        'order_id' => $order->id,
+        'amount' => $order->amount,
+        'exception' => $e,
+    ])->notify(['mail']);
 }
-
 ```
 
-Log:
-
-```
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Run with arguments {"command":"data:sync"}
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Data was synced
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Execution time: 1 second
-[2023-03-07 19:26:26] local.DEBUG: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Peak memory usage: 4 MB.
-```
-
-Terminal output:
-
-```
-Data was synced
-```
-
-### Console Command Output Capturing
-
-Also, you can capture [native Laravel console command output](https://laravel.com/docs/9.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Contextify\Console\Outputable` trait:
+### Example 2: User Activity Logging
 
 ```php
-<?php
+use Faustoff\Contextify\Facades\Contextify;
 
-namespace App\Console\Commands;
-
-use Illuminate\Console\Command;
-use Faustoff\Contextify\Console\Outputable;
-
-class SyncData extends Command
-{
-    use Outputable;
-
-    protected $signature = 'data:sync';
-
-    public function handle(): int
-    {
-        // You business logic here
-        
-        $this->info('Data was synced');
-
-        return self::SUCCESS;
-    }
-}
-
+Contextify::info('User action performed', [
+    'action' => 'profile_updated',
+    'user_id' => $user->id,
+]);
 ```
 
-Log:
-
-```
-[2023-03-07 19:26:26] local.NOTICE: [App\Console\Commands\SyncData] [PID:56] [UID:640765b20b1c0] [MEM:31457280] Data was synced
-```
-
-Terminal output:
-
-```
-Data was synced
-```
-
-### Console Command Handling Shutdown Signals
-
-You can handle shutdown signals (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful shutdown command execution by using trait:
-- `Faustoff\Contextify\Console\Terminatable` for Laravel <= 9
-- `Faustoff\Contextify\Console\TerminatableV10` for Laravel 10
-- `Faustoff\Contextify\Console\TerminatableV11` for Laravel >= 11
-
-and `Symfony\Component\Console\Command\SignalableCommandInterface` interface together with trait.
+### Example 3: Critical System Events
 
 ```php
-<?php
+use Faustoff\Contextify\Facades\Contextify;
 
-namespace App\Console\Commands;
-
-use Faustoff\Contextify\Console\Loggable;
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Command\SignalableCommandInterface;
-
-class ConsumeStats extends Command implements SignalableCommandInterface
-{
-    use Terminatable;
-
-    protected $signature = 'stats:consume';
-
-    public function handle(): void
-    {
-        while (true) {
-            // ...
-
-            if ($this->shouldTerminate) {
-                // Execution terminated by handle shutdown signal
-                break;
-            }
-        }
-    }
+if ($queueSize > 10000) {
+    Contextify::critical('Queue size exceeded threshold', [
+        'queue_size' => $queueSize,
+        'threshold' => 10000,
+    ])->notify(['mail', 'slack']);
 }
-
 ```
+
+## License
+
+This package is open-sourced software licensed under the [MIT license](LICENSE).
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support
+
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/faustoff/laravel-contextify).

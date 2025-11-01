@@ -1,6 +1,6 @@
 {
     "name": "faustoff/laravel-contextify",
-    "description": "Contextual logging in Laravel",
+    "description": "Contextual logging with notifications in Laravel.",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -16,12 +16,13 @@
     ],
     "require": {
         "php": "^8.0",
-        "nesbot/carbon": "^2.0|^3.0",
-        "monolog/monolog": "^2.0|^3.0",
-        "illuminate/log": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/notifications": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
-        "vlucas/phpdotenv": "^5.4.1"
+        "illuminate/log": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/notifications": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "monolog/monolog": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.89"
     },
     "extra": {
         "laravel": {
@@ -30,16 +31,8 @@
             ]
         }
     },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.22",
-        "laravel-notification-channels/telegram": "^2.0"
-    },
     "scripts": {
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix"
-    },
-    "suggest": {
-        "ext-pcntl": "Allows to use Faustoff\\Contextify\\Console\\Terminatable trait",
-        "laravel-notification-channels/telegram": "Allows to send Telegram notifications"
     }
 }

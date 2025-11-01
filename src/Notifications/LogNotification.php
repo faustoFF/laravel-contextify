@@ -4,85 +4,114 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Notifications;
 
-use Carbon\Carbon;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Str;
-use Monolog\Utils;
-use NotificationChannels\Telegram\TelegramMessage;
+use Illuminate\Notifications\Notification;
 
-class LogNotification extends AbstractNotification
+/**
+ * Notification for sending log messages through Laravel notification channels.
+ *
+ * Supports filtering channels using only() and except() methods.
+ */
+class LogNotification extends Notification
 {
-    public const ERROR = 'error';
-    public const WARNING = 'warning';
-    public const SUCCESS = 'success';
-    public const INFO = 'info';
-    public const DEBUG = 'debug';
+    /**
+     * @var array<string> Channels to include exclusively
+     */
+    public array $onlyChannels = [];
 
-    public string $hostname;
-    public string $env;
-    public Carbon $datetime;
+    /**
+     * @var array<string> Channels to exclude
+     */
+    public array $exceptChannels = [];
 
+    /**
+     * @param mixed $context Additional context data or a Throwable instance
+     * @param mixed $extraContext Extra context information to include
+     */
     public function __construct(
-        public string $callContext,
-        public ?int $callContextPid,
-        public ?string $callContextCommand,
-        public string $callContextUid,
-        public string $message,
         public string $level,
-        public mixed $context = []
+        public string $message,
+        public mixed $context = [],
+        public mixed $extraContext = []
     ) {
-        $this->hostname = app(config('contextify.notifications.hostname'))();
-        $this->env = App::environment();
-        $this->datetime = Carbon::now();
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
-        // TODO: add memory usage
     }
 
+    /**
+     * Get the mail representation of the notification.
+     */
     public function toMail(mixed $notifiable): MailMessage
     {
         return (new MailMessage())
             ->subject(ucfirst($this->level) . ': ' . $this->message)
             ->view('contextify::log', [
-                'hostname' => $this->hostname,
-                'env' => $this->env,
-                'datetime' => $this->datetime,
-                'callContext' => $this->callContext,
-                'callContextPid' => $this->callContextPid,
-                'callContextCommand' => $this->callContextCommand,
-                'callContextUid' => $this->callContextUid,
-                'msg' => $this->message,
                 'level' => $this->level,
+                'msg' => $this->message,
                 'context' => $this->context,
+                'extraContext' => $this->extraContext,
             ])
         ;
     }
 
-    public function toTelegram(mixed $notifiable): TelegramMessage
+    /**
+     * Get the notification delivery channels.
+     *
+     * Returns configured channels filtered by onlyChannels and exceptChannels.
+     *
+     * @return array<string> Array of channel names
+     */
+    public function via(mixed $notifiable): array
     {
-        return TelegramMessage::create(
-            Str::limit($this->message, 512)
-            . "\n\nHostname: {$this->hostname}"
-            . "\nENV: {$this->env}"
-            . "\nLevel: {$this->level}"
-            . "\nDatetime: {$this->datetime}"
-            . "\nLog context: {$this->callContext}"
-            . "\nPID: {$this->callContextPid}"
-            . "\nCommand: {$this->callContextCommand}"
-            . "\nUID: {$this->callContextUid}"
-            . Str::limit(
-                $this->context
-                    ? "\nContext: " . (
-                        is_string($this->context)
-                        ? $this->context
-                        : Utils::jsonEncode($this->context, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT)
-                    )
-                    : '',
-                512
-            )
-        )->options([
-            'parse_mode' => '',
-            'disable_web_page_preview' => true,
-        ]);
+        $channels = [];
+
+        foreach (config('contextify.notifications.channels') as $channel => $queue) {
+            $channels[] = is_string($channel) ? $channel : $queue;
+        }
+
+        if ($this->onlyChannels) {
+            $channels = array_intersect($channels, $this->onlyChannels);
+        }
+
+        if ($this->exceptChannels) {
+            $channels = array_diff($channels, $this->exceptChannels);
+        }
+
+        return $channels;
+    }
+
+    /**
+     * Get the queue connections for each channel.
+     *
+     * @return array<string, string> Associative array of [channel => queue]
+     */
+    public function viaQueues(): array
+    {
+        $queues = [];
+
+        foreach (config('contextify.notifications.channels') as $channel => $queue) {
+            $queues[$channel] = is_string($channel) ? $queue : 'default';
+        }
+
+        return $queues;
+    }
+
+    /**
+     * Specify which channels should receive the notification.
+     */
+    public function only(array $channels): static
+    {
+        $this->onlyChannels = $channels;
+
+        return $this;
+    }
+
+    /**
+     * Specify which channels should not receive the notification.
+     */
+    public function except(array $channels): static
+    {
+        $this->exceptChannels = $channels;
+
+        return $this;
     }
 }
