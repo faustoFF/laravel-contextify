@@ -166,28 +166,38 @@ class MemoryUsageContextProvider implements DynamicContextProviderInterface
 Add your custom providers to the configuration file:
 
 ```php
-// config/contextify.php
+<?php
 
-'logs' => [
-    'providers' => [
-        ProcessIdContextProvider::class,
-        TraceIdContextProvider::class,
-        CallContextProvider::class,
-        \App\Context\Providers\UserContextProvider::class,
-        \App\Context\Providers\MemoryUsageContextProvider::class,
-    ],
-],
+use App\Context\Providers\MemoryUsageContextProvider;
+use App\Context\Providers\UserContextProvider;
+use Faustoff\Contextify\Context\Providers\CallContextProvider;
+use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
+use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
+use Faustoff\Contextify\Context\Providers\ProcessIdContextProvider;
+use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 
-'notifications' => [
-    'providers' => [
-        HostnameContextProvider::class,
-        ProcessIdContextProvider::class,
-        TraceIdContextProvider::class,
-        EnvironmentContextProvider::class,
-        CallContextProvider::class,
-        \App\Context\Providers\UserContextProvider::class,
+return [
+    'logs' => [
+        'providers' => [
+            ProcessIdContextProvider::class,
+            TraceIdContextProvider::class,
+            CallContextProvider::class,
+            UserContextProvider::class,
+            MemoryUsageContextProvider::class,
+        ],
     ],
-],
+
+    'notifications' => [
+        'providers' => [
+            HostnameContextProvider::class,
+            ProcessIdContextProvider::class,
+            TraceIdContextProvider::class,
+            EnvironmentContextProvider::class,
+            CallContextProvider::class,
+            UserContextProvider::class,
+        ],
+    ],
+];
 ```
 
 ## Notifications
@@ -198,9 +208,14 @@ Configure notification channels in `config/contextify.php`:
 
 ```php
 'notifications' => [
-    'channels' => ['mail'],
-    
-    // You can specify queue for each channel
+    /*
+     * Notification channels configuration.
+     * 
+     * Simple array format - all channels use default queue:
+     * 'channels' => ['mail'],
+     * 
+     * OR associative array format - specify queue for each channel:
+     */
     'channels' => [
         'mail' => 'queue',
         'slack' => 'notifications',
@@ -232,6 +247,7 @@ Then update the configuration:
 ```php
 'notifications' => [
     'class' => \App\Notifications\CustomLogNotification::class,
+    // ... other notification settings
 ],
 ```
 
@@ -266,8 +282,6 @@ class CustomNotifiable extends Notifiable
 Then update the configuration file:
 
 ```php
-// config/contextify.php
-
 'notifications' => [
     'channels' => ['mail', 'slack'],
     
@@ -330,7 +344,7 @@ try {
         'order_id' => $order->id,
         'amount' => $order->amount,
         'exception' => $e,
-    ])->notify(['mail']);
+    ])->notify(only: ['mail']);
 }
 ```
 
@@ -354,7 +368,7 @@ if ($queueSize > 10000) {
     Contextify::critical('Queue size exceeded threshold', [
         'queue_size' => $queueSize,
         'threshold' => 10000,
-    ])->notify(['mail', 'slack']);
+    ])->notify(only: ['mail', 'slack']);
 }
 ```
 
