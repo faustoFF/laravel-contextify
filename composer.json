@@ -1,6 +1,6 @@
 {
     "name": "faustoff/laravel-contextify",
-    "description": "Contextual logging with notifications in Laravel.",
+    "description": "Contextual logging with inline notifications for Laravel.",
     "type": "library",
     "license": "MIT",
     "autoload": {

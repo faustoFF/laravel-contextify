@@ -5,23 +5,30 @@
 
 # Laravel Contextify
 
-**Contextual logging with notifications in Laravel.**
+**Contextual logging with inline notifications for Laravel.**
 
-Laravel Contextify automatically enriches your log entries with shared static and dynamic contextual information (built-in with trace IDs, process IDs, hostnames, caller information, etc.) and enables you to send notifications for log events you want in one place. It seamlessly integrates with Laravel's logging system through Monolog processors and provides a clean, fluent API.
+Laravel Contextify provides two main capabilities:
+- It allows you to **send notifications inline** with logging (eliminating the need to split your code into separate lines for storing the message, logging, and sending notifications).
+- It **enriches your log entries** (and notifications) with [static](#static-context-providers) (like [trace ID](src/Context/Providers/TraceIdContextProvider.php), [process ID](src/Context/Providers/ProcessIdContextProvider.php), [hostname](src/Context/Providers/HostnameContextProvider.php), etc.) and [dynamic](#dynamic-context-providers) (like [caller file and line](src/Context/Providers/CallContextProvider.php), etc.) **extra contextual information**, provided by a set of [Context Providers](#context-providers).
+
+It is inspired by Laravel's core log context capabilities like [Contextual Information](https://laravel.com/docs/12.x/logging#contextual-information) (aka `Log::withContext()`) and extra [Context](https://laravel.com/docs/12.x/context#main-content) (aka `Context::add()`), but takes it a step further with automatic context providers and seamless notification integration.
+
+It seamlessly integrates with Laravel's logging and notification systems and provides a simple, clean, and fluent API.
+
+> **Note:** The name "Contextify" is formed by combining two words: **Context** and **Notify**, reflecting the package's dual purpose of enriching logs with contextual information and enabling notifications for log events.
 
 ## Features
 
-- 📧 **Notification Support**: [Send notifications (email or any other custom Laravel notification channel) for log events you want in one place](#sending-notifications)
-- 🔍 **Automatic Context Enrichment**: [Every log entry and notification is automatically enriched with static/dynamic contextual data provided by context providers](#basic-logging)
-- 🔌 **Pluggable Context Providers**: [Built-in context providers and easy extensibility for custom providers](#context-providers)
-- 🔄 **Static & Dynamic Providers**: [Support for both static (cached) and dynamic (refreshed) context providers](#built-in-providers)
-- 🎯 **Group-Based Context**: [Separate context providers for logs and notifications](#context-providers)
-- 📊 **All Standard Log Levels**: [Support for all 8 PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)](#basic-logging)
-- ⚡ **Monolog Integration**: [Seamless integration with Laravel's logging system through Monolog processors](#architecture)
-- 🎨 **Custom Notifications**: [Extend notification classes and support custom notification channels](#custom-notification-class)
-- 🔔 **Channel Filtering**: [Filter notification channels with `only()` and `except()` methods](#sending-notifications)
-- 📦 **Queue Support**: [Queue notifications for better performance using Laravel's queue system](#configuration)
-- 🔄 **Fluent API**: [Chain methods for clean and readable code](#usage)
+- 📧 [Notification Support](#sending-notifications): Send notifications (email or any other custom Laravel notification channel) for log events you want in one place
+- 🔍 [Automatic Context Enrichment](#basic-logging): Every log entry and notification is automatically enriched with static/dynamic extra contextual data provided by Context Providers
+- 🔌 [Pluggable Context Providers](#context-providers): Built-in context providers and easy extensibility for custom providers
+- 🔄 [Static & Dynamic Providers](#built-in-providers): Support for both static (cached) and dynamic (refreshed) context providers
+- 🎯 [Group-Based Context](#context-providers): Separate set of context providers for logs and notifications
+- 📊 [Standard Log Levels](#basic-logging): Support for all 8 PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
+- ⚡ [Monolog Integration](#architecture): Seamless integration with Laravel's logging system through Monolog processors
+- 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and support custom notification channels
+- 🔔 [Channel Filtering](#sending-notifications): Filter notification channels with `only()` and `except()` methods inline with logging
+- 🔄 [Fluent API](#usage): Chain methods for clean and readable code
 
 ## Requirements
 
@@ -96,18 +103,22 @@ Contextify::alert('Security breach detected')->notify(except: ['slack']);
 
 ## Context Providers
 
-Context providers add contextual information to your logs and notifications. The package includes several built-in providers:
+Context providers add extra contextual information to your logs and notifications. The package includes several built-in providers:
 
 ### Built-in Providers
 
-#### Static Context Providers (Context cached at application boot)
+#### Static Context Providers
+
+Cached context at application boot per request/process.
 
 - **ProcessIdContextProvider**: Adds the current PHP process ID (`pid`)
 - **TraceIdContextProvider**: Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
 - **HostnameContextProvider**: Adds the server hostname (`hostname`)
 - **EnvironmentContextProvider**: Adds the application environment (`environment`)
 
-#### Dynamic Context Providers (Refreshed on Each Log Call)
+#### Dynamic Context Providers
+
+Refreshing on Each Log Call
 
 - **CallContextProvider**: Adds the file path and line number of the calling code (`caller`)
 
@@ -326,7 +337,7 @@ CONTEXTIFY_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 - **Manager**: Manages context providers and groups
 - **Repository**: Centralized storage for context data
 - **Processor**: Monolog processor that injects context into log records
-- **Context Providers**: Classes that provide contextual data (static or dynamic)
+- **Context Providers**: Classes that provide extra contextual data (static or dynamic)
 - **LogNotification**: Notification class for sending log events
 - **Notifiable**: Entity that receives notifications
 
