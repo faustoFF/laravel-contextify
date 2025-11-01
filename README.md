@@ -7,16 +7,21 @@
 
 **Contextual logging with notifications in Laravel.**
 
-Laravel Contextify automatically enriches your log entries with contextual information (trace IDs, process IDs, hostnames, caller information, etc.) and enables you to send notifications for important log events. It seamlessly integrates with Laravel's logging system through Monolog processors and provides a clean, fluent API.
+Laravel Contextify automatically enriches your log entries with shared static and dynamic contextual information (built-in with trace IDs, process IDs, hostnames, caller information, etc.) and enables you to send notifications for log events you want in one place. It seamlessly integrates with Laravel's logging system through Monolog processors and provides a clean, fluent API.
 
 ## Features
 
-- 🔍 **Automatic Context Enrichment**: Every log entry is automatically enriched with contextual data
-- 📧 **Notification Support**: Send email notifications (or any Laravel notification channel) for important log events
-- 🔌 **Pluggable Providers**: Built-in context providers and easy extensibility for custom providers
-- ⚡ **Performance Optimized**: Static context providers are cached, dynamic providers refresh on-demand
-- 🎯 **Group-Based Context**: Separate context providers for logs and notifications
-- 🔄 **Fluent API**: Chain methods for clean and readable code
+- 📧 **Notification Support**: [Send notifications (email or any other custom Laravel notification channel) for log events you want in one place](#sending-notifications)
+- 🔍 **Automatic Context Enrichment**: [Every log entry and notification is automatically enriched with static/dynamic contextual data provided by context providers](#basic-logging)
+- 🔌 **Pluggable Context Providers**: [Built-in context providers and easy extensibility for custom providers](#context-providers)
+- 🔄 **Static & Dynamic Providers**: [Support for both static (cached) and dynamic (refreshed) context providers](#built-in-providers)
+- 🎯 **Group-Based Context**: [Separate context providers for logs and notifications](#context-providers)
+- 📊 **All Standard Log Levels**: [Support for all 8 PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)](#basic-logging)
+- ⚡ **Monolog Integration**: [Seamless integration with Laravel's logging system through Monolog processors](#architecture)
+- 🎨 **Custom Notifications**: [Extend notification classes and support custom notification channels](#custom-notification-class)
+- 🔔 **Channel Filtering**: [Filter notification channels with `only()` and `except()` methods](#sending-notifications)
+- 📦 **Queue Support**: [Queue notifications for better performance using Laravel's queue system](#configuration)
+- 🔄 **Fluent API**: [Chain methods for clean and readable code](#usage)
 
 ## Requirements
 
@@ -83,22 +88,10 @@ Send notifications for logged events:
 Contextify::error('Payment processing failed', ['order_id' => 456])->notify();
 
 // Send notification to specific channels only
-Contextify::critical('Database connection lost')->notify(['mail']);
+Contextify::critical('Database connection lost')->notify(only: ['mail']);
 
 // Send notification excluding specific channels
-Contextify::alert('Security breach detected')->notify([], ['slack']);
-```
-
-### Using Throwable Exceptions
-
-You can pass exceptions as context:
-
-```php
-try {
-    // Some code that might throw
-} catch (\Exception $e) {
-    Contextify::error('Operation failed', $e)->notify();
-}
+Contextify::alert('Security breach detected')->notify(except: ['slack']);
 ```
 
 ## Context Providers
@@ -107,7 +100,7 @@ Context providers add contextual information to your logs and notifications. The
 
 ### Built-in Providers
 
-#### Static Context Providers (Cached at Application Boot)
+#### Static Context Providers (Context cached at application boot)
 
 - **ProcessIdContextProvider**: Adds the current PHP process ID (`pid`)
 - **TraceIdContextProvider**: Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
@@ -124,7 +117,7 @@ Create your own context provider by implementing one of the provider interfaces:
 
 #### Static Context Provider
 
-Static providers return data that remains constant throughout the application lifecycle. Data is cached at boot:
+Static providers return data that remains constant throughout the application request/process lifecycle. Context is cached at application boot:
 
 ```php
 <?php
@@ -156,12 +149,13 @@ namespace App\Context\Providers;
 
 use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
 
-class RequestIdContextProvider implements DynamicContextProviderInterface
+class MemoryUsageContextProvider implements DynamicContextProviderInterface
 {
     public function getContext(): array
     {
         return [
-            'request_id' => request()->header('X-Request-ID', uniqid()),
+            'memory_usage' => memory_get_usage(true),
+            'memory_peak' => memory_get_peak_usage(true),
         ];
     }
 }
@@ -180,7 +174,7 @@ Add your custom providers to the configuration file:
         TraceIdContextProvider::class,
         CallContextProvider::class,
         \App\Context\Providers\UserContextProvider::class,
-        \App\Context\Providers\RequestIdContextProvider::class,
+        \App\Context\Providers\MemoryUsageContextProvider::class,
     ],
 ],
 
@@ -241,6 +235,57 @@ Then update the configuration:
 ],
 ```
 
+### Custom Notification Channels
+
+You can create a custom notifiable class to add support for additional notification channels like Slack:
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use Faustoff\Contextify\Notifications\Notifiable;
+
+class CustomNotifiable extends Notifiable
+{
+    /**
+     * Get the Slack webhook URL for notifications.
+     *
+     * @return string Slack webhook URL
+     */
+    public function routeNotificationForSlack(): string
+    {
+        return config('contextify.notifications.slack_webhook_url');
+    }
+    
+    // You can add routing methods for other channels too
+    // public function routeNotificationForDiscord(): string { ... }
+}
+```
+
+Then update the configuration file:
+
+```php
+// config/contextify.php
+
+'notifications' => [
+    'channels' => ['mail', 'slack'],
+    
+    'notifiable' => \App\Notifications\CustomNotifiable::class,
+    
+    'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
+    
+    // Add Slack webhook URL configuration
+    'slack_webhook_url' => env('CONTEXTIFY_SLACK_WEBHOOK_URL'),
+],
+```
+
+Add the Slack webhook URL to your `.env` file:
+
+```env
+CONTEXTIFY_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+```
+
 ## Architecture
 
 ### How It Works
@@ -248,7 +293,7 @@ Then update the configuration:
 1. **Service Provider Boot**: During application boot, the service provider:
    - Registers context providers for logs and notifications
    - Initializes and categorizes providers (static vs dynamic)
-   - Updates static context once
+   - Updates static context once at boot
    - Registers a Monolog processor
 
 2. **Logging Process**:

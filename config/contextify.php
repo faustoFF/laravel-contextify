@@ -33,6 +33,7 @@ return [
             ProcessIdContextProvider::class,
             TraceIdContextProvider::class,
             CallContextProvider::class,
+            // TODO: peak memory usage provider
 
             // Add your custom context providers here...
         ],
@@ -66,7 +67,9 @@ return [
             TraceIdContextProvider::class,
             EnvironmentContextProvider::class,
             CallContextProvider::class,
+            // TODO: peak memory usage provider
             // TODO: Add _SERVER context provider
+            // TODO: datetime context provider
 
             // Add your custom context providers here...
         ],
