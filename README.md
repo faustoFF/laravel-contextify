@@ -190,9 +190,12 @@ use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 return [
     'logs' => [
         'providers' => [
+            // Built-in providers
             ProcessIdContextProvider::class,
             TraceIdContextProvider::class,
             CallContextProvider::class,
+            
+            // Custom providers
             UserContextProvider::class,
             MemoryUsageContextProvider::class,
         ],
@@ -200,11 +203,14 @@ return [
 
     'notifications' => [
         'providers' => [
+            // Built-in providers
             HostnameContextProvider::class,
             ProcessIdContextProvider::class,
             TraceIdContextProvider::class,
             EnvironmentContextProvider::class,
             CallContextProvider::class,
+            
+            // Custom providers
             UserContextProvider::class,
         ],
     ],
