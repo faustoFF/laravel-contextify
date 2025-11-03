@@ -23,7 +23,7 @@ class Processor implements ProcessorInterface
      *
      * @param mixed $record
      */
-    public function __invoke($record): mixed
+    public function __invoke($record)
     {
         $context = $this->manager->getContext('log');
 
