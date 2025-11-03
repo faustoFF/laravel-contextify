@@ -7,15 +7,16 @@
 
 > **Contextual logging with inline notifications for Laravel.**
 
-Laravel Contextify provides two main capabilities:
-- It allows you to **send notifications inline** with logging (eliminating the need to split your code into separate lines for storing the message, logging, and sending notifications).
-- It **enriches your log entries** (and notifications) with [static](#static-context-providers) (like [trace ID](src/Context/Providers/TraceIdContextProvider.php), [process ID](src/Context/Providers/ProcessIdContextProvider.php), [hostname](src/Context/Providers/HostnameContextProvider.php), etc.) and [dynamic](#dynamic-context-providers) (like [call file and line](src/Context/Providers/CallContextProvider.php), etc.) **extra contextual information**, provided by a set of [Context Providers](#context-providers).
+**Laravel Contextify** enhances Laravel’s native logging system by introducing two powerful capabilities:
 
-It is inspired by Laravel's core log capabilities like [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages), [Contextual Information](https://laravel.com/docs/12.x/logging#contextual-information) (aka `Log::withContext()`) and extra [Context](https://laravel.com/docs/12.x/context#main-content) (aka `Context::add()`), but takes it a step further with automatic context providers and seamless notification integration.
+1. **Inline Notifications** — [send notifications directly alongside log messages](#sending-notifications), without splitting your code into multiple lines for logging, storing, and notifying.
+2. **Automatic Context Enrichment** — every log (and inline notification) can include additional contextual details provided by built-in [Context Providers](#context-providers) (like [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php) and more)
 
-It seamlessly integrates with Laravel's [logging](https://laravel.com/docs/12.x/logging) and [notification](https://laravel.com/docs/12.x/notifications) systems and provides a [simple, clean, and fluent API](#usage).
+Inspired by Laravel’s own features — [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages), [Contextual Information](https://laravel.com/docs/12.x/logging#contextual-information), and [Context](https://laravel.com/docs/12.x/context#main-content) — **Laravel Contextify** takes logging one step further with **automatic context injection** and **seamless notification integration**, all within a single, fluent API.
 
-> **Note:** The name "Contextify" is formed by combining two words: **Context** and **Notify**, reflecting the package's dual purpose of enriching logs with contextual information and enabling notifications for log events.
+It integrates effortlessly with Laravel’s [logging](https://laravel.com/docs/12.x/logging) and [notification](https://laravel.com/docs/12.x/notifications) subsystems, offering a **clean, expressive, and developer-friendly API** for contextual logging and notifications.
+
+> **Name origin:** “Contextify” combines **Context** and **Notify**, reflecting its dual purpose — to enrich logs with contextual information and to deliver notifications for log events.
 
 ## Features
 
@@ -24,7 +25,7 @@ It seamlessly integrates with Laravel's [logging](https://laravel.com/docs/12.x/
 - 🔌 [Pluggable Context Providers](#context-providers): Built-in context providers and easy extensibility for custom providers
 - 🔄 [Static & Dynamic Providers](#built-in-providers): Support for both static (cached) and dynamic (refreshed) context providers
 - 🎯 [Group-Based Context](#context-providers): Separate set of context providers for logs and notifications
-- 📊 [Standard Log Levels](#basic-logging): Support for all 8 PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
+- 📊 [Standard Log Levels](#basic-logging): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
 - ⚡ [Monolog Integration](#architecture): Seamless integration with Laravel's logging system through Monolog processors
 - 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and support custom notification channels
 - 🔔 [Channel Filtering](#sending-notifications): Filter notification channels with `only()` and `except()` methods inline with logging
@@ -73,18 +74,32 @@ Use the `Contextify` facade just like Laravel's core `Log` facade to log message
 ```php
 use Faustoff\Contextify\Facades\Contextify;
 
-// All standard log levels are supported
 Contextify::debug('Debug message', ['key' => 'value']);
+// [2025-01-01 12:00:00] local.DEBUG: Debug message {"key":"value"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Services/ExampleService.php:42"}
+
 Contextify::info('User logged in', ['user_id' => 123]);
+// [2025-01-01 12:00:00] local.INFO: User logged in {"user_id":123} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Http/Controllers/Auth/LoginController.php:55"}
+
 Contextify::notice('Important notice');
+// [2025-01-01 12:00:00] local.NOTICE: Important notice [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"routes/web.php:10"}
+
 Contextify::warning('Something unusual happened');
+// [2025-01-01 12:00:00] local.WARNING: Something unusual happened [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Jobs/ProcessThing.php:87"}
+
 Contextify::error('An error occurred', ['error_code' => 'E001']);
+// [2025-01-01 12:00:00] local.ERROR: An error occurred {"error_code":"E001"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Http/Controllers/Api/OrderController.php:133"}
+
 Contextify::critical('Critical system failure');
+// [2025-01-01 12:00:00] local.CRITICAL: Critical system failure [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/MonitorCommand.php:71"}
+
 Contextify::alert('Immediate action required');
+// [2025-01-01 12:00:00] local.ALERT: Immediate action required [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Providers/AppServiceProvider.php:25"}
+
 Contextify::emergency('System is down');
+// [2025-01-01 12:00:00] local.EMERGENCY: System is down [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Exceptions/Handler.php:100"}
 ```
 
-Each log entry will automatically include extra context from [configured providers](#context-providers).
+Each log entry will automatically include extra context from [configured context providers](#context-providers).
 
 ### Sending Notifications
 
@@ -118,7 +133,7 @@ Cached context at application boot per request/process.
 
 #### Dynamic Context Providers
 
-Refreshing on Each Log Call
+Refreshing on each log call
 
 - [CallContextProvider](src/Context/Providers/CallContextProvider.php): Adds the file path and line number of the calling code
 
@@ -128,7 +143,7 @@ Create your own context provider by implementing one of the provider interfaces:
 
 #### Static Context Provider
 
-Static providers return data that remains constant throughout the application request/process lifecycle. Context is cached at application boot:
+Static providers return data that remains constant throughout the application request/process lifecycle.
 
 ```php
 <?php
@@ -317,77 +332,7 @@ Add the Slack webhook URL to your `.env` file:
 CONTEXTIFY_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 ```
 
-## Architecture
-
-### How It Works
-
-1. **Service Provider Boot**: During application boot, the service provider:
-   - Registers context providers for logs and notifications
-   - Initializes and categorizes providers (static vs dynamic)
-   - Updates static context once at boot
-   - Registers a Monolog processor
-
-2. **Logging Process**:
-   - When you call `Contextify::info()` (or any log level), the dynamic context is refreshed
-   - The log entry is written through Laravel's Log facade
-   - The Monolog processor injects context from the 'log' group into the log record's `extra` field
-
-3. **Notification Process**:
-   - After logging, you can call `notify()` to send a notification
-   - The notification includes context from the 'notification' group
-   - You can filter channels using `only()` and `except()` methods
-
-### Component Overview
-
-- **Contextify**: Main logging service with fluent API
-- **Manager**: Manages context providers and groups
-- **Repository**: Centralized storage for context data
-- **Processor**: Monolog processor that injects context into log records
-- **Context Providers**: Classes that provide extra contextual data (static or dynamic)
-- **LogNotification**: Notification class for sending log events
-- **Notifiable**: Entity that receives notifications
-
-## Examples
-
-### Example 1: Application Error Tracking
-
-```php
-use Faustoff\Contextify\Facades\Contextify;
-
-try {
-    $this->processPayment($order);
-} catch (PaymentException $e) {
-    Contextify::error('Payment processing failed', [
-        'order_id' => $order->id,
-        'amount' => $order->amount,
-        'exception' => $e,
-    ])->notify(only: ['mail']);
-}
-```
-
-### Example 2: User Activity Logging
-
-```php
-use Faustoff\Contextify\Facades\Contextify;
-
-Contextify::info('User action performed', [
-    'action' => 'profile_updated',
-    'user_id' => $user->id,
-]);
-```
-
-### Example 3: Critical System Events
-
-```php
-use Faustoff\Contextify\Facades\Contextify;
-
-if ($queueSize > 10000) {
-    Contextify::critical('Queue size exceeded threshold', [
-        'queue_size' => $queueSize,
-        'threshold' => 10000,
-    ])->notify(only: ['mail', 'slack']);
-}
-```
+Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
 
 ## License
 
