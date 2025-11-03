@@ -9,7 +9,7 @@
 
 **Laravel Contextify** enhances Laravel’s native logging system by introducing two powerful capabilities:
 
-1. **Inline Notifications** — [send notifications directly alongside log messages](#sending-notifications), without splitting your code into multiple lines for logging, storing, and notifying.
+1. **Inline Notifications** — [send notifications directly alongside log messages](#notifications), without splitting your code into multiple lines for logging, storing, and notifying.
 2. **Automatic Context Enrichment** — every log (and inline notification) can include additional contextual details provided by built-in [Context Providers](#context-providers) (like [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php) and more)
 
 Inspired by Laravel’s own features — [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages), [Contextual Information](https://laravel.com/docs/12.x/logging#contextual-information), and [Context](https://laravel.com/docs/12.x/context#main-content) — **Laravel Contextify** takes logging one step further with **automatic context injection** and **seamless notification integration**, all within a single, fluent API.
@@ -20,14 +20,14 @@ It integrates effortlessly with Laravel’s [logging](https://laravel.com/docs/1
 
 ## Features
 
-- 📧 [Notification Support](#sending-notifications): Send notifications (email or any other custom Laravel notification channel) for log events you want in one place
-- 🔍 [Automatic Context Enrichment](#basic-logging): Every log entry and notification is automatically enriched with static/dynamic extra contextual data provided by Context Providers
+- 📧 [Notification Support](#notifications): Send notifications (email or any other custom Laravel notification channel) for log events you want in one place
+- 🔍 [Automatic Context Enrichment](#logging): Every log entry and notification is automatically enriched with static/dynamic extra contextual data provided by Context Providers
 - 🔌 [Pluggable Context Providers](#registering-custom-providers): Built-in context providers and easy extensibility for custom providers
 - 🔄 [Static & Dynamic Providers](#built-in-providers): Support for both static (cached) and dynamic (refreshed) context providers
 - 🎯 [Group-Based Context](#registering-custom-providers): Separate set of context providers for logs and notifications
-- 📊 [Standard Log Levels](#basic-logging): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
+- 📊 [Standard Log Levels](#logging): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
 - 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and support custom notification channels
-- 🔔 [Channel Filtering](#sending-notifications): Filter notification channels with `only()` and `except()` methods inline with logging
+- 🔔 [Channel Filtering](#notifications): Filter notification channels with `only()` and `except()` methods inline with logging
 - 🔄 [Fluent API](#usage): Chain methods for clean and readable code
 - ⚡ Monolog Integration: Seamless integration with Laravel's logging system through Monolog processors
 
@@ -67,7 +67,7 @@ CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
 
 ## Usage
 
-### Basic Logging
+### Logging
 
 Use the `Contextify` facade just like Laravel's core `Log` facade to log messages with automatic extra context enrichment:
 
@@ -101,7 +101,7 @@ Contextify::emergency('System is down');
 
 Each log entry will automatically include extra context from [configured context providers](#context-providers).
 
-### Sending Notifications
+### Notifications
 
 Send notifications for logged events:
 
