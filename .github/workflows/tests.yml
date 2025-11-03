@@ -105,6 +105,8 @@ jobs:
           if [ -n "${PHPUNIT}" ]; then
             composer require --no-interaction --no-update phpunit/phpunit:${PHPUNIT}
           fi
+          # Do not install php-cs-fixer in CI across all matrices (not needed for tests)
+          composer remove --no-interaction --no-update friendsofphp/php-cs-fixer || true
 
       - name: Install dependencies
         run: |
