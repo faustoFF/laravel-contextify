@@ -81,22 +81,22 @@ Contextify::info('User logged in', ['user_id' => 123]);
 // [2025-01-01 12:00:00] local.INFO: User logged in {"user_id":123} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Http/Controllers/Auth/LoginController.php:55"}
 
 Contextify::notice('Important notice');
-// [2025-01-01 12:00:00] local.NOTICE: Important notice [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"routes/web.php:10"}
+// [2025-01-01 12:00:00] local.NOTICE: Important notice  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"routes/web.php:10"}
 
 Contextify::warning('Something unusual happened');
-// [2025-01-01 12:00:00] local.WARNING: Something unusual happened [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Jobs/ProcessThing.php:87"}
+// [2025-01-01 12:00:00] local.WARNING: Something unusual happened  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Jobs/ProcessThing.php:87"}
 
 Contextify::error('An error occurred', ['error_code' => 'E001']);
 // [2025-01-01 12:00:00] local.ERROR: An error occurred {"error_code":"E001"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Http/Controllers/Api/OrderController.php:133"}
 
 Contextify::critical('Critical system failure');
-// [2025-01-01 12:00:00] local.CRITICAL: Critical system failure [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/MonitorCommand.php:71"}
+// [2025-01-01 12:00:00] local.CRITICAL: Critical system failure  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/MonitorCommand.php:71"}
 
 Contextify::alert('Immediate action required');
-// [2025-01-01 12:00:00] local.ALERT: Immediate action required [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Providers/AppServiceProvider.php:25"}
+// [2025-01-01 12:00:00] local.ALERT: Immediate action required  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Providers/AppServiceProvider.php:25"}
 
 Contextify::emergency('System is down');
-// [2025-01-01 12:00:00] local.EMERGENCY: System is down [] {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Exceptions/Handler.php:100"}
+// [2025-01-01 12:00:00] local.EMERGENCY: System is down  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Exceptions/Handler.php:100"}
 ```
 
 Each log entry will automatically include extra context from [configured context providers](#context-providers).
