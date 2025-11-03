@@ -21,11 +21,11 @@ It integrates effortlessly with Laravel’s [logging](https://laravel.com/docs/1
 ## Features
 
 - 📧 [Notification Support](#sending-notifications): Send notifications (email or any other custom Laravel notification channel) for log events you want in one place
-- 🔍 [Automatic Context Enrichment](#logging): Every log entry and notification is automatically enriched with static/dynamic extra contextual data provided by Context Providers
+- 🔍 [Automatic Context Enrichment](#writing-logs-messages): Every log entry and notification is automatically enriched with static/dynamic extra contextual data provided by Context Providers
 - 🔌 [Pluggable Context Providers](#registering-custom-providers): Built-in context providers and easy extensibility for custom providers
 - 🔄 [Static & Dynamic Providers](#built-in-providers): Support for both static (cached) and dynamic (refreshed) context providers
 - 🎯 [Group-Based Context](#registering-custom-providers): Separate set of context providers for logs and notifications
-- 📊 [Standard Log Levels](#logging): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
+- 📊 [Standard Log Levels](#writing-logs-messages): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
 - 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and support custom notification channels
 - 🔔 [Channel Filtering](#sending-notifications): Filter notification channels with `only()` and `except()` methods inline with logging
 - 🔄 [Fluent API](#usage): Chain methods for clean and readable code
@@ -67,7 +67,7 @@ CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
 
 ## Usage
 
-### Logging
+### Writing logs messages
 
 Use the `Contextify` facade just like Laravel's core `Log` facade to log messages with automatic extra context enrichment:
 
