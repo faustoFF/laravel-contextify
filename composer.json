@@ -8,6 +8,11 @@
             "Faustoff\\Contextify\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Faustoff\\Contextify\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "faustoFF",
@@ -22,7 +27,9 @@
         "monolog/monolog": "^2.0|^3.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.89"
+        "friendsofphp/php-cs-fixer": "^3.89",
+        "phpunit/phpunit": "^9.6 || ^10.0 || ^11.0",
+        "orchestra/testbench": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0"
     },
     "extra": {
         "laravel": {
@@ -33,6 +40,8 @@
     },
     "scripts": {
         "cs": "php-cs-fixer fix --dry-run --diff",
-        "cs:fix": "php-cs-fixer fix"
+        "cs:fix": "php-cs-fixer fix",
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-text"
     }
 }

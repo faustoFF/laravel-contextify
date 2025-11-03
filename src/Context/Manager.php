@@ -91,6 +91,10 @@ class Manager
     {
         $context = [];
 
+        if (!isset($this->groups[$group])) {
+            return $context;
+        }
+
         foreach ($this->repository->all() as $provider => $data) {
             if (in_array($provider, $this->groups[$group])) {
                 $context = array_merge($context, $data);
