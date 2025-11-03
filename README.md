@@ -128,8 +128,8 @@ Cached context at application boot per request/process.
 
 - [ProcessIdContextProvider](src/Context/Providers/ProcessIdContextProvider.php): Adds the current PHP process ID (`pid`)
 - [TraceIdContextProvider](src/Context/Providers/TraceIdContextProvider.php): Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
-- [HostnameContextProvider](src/Context/Providers/TraceIdContextProvider.php): Adds the server hostname (`hostname`)
-- [EnvironmentContextProvider](src/Context/Providers/TraceIdContextProvider.php): Adds the application environment (`environment`)
+- [HostnameContextProvider](src/Context/Providers/HostnameContextProvider.php): Adds the server hostname (`hostname`)
+- [EnvironmentContextProvider](src/Context/Providers/EnvironmentContextProvider.php): Adds the application environment (`environment`)
 
 #### Dynamic Context Providers
 
@@ -256,6 +256,10 @@ Configure notification channels in `config/contextify.php`:
     'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
 ],
 ```
+
+If you use the simple array format (e.g., `['mail']`), Laravel will route
+notifications on the `default` queue. The explicit per-channel queue mapping
+(`viaQueues`) applies when using the associative array format.
 
 ### Custom Notification Class
 
