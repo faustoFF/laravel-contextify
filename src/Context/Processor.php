@@ -19,12 +19,11 @@ class Processor implements ProcessorInterface
 
     /**
      * Merges context data from the 'log' group into the log record's extra field.
+     * Compatible with Monolog 2 (array record) and Monolog 3 (LogRecord object).
      *
-     * @param array|LogRecord $record Log record (array for Monolog 2, LogRecord for Monolog 3)
-     *
-     * @return array|LogRecord Processed record with merged context or original if context is empty
+     * @param mixed $record
      */
-    public function __invoke(array|LogRecord $record): array|LogRecord
+    public function __invoke($record): mixed
     {
         $context = $this->manager->getContext('log');
 
@@ -32,8 +31,8 @@ class Processor implements ProcessorInterface
             return $record;
         }
 
-        // Monolog 3 (LogRecord)
-        if ($record instanceof LogRecord) {
+        // Monolog 3 (LogRecord) — detect safely without hard dependency
+        if (is_object($record) && is_a($record, LogRecord::class, allow_string: true)) {
             return $record->with(extra: [...$record->extra, ...$context]);
         }
 

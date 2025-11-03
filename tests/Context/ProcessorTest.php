@@ -8,8 +8,7 @@ use Faustoff\Contextify\Context\Manager;
 use Faustoff\Contextify\Context\Processor;
 use Faustoff\Contextify\Context\Repository;
 use Faustoff\Contextify\Tests\TestCase;
-use Monolog\Level;
-use Monolog\LogRecord;
+use function class_exists;
 
 class ProcessorTest extends TestCase
 {
@@ -27,11 +26,13 @@ class ProcessorTest extends TestCase
 
         $processor = new Processor($manager);
 
-        // LogRecord (Monolog 3)
-        $record = new LogRecord(datetime: new \DateTimeImmutable(), channel: 'test', level: Level::Info, message: 'm', context: [], extra: []);
-        $out = $processor($record);
-        $this->assertInstanceOf(LogRecord::class, $out);
-        $this->assertArrayHasKey('k', $out->extra);
+        // LogRecord path (Monolog 3) — run only if available
+        if (class_exists(\Monolog\LogRecord::class)) {
+            $record = new \Monolog\LogRecord(datetime: new \DateTimeImmutable(), channel: 'test', level: \Monolog\Level::Info, message: 'm', context: [], extra: []);
+            $out = $processor($record);
+            $this->assertInstanceOf(\Monolog\LogRecord::class, $out);
+            $this->assertArrayHasKey('k', $out->extra);
+        }
 
         // Array (Monolog 2 shape)
         $arr = ['message' => 'm'];
