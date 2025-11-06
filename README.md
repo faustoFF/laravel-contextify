@@ -139,6 +139,7 @@ Refreshing on each log call
 
 - [CallContextProvider](src/Context/Providers/CallContextProvider.php): Adds the file path and line number of the calling code (`caller`)
 - [PeakMemoryUsageContextProvider](src/Context/Providers/PeakMemoryUsageContextProvider.php): Adds the peak memory usage in bytes (`peak_memory_usage`)
+- [DateTimeContextProvider](src/Context/Providers/DateTimeContextProvider.php): Adds the current date and time in Laravel log format (`datetime`)
 
 ### Creating Custom Context Providers
 

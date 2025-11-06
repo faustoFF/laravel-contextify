@@ -1,6 +1,7 @@
 <?php
 
 use Faustoff\Contextify\Context\Providers\CallContextProvider;
+use Faustoff\Contextify\Context\Providers\DateTimeContextProvider;
 use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
 use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
 use Faustoff\Contextify\Context\Providers\PeakMemoryUsageContextProvider;
@@ -53,8 +54,8 @@ return [
             EnvironmentContextProvider::class,
             CallContextProvider::class,
             PeakMemoryUsageContextProvider::class,
+            DateTimeContextProvider::class,
             // TODO: Add _SERVER context provider
-            // TODO: datetime context provider
 
             // Add your custom context providers here...
         ],

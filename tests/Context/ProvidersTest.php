@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Faustoff\Contextify\Tests\Context;
 
 use Faustoff\Contextify\Context\Providers\CallContextProvider;
+use Faustoff\Contextify\Context\Providers\DateTimeContextProvider;
 use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
 use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
 use Faustoff\Contextify\Context\Providers\PeakMemoryUsageContextProvider;
@@ -73,5 +74,19 @@ class ProvidersTest extends TestCase
         $this->assertArrayHasKey('peak_memory_usage', $ctx);
         $this->assertIsInt($ctx['peak_memory_usage']);
         $this->assertGreaterThanOrEqual(0, $ctx['peak_memory_usage']);
+    }
+
+    public function testDateTimeProviderReturnsLaravelLogFormatString(): void
+    {
+        $p = new DateTimeContextProvider();
+
+        $ctx = $p->getContext();
+
+        $this->assertArrayHasKey('datetime', $ctx);
+        $this->assertIsString($ctx['datetime']);
+        // Проверяем, что это валидный формат Laravel логов (Y-m-d H:i:s)
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $ctx['datetime']);
+        // Проверяем, что дата валидна
+        $this->assertNotFalse(\DateTime::createFromFormat('Y-m-d H:i:s', $ctx['datetime']));
     }
 }
