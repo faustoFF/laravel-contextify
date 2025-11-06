@@ -3,6 +3,7 @@
 use Faustoff\Contextify\Context\Providers\CallContextProvider;
 use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
 use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
+use Faustoff\Contextify\Context\Providers\PeakMemoryUsageContextProvider;
 use Faustoff\Contextify\Context\Providers\ProcessIdContextProvider;
 use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 use Faustoff\Contextify\Notifications\LogNotification;
@@ -21,19 +22,12 @@ return [
     */
 
     'logs' => [
-        /*
-         * Context providers for log entries.
-         *
-         * These providers add contextual information to every log entry:
-         * - ProcessIdContextProvider: Adds the current process ID
-         * - TraceIdContextProvider: Adds a unique trace ID for request/process tracking
-         * - CallContextProvider: Adds information about the calling code location
-         */
+        // Context providers for log entries.
         'providers' => [
             ProcessIdContextProvider::class,
             TraceIdContextProvider::class,
             CallContextProvider::class,
-            // TODO: peak memory usage provider
+            PeakMemoryUsageContextProvider::class,
 
             // Add your custom context providers here...
         ],
@@ -51,23 +45,14 @@ return [
     */
 
     'notifications' => [
-        /*
-         * Context providers for notifications.
-         *
-         * These providers add contextual information to notifications:
-         * - HostnameContextProvider: Adds the server hostname
-         * - ProcessIdContextProvider: Adds the current process ID
-         * - TraceIdContextProvider: Adds a unique trace ID for request/process tracking
-         * - EnvironmentContextProvider: Adds the current application environment
-         * - CallContextProvider: Adds information about the calling code location
-         */
+        // Context providers for notifications.
         'providers' => [
             HostnameContextProvider::class,
             ProcessIdContextProvider::class,
             TraceIdContextProvider::class,
             EnvironmentContextProvider::class,
             CallContextProvider::class,
-            // TODO: peak memory usage provider
+            PeakMemoryUsageContextProvider::class,
             // TODO: Add _SERVER context provider
             // TODO: datetime context provider
 

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Tests\Context;
 
+use Faustoff\Contextify\Context\Providers\CallContextProvider;
 use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
 use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
+use Faustoff\Contextify\Context\Providers\PeakMemoryUsageContextProvider;
 use Faustoff\Contextify\Context\Providers\ProcessIdContextProvider;
 use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
-use Faustoff\Contextify\Context\Providers\CallContextProvider;
 use Faustoff\Contextify\Tests\TestCase;
 
 class ProvidersTest extends TestCase
@@ -61,5 +62,16 @@ class ProvidersTest extends TestCase
 
         $this->assertArrayHasKey('caller', $ctx);
         $this->assertTrue(is_string($ctx['caller']) || is_null($ctx['caller']));
+    }
+
+    public function testPeakMemoryUsageProviderReturnsInt(): void
+    {
+        $p = new PeakMemoryUsageContextProvider();
+
+        $ctx = $p->getContext();
+
+        $this->assertArrayHasKey('peak_memory_usage', $ctx);
+        $this->assertIsInt($ctx['peak_memory_usage']);
+        $this->assertGreaterThanOrEqual(0, $ctx['peak_memory_usage']);
     }
 }
