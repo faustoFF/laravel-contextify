@@ -220,8 +220,8 @@ The context data returned by each provider is shared between logs and notificati
 
 Inside the `config/contextify.php` configuration file you can define:
 
-- **`logs.providers`** — providers that will enrich log entries
-- **`notifications.providers`** — providers that will enrich notifications
+- `logs.providers` — providers that will enrich log entries
+- `notifications.providers` — providers that will enrich notifications
 
 You can configure it like this:
 
