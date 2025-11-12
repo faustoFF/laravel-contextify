@@ -22,7 +22,7 @@ The [`Contextify` facade](src/Facades/Contextify.php) is fully compatible with L
 
 ## Features
 
-- 📧 [Notification Support](#sending-notifications): Send notifications via built-in **mail** and **telegram** channels or any other Laravel notification channels
+- 📧 [Notification Support](#sending-notifications): Send notifications via built-in mail and telegram channels or any other Laravel notification channels
 - 🔍 [Automatic Extra Context Enrichment](#writing-logs): Every log record and notification is automatically enriched with static/dynamic extra contextual data provided by configured Context Providers
 - 🔌 [Pluggable Context Providers](#creating-custom-context-providers): Built-in Context Providers can be easily extended with your own custom providers
 - 🔄 [Static & Dynamic Context Providers](#static-context-providers): Support for both static (cached) and dynamic (refreshed) Context Providers
@@ -190,6 +190,8 @@ return [
             // Custom providers
             CustomContextProvider::class,
         ],
+        
+        // ... other logs settings
     ],
 
     'notifications' => [
@@ -204,6 +206,8 @@ return [
             // Custom providers
             CustomContextProvider::class,
         ],
+        
+        // ... other notifications settings
     ],
 ];
 ```
@@ -239,6 +243,8 @@ return [
             CallContextProvider::class,              // Logs only
             PeakMemoryUsageContextProvider::class,   // Logs only
         ],
+        
+        // ... other logs settings
     ],
 
     'notifications' => [
@@ -248,6 +254,8 @@ return [
             ProcessIdContextProvider::class,         // Shared
             TraceIdContextProvider::class,           // Shared
         ],
+        
+        // ... other notifications settings
     ],
 ];
 ```
@@ -274,6 +282,8 @@ Configure notification channels in `config/contextify.php`:
     ],
     
     'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
+    
+    // ... other notifications settings
 ],
 ```
 
@@ -302,7 +312,7 @@ Then update the configuration:
 ```php
 'notifications' => [
     'class' => \App\Notifications\CustomLogNotification::class,
-    // ... other notification settings
+    // ... other notifications settings
 ],
 ```
 
@@ -343,7 +353,7 @@ Then update the configuration file:
     // Add Slack webhook URL configuration
     'slack_webhook_url' => env('CONTEXTIFY_SLACK_WEBHOOK_URL'),
 
-    // ... other notification settings
+    // ... other notifications settings
 ],
 ```
 
