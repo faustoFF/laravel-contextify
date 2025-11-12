@@ -254,7 +254,7 @@ return [
 
 ## Notifications
 
-The package supports **mail** and **telegram** notification channels out of the box. Mail notifications work immediately after installation, while Telegram requires to install and configure the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package.
+The package supports **mail** and **telegram** notification channels out of the box. Mail notifications work immediately after installation, while Telegram requires installing and configuring the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package.
 
 ### Configuration
 
