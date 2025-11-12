@@ -8,8 +8,6 @@ use Illuminate\Notifications\Notifiable as NotifiableTrait;
 
 /**
  * Notifiable entity for handling notifications within the Contextify package.
- *
- * Provides routing configuration for mail notifications based on package configuration.
  */
 class Notifiable
 {
@@ -17,11 +15,17 @@ class Notifiable
 
     /**
      * Get the mail addresses that notifications should be sent to.
-     *
-     * @return array|string Mail address(es) from 'notifications.mail_addresses' config
      */
-    public function routeNotificationForMail(): array|string
+    public function routeNotificationForMail(): array
     {
         return config('contextify.notifications.mail_addresses');
+    }
+
+    /**
+     * Get the Telegram chat ID that notifications should be sent to.
+     */
+    public function routeNotificationForTelegram(): null|int|string
+    {
+        return config('contextify.notifications.telegram_chat_id');
     }
 }

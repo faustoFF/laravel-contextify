@@ -6,6 +6,9 @@ namespace Faustoff\Contextify\Notifications;
 
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
+use Monolog\Utils;
+use NotificationChannels\Telegram\TelegramMessage;
 
 /**
  * Notification for sending log messages through Laravel notification channels.
@@ -24,10 +27,6 @@ class LogNotification extends Notification
      */
     public array $exceptChannels = [];
 
-    /**
-     * @param mixed $context Additional context data or a Throwable instance
-     * @param mixed $extraContext Extra context information to include
-     */
     public function __construct(
         public string $level,
         public string $message,
@@ -50,6 +49,35 @@ class LogNotification extends Notification
                 'context' => $this->context,
                 'extraContext' => $this->extraContext,
             ])
+        ;
+    }
+
+    /**
+     * Get the Telegram representation of the notification.
+     */
+    public function toTelegram(mixed $notifiable): TelegramMessage
+    {
+        $sections = [];
+
+        $sections[] = strtoupper($this->level) . ': ' . Str::limit($this->message, 512);
+
+        if (!empty($this->context)) {
+            $sections[] = 'Context:';
+            $sections[] = $this->formatContext($this->context);
+        }
+
+        if (!empty($this->extraContext)) {
+            $sections[] = 'Extra context:';
+            $sections[] = $this->formatContext($this->extraContext);
+        }
+
+        return TelegramMessage::create()
+            ->content(implode(PHP_EOL . PHP_EOL, $sections))
+            ->options([
+                'parse_mode' => '',
+                'disable_web_page_preview' => true,
+            ])
+            ->chunk(2048)
         ;
     }
 
@@ -113,5 +141,15 @@ class LogNotification extends Notification
         $this->exceptChannels = $channels;
 
         return $this;
+    }
+
+    /**
+     * Convert context values to string for Telegram output.
+     */
+    protected function formatContext(mixed $value): string
+    {
+        return is_string($value)
+            ? $value
+            : Utils::jsonEncode($value, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT);
     }
 }

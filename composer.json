@@ -42,5 +42,8 @@
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
         "test": "phpunit"
+    },
+    "suggest": {
+        "laravel-notification-channels/telegram": "Allows sending notifications to Telegram"
     }
 }

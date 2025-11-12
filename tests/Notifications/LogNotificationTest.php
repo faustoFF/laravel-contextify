@@ -14,13 +14,13 @@ class LogNotificationTest extends TestCase
         $n = new LogNotification('info', 'm');
 
         $all = $n->via(null);
-        $this->assertEqualsCanonicalizing(['mail', 'slack'], $all);
+        $this->assertEqualsCanonicalizing(['mail', 'telegram', 'slack'], $all);
 
         $only = (clone $n)->only(['mail'])->via(null);
         $this->assertSame(['mail'], array_values($only));
 
         $except = (clone $n)->except(['slack'])->via(null);
-        $this->assertSame(['mail'], array_values($except));
+        $this->assertSame(['mail', 'telegram'], array_values($except));
     }
 
     public function testViaQueuesReturnsMapping(): void
@@ -29,13 +29,13 @@ class LogNotificationTest extends TestCase
 
         $queues = $n->viaQueues();
 
-        $this->assertSame(['mail' => 'default', 'slack' => 'queue'], $queues);
+        $this->assertSame(['mail' => 'default', 'telegram' => 'notifications', 'slack' => 'queue'], $queues);
     }
 
     protected function defineEnvironment($app): void
     {
         parent::defineEnvironment($app);
 
-        $app['config']->set('contextify.notifications.channels', ['mail' => 'default', 'slack' => 'queue']);
+        $app['config']->set('contextify.notifications.channels', ['mail' => 'default', 'telegram' => 'notifications', 'slack' => 'queue']);
     }
 }

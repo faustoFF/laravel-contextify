@@ -81,5 +81,14 @@ return [
          * CONTEXTIFY_MAIL_ADDRESSES environment variable.
          */
         'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', 'your@example.com')),
+
+        /*
+         * Telegram chat ID that will receive notifications.
+         *
+         * Requires the laravel-notification-channels/telegram package to be installed.
+         *
+         * @see https://laravel-notification-channels.com/telegram/#installation
+         */
+        'telegram_chat_id' => env('CONTEXTIFY_TELEGRAM_CHAT_ID'),
     ],
 ];
