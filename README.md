@@ -216,7 +216,7 @@ return [
 
 You can define independent sets of Context Providers for logs and notifications.
 
-The context data returned by each provider is shared between logs and notifications. If a provider appears in both lists, the same provided context data will be used both in log record and notification.
+The context data returned by each provider is shared between logs and notifications. If a provider appears in both sets, the same provided context data will be used both in log record and notification.
 
 Inside the `config/contextify.php` configuration file you can define:
 
