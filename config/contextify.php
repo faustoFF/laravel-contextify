@@ -10,6 +10,8 @@ use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 use Faustoff\Contextify\Notifications\LogNotification;
 use Faustoff\Contextify\Notifications\Notifiable;
 
+// TODO: Contextify traits from v3: Loggable (base), console: Loggable, Outputable, Terminatable (https://laravel.com/docs/12.x/artisan#signal-handling), Trackable
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -62,6 +64,8 @@ return [
 
         // The notification class to use for sending notifications.
         'class' => LogNotification::class,
+
+        // TODO: exception notification support
 
         /*
          * Notification channels to use for sending notifications.

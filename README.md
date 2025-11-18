@@ -24,7 +24,7 @@ The [`Contextify` facade](src/Facades/Contextify.php) is fully compatible with L
 
 - 📧 [Notification Support](#sending-notifications): Send notifications via built-in mail and telegram channels or any other Laravel notification channels
 - 🔍 [Automatic Extra Context Enrichment](#writing-logs): Every log record and notification is automatically enriched with static/dynamic extra contextual data provided by configured Context Providers
-- 🔌 [Pluggable Context Providers](#creating-custom-context-providers): Built-in Context Providers can be easily extended with your own custom providers
+- 🔌 [Custom Context Providers](#creating-custom-context-providers): Built-in Context Providers can be easily extended with your own custom providers
 - 🔄 [Static & Dynamic Context Providers](#static-context-providers): Support for both static (cached) and dynamic (refreshed) Context Providers
 - 🎯 [Group-Based Context](#group-based-context): Separate set of Context Providers for logs and notifications
 - 📊 [Standard Log Levels](#writing-logs): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
@@ -93,11 +93,11 @@ Contextify::notice('Important notice');
 
 ### Sending Notifications
 
-Use the `notify()` chain method (after one of logging methods, like `debug()`) of [`Contextify` facade](src/Facades/Contextify.php) to send notifications directly alongside logging.
+Use the `notify()` chain method (after one of [logging methods](#writing-logs)) of [`Contextify` facade](src/Facades/Contextify.php) to send notifications directly alongside logging.
 
 The notification will include:
-- **message** (first parameter of log methods, namely `message`, just like Laravel's native `Log` facade)
-- **context** (second parameter of log methods, namely `context`, just like Laravel's native `Log` facade)
+- **message** (first parameter of log methods)
+- **context** (second parameter of log methods)
 - **extra context**, provided by [Context Providers](#context-providers) configured [for notifications](#group-based-context).
 
 You can filter notification channels using `only` and `except` parameters of `notify()` method:
@@ -122,7 +122,7 @@ Contextify::alert('Security breach detected')->notify(except: ['telegram']);
 
 ## Context Providers
 
-Context Providers add extra contextual data to your logs and notifications. The package includes several built-in providers:
+Context Providers add extra contextual data to your logs and notifications. The package includes several built-in providers.
 
 ### Static Context Providers
 
@@ -133,6 +133,23 @@ Built-in:
 - [TraceIdContextProvider](src/Context/Providers/TraceIdContextProvider.php): Generates a unique 16-character hexadecimal trace ID (`trace_id`) for distributed tracing
 - [HostnameContextProvider](src/Context/Providers/HostnameContextProvider.php): Adds the server hostname (`hostname`)
 - [EnvironmentContextProvider](src/Context/Providers/EnvironmentContextProvider.php): Adds the application environment (`environment`)
+
+#### Refreshing Static Context
+
+By default, static providers' context is retrieved once during application boot and cached. However, you can manually refresh static context using the `touch()` method. This is particularly useful when a process is forked (e.g., in queue workers), where you might want to generate a new trace ID for the forked process.
+
+```php
+<?php
+
+use Faustoff\Contextify\Facades\Contextify;
+use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
+
+// Refresh a specific static provider's context (e.g., generate a new trace ID)
+Contextify::touch(TraceIdContextProvider::class);
+
+// Refresh all static providers' context
+Contextify::touch();
+```
 
 ### Dynamic Context Providers
 
@@ -290,32 +307,6 @@ Configure notification channels in `config/contextify.php`:
 If you use the simple array format (e.g., `['mail']`), Laravel will route
 notifications on the `default` queue. The explicit per-channel queue mapping applies when using the associative array format.
 
-### Custom Notification Class
-
-You can create a custom notification class by extending `LogNotification`:
-
-```php
-<?php
-
-namespace App\Notifications;
-
-use Faustoff\Contextify\Notifications\LogNotification;
-
-class CustomLogNotification extends LogNotification
-{
-    // Override methods as needed
-}
-```
-
-Then update the configuration:
-
-```php
-'notifications' => [
-    'class' => \App\Notifications\CustomLogNotification::class,
-    // ... other notifications settings
-],
-```
-
 ### Custom Notification Channels
 
 You can create a custom notifiable class to add support for additional notification channels like Slack:
@@ -364,6 +355,32 @@ CONTEXTIFY_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 ```
 
 Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
+
+### Custom Notification Class
+
+You can create a custom notification class by extending `LogNotification`:
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use Faustoff\Contextify\Notifications\LogNotification;
+
+class CustomLogNotification extends LogNotification
+{
+    // Override methods as needed
+}
+```
+
+Then update the configuration:
+
+```php
+'notifications' => [
+    'class' => \App\Notifications\CustomLogNotification::class,
+    // ... other notifications settings
+],
+```
 
 ## License
 

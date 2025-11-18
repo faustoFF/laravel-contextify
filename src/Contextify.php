@@ -130,6 +130,16 @@ class Contextify
     }
 
     /**
+     * Manually refresh context from static provider(s).
+     *
+     * @param string|null $providerClass Provider class name to refresh, or null to refresh all static providers
+     */
+    public function touch(?string $providerClass = null): void
+    {
+        $this->manager->touchStaticContext($providerClass);
+    }
+
+    /**
      * Updates dynamic context, writes log entry, and stores data for notifications.
      *
      * @param string $level Log level (debug, info, notice, warning, error, critical, alert, emergency)

@@ -83,6 +83,27 @@ class Manager
     }
 
     /**
+     * Manually refresh context from static provider(s).
+     *
+     * @param string|null $providerClass Provider class name to refresh, or null to refresh all static providers
+     */
+    public function touchStaticContext(?string $providerClass = null): void
+    {
+        if (null !== $providerClass) {
+            if (!isset($this->static[$providerClass])) {
+                return;
+            }
+
+            $provider = $this->static[$providerClass];
+            $this->repository->set($provider::class, $provider->getContext());
+        } else {
+            foreach ($this->static as $provider) {
+                $this->repository->set($provider::class, $provider->getContext());
+            }
+        }
+    }
+
+    /**
      * Retrieve merged context data for a specific group.
      *
      * @return array<string, mixed> Merged context data from all providers in the group

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static self alert(string $message, mixed $context = [])
  * @method static self emergency(string $message, mixed $context = [])
  * @method static void notify(array $only = [], array $except = [])
+ * @method static void touch(?string $providerClass = null)
  *
  * @example
  * Contextify::info('User logged in', ['user_id' => 123]);
