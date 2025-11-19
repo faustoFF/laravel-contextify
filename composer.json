@@ -45,5 +45,12 @@
     },
     "suggest": {
         "laravel-notification-channels/telegram": "Allows sending notifications to Telegram"
+    },
+    "config": {
+        "audit": {
+            "ignore": {
+                "PKSA-8qx3-n5y5-vvnd": "Support for old laravel versions"
+            }
+        }
     }
 }
