@@ -22,7 +22,9 @@ jobs:
             laravel: '8'
           - php: '8.4'
             laravel: '8'
-          # Laravel 9: target PHP 8.0–8.2 only
+          # Laravel 9: target PHP 8.1–8.2 only (PHP 8.0 not supported in newer Laravel 9 versions cause of symfony dependencies)
+          - php: '8.0'
+            laravel: '9'
           - php: '8.3'
             laravel: '9'
           - php: '8.4'
@@ -78,12 +80,7 @@ jobs:
               PHPUNIT=^9.6
               ;;
             9)
-              # Laravel 9: use testbench 6.x for PHP 8.0, 7.x for PHP 8.1+
-              if [ "${{ matrix.php }}" = "8.0" ]; then
-                TESTBENCH=^6.0
-              else
-                TESTBENCH=^7.0
-              fi
+              TESTBENCH=^7.0
               PHPUNIT=^9.6
               ;;
             10)
