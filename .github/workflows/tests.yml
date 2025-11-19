@@ -78,7 +78,12 @@ jobs:
               PHPUNIT=^9.6
               ;;
             9)
-              TESTBENCH=^7.0
+              # Laravel 9: use testbench 6.x for PHP 8.0, 7.x for PHP 8.1+
+              if [ "${{ matrix.php }}" = "8.0" ]; then
+                TESTBENCH=^6.0
+              else
+                TESTBENCH=^7.0
+              fi
               PHPUNIT=^9.6
               ;;
             10)
