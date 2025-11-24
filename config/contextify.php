@@ -7,6 +7,8 @@ use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
 use Faustoff\Contextify\Context\Providers\PeakMemoryUsageContextProvider;
 use Faustoff\Contextify\Context\Providers\ProcessIdContextProvider;
 use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
+use Faustoff\Contextify\Exceptions\Reportable;
+use Faustoff\Contextify\Notifications\ExceptionNotification;
 use Faustoff\Contextify\Notifications\LogNotification;
 use Faustoff\Contextify\Notifications\Notifiable;
 
@@ -62,10 +64,11 @@ return [
             // Add your custom context providers here...
         ],
 
-        // The notification class to use for sending notifications.
+        // The notification class to use for sending log notifications.
         'class' => LogNotification::class,
 
-        // TODO: exception notification support
+        // The notification class to use for sending exception notifications.
+        'exception_class' => ExceptionNotification::class,
 
         /*
          * Notification channels to use for sending notifications.
@@ -77,6 +80,10 @@ return [
 
         // The notifiable entity that will receive notifications.
         'notifiable' => Notifiable::class,
+
+        // The reportable class that registers an exception handler for sending exception notifications.
+        // Set to null to disable automatic exception notifications.
+        'reportable' => Reportable::class,
 
         /*
          * Email addresses that will receive notifications.

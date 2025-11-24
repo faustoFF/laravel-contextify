@@ -120,6 +120,49 @@ Contextify::alert('Security breach detected')->notify(except: ['telegram']);
 // Notification with extra context sent to all configured notification channels except a Telegram channel
 ```
 
+### Exception Notifications
+
+The package can automatically send notifications when exceptions occur in your application. This feature is enabled by default and uses Laravel's exception handler to catch and report exceptions.
+
+When an exception is reported through Laravel's exception handler, a notification is automatically sent with:
+- **exception details** (full exception message and stack trace)
+- **extra context**, provided by [Context Providers](#context-providers) configured [for notifications](#group-based-context)
+
+Exception notifications are sent using the `ExceptionNotification` class configured in `config/contextify.php`. You can customize this by creating your own notification class:
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use Faustoff\Contextify\Notifications\ExceptionNotification;
+
+class CustomExceptionNotification extends ExceptionNotification
+{
+    // Override methods as needed
+}
+```
+
+Then update the configuration:
+
+```php
+'notifications' => [
+    'exception_class' => \App\Notifications\CustomExceptionNotification::class,
+    // ... other notifications settings
+],
+```
+
+To disable automatic exception notifications, set the `reportable` option to `null` in your configuration:
+
+```php
+'notifications' => [
+    'reportable' => null, // Disable automatic exception notifications
+    // ... other notifications settings
+],
+```
+
+> **Note:** The package uses `ExceptionNotificationFailedException` to prevent infinite loops when exception notifications themselves fail. This exception signals to Laravel's exception handler that it should not attempt to report the notification failure again.
+
 ## Context Providers
 
 Context Providers add extra contextual data to your logs and notifications. The package includes several built-in providers.
