@@ -425,6 +425,128 @@ Then update the configuration:
 ],
 ```
 
+## Console Commands
+
+### Tracking
+
+Also, you can track console command execution by using `Faustoff\Contextify\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time.
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Trackable;
+use Faustoff\Contextify\Facades\Contextify;
+
+class SyncData extends Command
+{
+    use Trackable;
+
+    protected $signature = 'data:sync';
+
+    public function handle(): int
+    {
+        // Your business logic here
+        
+        Contextify::notice('Data was synced');
+
+        return self::SUCCESS;
+    }
+}
+
+```
+
+Log:
+
+```
+[2025-01-01 12:00:00] local.DEBUG: Run with arguments {"command":"data:sync"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
+[2025-01-01 12:00:00] local.NOTICE: Data was synced {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
+[2025-01-01 12:00:00] local.DEBUG: Execution time: 1 second {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
+```
+
+### Output Capturing
+
+Also, you can capture [native Laravel console command output](https://laravel.com/docs/12.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Contextify\Console\Outputable` trait:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Faustoff\Contextify\Console\Outputable;
+
+class SyncData extends Command
+{
+    use Outputable;
+
+    protected $signature = 'data:sync';
+
+    public function handle(): int
+    {
+        // You business logic here
+        
+        $this->info('Data was synced');
+
+        return self::SUCCESS;
+    }
+}
+
+```
+
+Log:
+
+```
+[2025-01-01 12:00:00] local.NOTICE: Data was synced {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
+```
+
+### Handling Shutdown Signals
+
+You can handle shutdown signals (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful shutdown command execution by using trait:
+- `Faustoff\Contextify\Console\Terminatable` for Laravel <= 9
+- `Faustoff\Contextify\Console\TerminatableV10` for Laravel 10
+- `Faustoff\Contextify\Console\TerminatableV11` for Laravel >= 11
+
+and `Symfony\Component\Console\Command\SignalableCommandInterface` interface together with trait.
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Faustoff\Contextify\Console\Loggable;
+use Illuminate\Console\Command;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
+
+class ConsumeStats extends Command implements SignalableCommandInterface
+{
+    use Terminatable;
+
+    protected $signature = 'stats:consume';
+
+    public function handle(): void
+    {
+        while (true) {
+            // ...
+
+            if ($this->shouldTerminate) {
+                // Execution terminated by handle shutdown signal
+                break;
+            }
+        }
+    }
+}
+
+```
+
+Log:
+
+```
+[2025-01-01 12:00:00] local.WARNING: Received SIGTERM (15) shutdown signal {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/ConsumeStats:42"}
+```
+
 ## License
 
 This package is open-sourced software licensed under the [MIT license](LICENSE).
