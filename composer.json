@@ -21,17 +21,17 @@
     ],
     "require": {
         "php": "^8.0",
-        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/log": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/notifications": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/log": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/notifications": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
         "monolog/monolog": "^2.0|^3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
         "laravel-notification-channels/telegram": "*",
         "phpunit/phpunit": "^9.6 || ^10.0 || ^11.0",
-        "orchestra/testbench": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0"
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9.0 || ^10.0"
     },
     "extra": {
         "laravel": {
@@ -46,6 +46,7 @@
         "test": "phpunit --testdox"
     },
     "suggest": {
+        "ext-pcntl": "Allows to use Console Terminatable trait",
         "laravel-notification-channels/telegram": "Allows sending notifications to Telegram"
     },
     "config": {
