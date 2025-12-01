@@ -77,7 +77,9 @@ class ExceptionNotification extends AbstractNotification
                 'parse_mode' => '',
                 'disable_web_page_preview' => true,
             ])
-            ->chunk(2048)
+            // Works from laravel-notification-channels/telegram:^4.0.0 (requires Laravel 10+)
+            // https://github.com/laravel-notification-channels/telegram/releases/tag/4.0.0
+            // ->chunk(2048)
         ;
     }
 
