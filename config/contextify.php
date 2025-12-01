@@ -12,8 +12,6 @@ use Faustoff\Contextify\Notifications\ExceptionNotification;
 use Faustoff\Contextify\Notifications\LogNotification;
 use Faustoff\Contextify\Notifications\Notifiable;
 
-// TODO: Contextify traits from v3: Loggable (base), console: Loggable, Outputable, Terminatable (https://laravel.com/docs/12.x/artisan#signal-handling), Trackable
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +57,6 @@ return [
             CallContextProvider::class,
             PeakMemoryUsageContextProvider::class,
             DateTimeContextProvider::class,
-            // TODO: Add _SERVER context provider
 
             // Add your custom context providers here...
         ],
