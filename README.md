@@ -505,9 +505,9 @@ Log:
 ### Handling Shutdown Signals
 
 You can handle shutdown signals (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful shutdown command execution by using trait:
-- `Faustoff\Contextify\Console\Terminatable` for Laravel <= 9
-- `Faustoff\Contextify\Console\TerminatableV10` for Laravel 10
-- `Faustoff\Contextify\Console\TerminatableV11` for Laravel >= 11
+- `Faustoff\Contextify\Console\TerminatableV62` for `symfony/console:<6.3` (Laravel 9, 10)
+- `Faustoff\Contextify\Console\TerminatableV63` for `symfony/console:^6.3` (Laravel 9, 10)
+- `Faustoff\Contextify\Console\TerminatableV70` for `symfony/console:^7.0` (Laravel 11+)
 
 and `Symfony\Component\Console\Command\SignalableCommandInterface` interface together with trait.
 
@@ -516,13 +516,13 @@ and `Symfony\Component\Console\Command\SignalableCommandInterface` interface tog
 
 namespace App\Console\Commands;
 
-use Faustoff\Contextify\Console\Loggable;
+use Faustoff\Contextify\Console\TerminatableV62;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 
 class ConsumeStats extends Command implements SignalableCommandInterface
 {
-    use Terminatable;
+    use TerminatableV62;
 
     protected $signature = 'stats:consume';
 

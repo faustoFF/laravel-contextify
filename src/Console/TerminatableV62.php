@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Console;
 
-trait TerminatableV10
+trait TerminatableV62
 {
     use BaseTerminatable;
 
-    public function handleSignal(int $signal): false|int
+    public function handleSignal(int $signal): void
     {
         $this->processSignal($signal);
-
-        return false;
     }
 }
+

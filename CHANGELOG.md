@@ -24,7 +24,7 @@ This release is a complete redesign of the package concept and implementation. T
   - Automatic exception notifications with context enrichment from notification providers
 - Legacy traits restored for backward compatibility:
   - `Loggable` trait for easy logging in classes
-  - Console traits: `BaseTerminatable`, `Terminatable`, `TerminatableV10`, `TerminatableV11`, `Trackable`, `Outputable`
+  - Console traits: `BaseTerminatable`, `TerminatableV62`, `TerminatableV63`, `TerminatableV70`, `Trackable`, `Outputable`
   - These traits provide compatibility with v3 code while encouraging migration to the new facade API
 - New configuration file format (`config/contextify.php`)
 - New test suite and CI workflow
@@ -43,7 +43,7 @@ This release is a complete redesign of the package concept and implementation. T
 
 - Legacy traits and console helpers removed (later restored for backward compatibility):
   - `Loggable`, `HasLog`, `DummyLoggable`
-  - Console mixins: `BaseTerminatable`, `Terminatable*`, `Trackable`, `Outputable`, `Loggable`
+  - Console mixins: `BaseTerminatable`, `TerminatableV62`, `TerminatableV63`, `TerminatableV70`, `Trackable`, `Outputable`, `Loggable`
 - Exception notification class replaced:
   - `ExceptionOccurredNotification` replaced with `ExceptionNotification` (new implementation with improved context support)
   - `resources/views/exception.blade.php` updated (not removed) to work with the new `ExceptionNotification` class

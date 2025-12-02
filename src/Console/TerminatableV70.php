@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Console;
 
-trait TerminatableV11
+trait TerminatableV70
 {
     use BaseTerminatable;
 
@@ -15,3 +15,4 @@ trait TerminatableV11
         return false;
     }
 }
+
