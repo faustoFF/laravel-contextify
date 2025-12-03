@@ -55,14 +55,21 @@ class ProvidersTest extends TestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{16}$/', $ctx['trace_id']);
     }
 
-    public function testCallContextProviderReturnsCallerStringOrNull(): void
+    public function testCallContextProviderReturnsFileAndClass(): void
     {
         $p = new CallContextProvider();
 
         $ctx = $p->getContext();
 
-        $this->assertArrayHasKey('caller', $ctx);
-        $this->assertTrue(is_string($ctx['caller']) || is_null($ctx['caller']));
+        $this->assertArrayHasKey('file', $ctx);
+        $this->assertTrue(is_string($ctx['file']) || is_null($ctx['file']));
+
+        $this->assertArrayHasKey('class', $ctx);
+        $this->assertTrue(is_string($ctx['class']) || is_null($ctx['class']));
+
+        if (null !== $ctx['file']) {
+            $this->assertStringContainsString(':', $ctx['file']);
+        }
     }
 
     public function testPeakMemoryUsageProviderReturnsInt(): void

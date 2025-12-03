@@ -21,34 +21,60 @@ class CallContextProvider implements DynamicContextProviderInterface
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
 
-        $call = $this->findCall($trace);
+        $call = $this->findCallFile($trace);
+
+        $callFile = $call['file'] ?? null;
 
         $basePath = base_path();
 
-        $file = str_starts_with($call['file'], $basePath)
-            ? substr($call['file'], strlen($basePath) + 1)
-            : $call['file'];
+        $file = ($callFile && str_starts_with($callFile, $basePath))
+            ? substr($callFile, strlen($basePath) + 1)
+            : $callFile;
 
         return [
-            'caller' => $call ? "{$file}:{$call['line']}" : null,
+            'file' => $file ? "{$file}:{$call['line']}" : null,
+            'class' => $this->findCallClass($trace)['class'] ?? null,
         ];
     }
 
     /**
-     * Finds the first relevant call frame in the backtrace.
+     * Finds the first relevant call file frame in the backtrace.
      *
-     * @return array|null First relevant call frame or null if not found
+     * @return array|null First relevant call file frame or null if not found
      */
-    private function findCall(array $trace): ?array
+    private function findCallFile(array $trace): ?array
     {
         foreach ($trace as $frame) {
             if (!isset($frame['file'])) {
                 continue;
             }
 
-            // Пропускаем фреймы из игнорируемых классов
             if (isset($frame['class'])) {
                 if (str_starts_with($frame['class'], 'Faustoff\Contextify\\')) {
+                    continue;
+                }
+            }
+
+            return $frame;
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the first relevant call class frame in the backtrace.
+     *
+     * @return array|null First relevant call class frame or null if not found
+     */
+    private function findCallClass(array $trace): ?array
+    {
+        foreach ($trace as $frame) {
+            if (isset($frame['class'])) {
+                if (str_starts_with($frame['class'], 'Faustoff\Contextify\\')) {
+                    continue;
+                }
+
+                if ($frame['class'] === 'Illuminate\Support\Facades\Facade') {
                     continue;
                 }
             }
