@@ -84,7 +84,7 @@ class ManagerTest extends TestCase
         $initialStatic2 = $initialContext['static2'];
 
         // Touch all static providers
-        $manager->touchStaticContext();
+        $manager->updateStaticContext();
 
         // Get context after touch
         $updatedContext = $manager->getContext('log');
@@ -130,7 +130,7 @@ class ManagerTest extends TestCase
         $initialCallCount = $staticProvider2->callCount;
 
         // Touch only staticProvider1
-        $manager->touchStaticContext($staticProvider1::class);
+        $manager->updateStaticContext($staticProvider1::class);
 
         // staticProvider2 should not be called again
         $this->assertSame($initialCallCount, $staticProvider2->callCount);
@@ -160,7 +160,7 @@ class ManagerTest extends TestCase
         $manager->updateStaticContext();
 
         // Touch non-existent provider - should not throw error
-        $manager->touchStaticContext('NonExistentProvider');
+        $manager->updateStaticContext('NonExistentProvider');
 
         // Context should remain unchanged
         $context = $manager->getContext('log');
@@ -198,7 +198,7 @@ class ManagerTest extends TestCase
         $manager->updateDynamicContext();
 
         // Try to touch dynamic provider - should be ignored
-        $manager->touchStaticContext($dynamicProvider::class);
+        $manager->updateStaticContext($dynamicProvider::class);
 
         // Context should remain unchanged
         $context = $manager->getContext('log');

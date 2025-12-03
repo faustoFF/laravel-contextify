@@ -8,14 +8,11 @@ use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
 
 /**
  * Provides call context information by analyzing the debug backtrace.
- *
- * Returns file path and line number of the caller, skipping frames from
- * the Contextify package itself.
  */
 class CallContextProvider implements DynamicContextProviderInterface
 {
     /**
-     * @return array{caller: string|null} Formatted file path and line number (relative to base path)
+     * @return array{file: string|null, class: string|null} Returns file path with line number (relative to base path) and class name
      */
     public function getContext(): array
     {

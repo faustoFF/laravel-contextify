@@ -8,8 +8,6 @@ use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
 
 /**
  * Provides a unique trace ID for distributed tracing and request correlation.
- *
- * Generates a cryptographically secure 16-character hexadecimal trace identifier.
  */
 class TraceIdContextProvider implements StaticContextProviderInterface
 {

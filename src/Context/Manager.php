@@ -63,31 +63,11 @@ class Manager
     }
 
     /**
-     * Update the repository with data from all static providers (called once at boot).
-     */
-    public function updateStaticContext(): void
-    {
-        foreach ($this->static as $provider) {
-            $this->repository->set($provider::class, $provider->getContext());
-        }
-    }
-
-    /**
-     * Update the repository with fresh data from all dynamic providers (called on each log).
-     */
-    public function updateDynamicContext(): void
-    {
-        foreach ($this->dynamic as $provider) {
-            $this->repository->set($provider::class, $provider->getContext());
-        }
-    }
-
-    /**
-     * Manually refresh context from static provider(s).
+     * Update the repository with data from static provider(s).
      *
      * @param string|null $providerClass Provider class name to refresh, or null to refresh all static providers
      */
-    public function touchStaticContext(?string $providerClass = null): void
+    public function updateStaticContext(?string $providerClass = null): void
     {
         if (null !== $providerClass) {
             if (!isset($this->static[$providerClass])) {
@@ -100,6 +80,16 @@ class Manager
             foreach ($this->static as $provider) {
                 $this->repository->set($provider::class, $provider->getContext());
             }
+        }
+    }
+
+    /**
+     * Update the repository with fresh data from all dynamic providers (called on each log).
+     */
+    public function updateDynamicContext(): void
+    {
+        foreach ($this->dynamic as $provider) {
+            $this->repository->set($provider::class, $provider->getContext());
         }
     }
 

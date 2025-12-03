@@ -6,6 +6,13 @@ namespace Faustoff\Contextify\Console;
 
 use Faustoff\Contextify\Facades\Contextify;
 
+/**
+ * Trait for capturing console command output and storing it in logs.
+ *
+ * This trait extends the base `Illuminate\Console\Command` class to capture
+ * output produced by `info()`-like methods and store it in logs using the
+ * `Contextify` facade.
+ */
 trait Outputable
 {
     public function line($string, $style = null, $verbosity = null): void

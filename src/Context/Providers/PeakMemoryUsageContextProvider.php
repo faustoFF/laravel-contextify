@@ -8,9 +8,6 @@ use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
 
 /**
  * Provides peak memory usage information.
- *
- * Returns the peak memory usage in bytes. This is a dynamic provider
- * as memory usage can change throughout the application lifecycle.
  */
 class PeakMemoryUsageContextProvider implements DynamicContextProviderInterface
 {

@@ -17,9 +17,6 @@ class ExceptionNotificationFailedException extends \RuntimeException
     /**
      * Indicate that this exception should not be reported via the exception handler.
      *
-     * Returns `true` to signal that the exception has been handled and should not
-     * trigger another notification attempt, preventing infinite loops.
-     *
      * @return bool Always returns `true` to prevent re-reporting
      *
      * @see https://github.com/laravel/framework/blob/bb61dbfec4665c25bcf3aad23db178fec1089a18/src/Illuminate/Foundation/Exceptions/Handler.php#L382

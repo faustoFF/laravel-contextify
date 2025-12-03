@@ -136,7 +136,7 @@ class Contextify
      */
     public function touch(?string $providerClass = null): void
     {
-        $this->manager->touchStaticContext($providerClass);
+        $this->manager->updateStaticContext($providerClass);
     }
 
     /**

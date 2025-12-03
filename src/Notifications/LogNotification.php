@@ -24,9 +24,6 @@ class LogNotification extends AbstractNotification
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(mixed $notifiable): MailMessage
     {
         return (new MailMessage())
@@ -40,9 +37,6 @@ class LogNotification extends AbstractNotification
         ;
     }
 
-    /**
-     * Get the Telegram representation of the notification.
-     */
     public function toTelegram(mixed $notifiable): TelegramMessage
     {
         $sections = [];

@@ -6,6 +6,6 @@ namespace Faustoff\Contextify\Context\Contracts;
 
 /**
  * Static context providers return data that remains constant throughout the application lifecycle.
- * Data is retrieved once during application boot and cached in the repository.
+ * Data is retrieved once during application boot and cached in the context repository.
  */
 interface StaticContextProviderInterface extends ContextProviderInterface {}

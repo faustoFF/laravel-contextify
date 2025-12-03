@@ -24,24 +24,11 @@ class ExceptionNotification extends AbstractNotification
      */
     public string $exception;
 
-    /**
-     * Create a new exception notification instance.
-     *
-     * @param \Throwable $exception The exception that occurred
-     * @param mixed $extraContext Additional context data from context providers
-     */
     public function __construct(\Throwable $exception, public mixed $extraContext = [])
     {
         $this->exception = "{$exception}";
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param mixed $notifiable The notifiable entity
-     *
-     * @return MailMessage Mail message instance
-     */
     public function toMail(mixed $notifiable): MailMessage
     {
         return (new MailMessage())
@@ -53,18 +40,11 @@ class ExceptionNotification extends AbstractNotification
         ;
     }
 
-    /**
-     * Get the Telegram representation of the notification.
-     *
-     * @param mixed $notifiable The notifiable entity
-     *
-     * @return TelegramMessage Telegram message instance
-     */
     public function toTelegram(mixed $notifiable): TelegramMessage
     {
         $sections = [];
 
-        $sections[] = 'Exception: ' . Str::limit($this->exception, 1024);
+        $sections[] = Str::limit($this->exception, 1024);
 
         if (!empty($this->extraContext)) {
             $sections[] = 'Extra context:';

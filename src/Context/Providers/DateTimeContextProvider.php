@@ -8,10 +8,6 @@ use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
 
 /**
  * Provides current date and time information.
- *
- * Returns the current date and time in the same format used by Laravel logs
- * (Y-m-d H:i:s, e.g., "2025-01-01 12:00:00"). This is a dynamic provider
- * as the date/time changes on each invocation.
  */
 class DateTimeContextProvider implements DynamicContextProviderInterface
 {

@@ -20,12 +20,6 @@ class Reportable
     /**
      * Returns a callable that handles exception reporting.
      *
-     * The returned callable:
-     * - Retrieves the configured exception notification class
-     * - Gets extra context from notification context providers
-     * - Creates and sends the notification
-     * - Handles any errors during notification sending gracefully
-     *
      * @return callable(\Throwable): void Exception handler callable
      */
     public function __invoke(): callable
