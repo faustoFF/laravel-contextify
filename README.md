@@ -9,29 +9,27 @@
 
 ![Showcode](docs/images/showcode.jpg)
 
-**Laravel Contextify** enhances native Laravel’s logging by introducing two capabilities:
+**Laravel Contextify** enhances Laravel's logging with two features:
 
-1. **Inline Notifications** — [send notifications directly alongside logging](#sending-notifications), without splitting your code into multiple lines for logging and notifying.
-2. **Automatic Extra Context Enrichment** — every log record and notification includes extra contextual data provided by configured [Context Providers](#context-providers) (like built-in [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php) and more)
+1. **Inline Notifications** — [send notifications alongside logging](#sending-notifications) without splitting code.
+2. **Automatic Context Enrichment** — logs and notifications include extra contextual data from configured [Context Providers](#context-providers) (built-in: [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php), and more).
 
-Inspired by Laravel's own logging features ([`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages), [Contextual Information](https://laravel.com/docs/12.x/logging#contextual-information), and [Context](https://laravel.com/docs/12.x/context#main-content)) — **Laravel Contextify** integrates effortlessly with Laravel's [logging](https://laravel.com/docs/12.x/logging) and [notification](https://laravel.com/docs/12.x/notifications) subsystems. It takes logging one step further with **automatic extra context injection** and **seamless notification integration**, bringing everything together in one fluent API.
-
-The [`Contextify` facade](src/Facades/Contextify.php) is fully compatible with Laravel's standard [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages): it provides the same logging methods (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`) with identical parameters, while adding a chainable `notify()` method for [sending notifications](#sending-notifications). 
+Provides [`Contextify` facade](src/Facades/Contextify.php) compatible with Laravel's [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages): same methods (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`) with identical parameters, plus a chainable `notify()` method. 
 
 > **Name origin:** “Contextify” combines **Context** and **Notify**, reflecting its dual purpose — to enrich logs with contextual data and to send notifications for log events.
 
 ## Features
 
-- 📧 [Notification Support](#sending-notifications): Send notifications via built-in mail and telegram channels or any other Laravel notification channels
-- 🔍 [Automatic Extra Context Enrichment](#writing-logs): Every log record and notification is automatically enriched with static/dynamic extra contextual data provided by configured Context Providers
-- 🔌 [Custom Context Providers](#creating-custom-context-providers): Built-in Context Providers can be easily extended with your own custom providers
-- 🔄 [Static & Dynamic Context Providers](#static-context-providers): Support for both static (cached) and dynamic (refreshed) Context Providers
-- 🎯 [Group-Based Context](#group-based-context): Separate set of Context Providers for logs and notifications
-- 📊 [Standard Log Levels](#writing-logs): Support for all PSR-3 log levels (debug, info, notice, warning, error, critical, alert, emergency)
-- 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and support custom notification channels
-- 🔔 [Notification Channel Filtering](#sending-notifications): Filter notification channels with `only` and `except` parameters inline with logging
-- 🔄 [Fluent API](#usage): Chain methods for clean and readable code
-- ⚡ [Monolog Integration](https://github.com/Seldaek/monolog/blob/main/doc/02-handlers-formatters-processors.md#processors): Seamless integration with Laravel's logging system through Monolog processors
+- 📧 [Notification Support](#sending-notifications): Send notifications via mail, telegram, or any Laravel notification channel
+- 🔍 [Automatic Context Enrichment](#writing-logs): Logs and notifications automatically include extra contextual data from configured Context Providers
+- 🔌 [Custom Context Providers](#creating-custom-context-providers): Extend built-in providers with your own
+- 🔄 [Static & Dynamic Providers](#static-context-providers): Static (cached) and dynamic (refreshed on each call) providers
+- 🎯 [Group-Based Context](#group-based-context): Separate Context Providers for logs and notifications
+- 📊 [PSR-3 Log Levels](#writing-logs): All standard log levels (debug, info, notice, warning, error, critical, alert, emergency)
+- 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and add custom channels
+- 🔔 [Channel Filtering](#sending-notifications): Filter channels with `only` and `except` parameters
+- 🔄 [Fluent API](#usage): Chain methods for readable code
+- ⚡ [Monolog Integration](https://github.com/Seldaek/monolog/blob/main/doc/02-handlers-formatters-processors.md#processors): Integrates with Laravel's logging via Monolog processors
 
 ## Requirements
 
@@ -55,24 +53,24 @@ Optionally, publish the configuration file:
 php artisan vendor:publish --tag=contextify-config
 ```
 
-This will create a `config/contextify.php` file where you can configure [Context Providers](#context-providers) and [notification](#notifications) settings.
+This creates `config/contextify.php` for configuring [Context Providers](#context-providers) and [notifications](#notifications).
 
 ### Environment Variables
 
-Add the following to your `.env` file to configure notification recipients:
+Add to `.env` to configure notification recipients:
 
 ```env
 CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
 CONTEXTIFY_TELEGRAM_CHAT_ID=123456789
 ```
 
-> **Note:** The package supports **mail** and **telegram** channels out of the box. However, to use Telegram notifications, you need to install and configure the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package.
+> **Note:** Telegram notifications require the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package to be installed manually.
 
 ## Usage
 
 ### Writing Logs
 
-Use the [`Contextify` facade](src/Facades/Contextify.php) just like Laravel's core [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages) to log messages with automatic extra context enrichment, provided by [Context Providers](#context-providers) configured [for logging](#group-based-context):
+Use the [`Contextify` facade](src/Facades/Contextify.php) like Laravel's [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages). Logs automatically include extra context from [Context Providers](#context-providers) configured [for logging](#group-based-context):
 
 ```php
 <?php
@@ -80,27 +78,22 @@ Use the [`Contextify` facade](src/Facades/Contextify.php) just like Laravel's co
 use Faustoff\Contextify\Facades\Contextify;
 
 Contextify::debug('Debug message', ['key' => 'value']);
-// [2025-01-01 12:00:00] local.DEBUG: Debug message {"key":"value"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Services/ExampleService.php:42"}
+// [2025-01-01 12:00:00] local.DEBUG: Debug message {"key":"value"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Services/ExampleService.php:42","class":"App\\Services\\ExampleService"}
 
 Contextify::info('User logged in', ['user_id' => 123]);
-// [2025-01-01 12:00:00] local.INFO: User logged in {"user_id":123} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Http/Controllers/Auth/LoginController.php:55"}
+// [2025-01-01 12:00:00] local.INFO: User logged in {"user_id":123} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Http/Controllers/Auth/LoginController.php:55","class":"App\\Http\\Controllers\\Auth\\LoginController"}
 
 Contextify::notice('Important notice');
-// [2025-01-01 12:00:00] local.NOTICE: Important notice  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"routes/web.php:10"}
+// [2025-01-01 12:00:00] local.NOTICE: Important notice  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"routes/web.php:10","class":null}
 
 // ... and the same for warning, error, critical, alert and emergency
 ```
 
 ### Sending Notifications
 
-Use the `notify()` chain method (after one of [logging methods](#writing-logs)) of [`Contextify` facade](src/Facades/Contextify.php) to send notifications directly alongside logging.
+Chain `notify()` after any [logging method](#writing-logs) to send notifications. Notifications include the log message, context, and extra context from [Context Providers](#context-providers) configured [for notifications](#group-based-context).
 
-The notification will include:
-- **message** (first parameter of log methods)
-- **context** (second parameter of log methods)
-- **extra context**, provided by [Context Providers](#context-providers) configured [for notifications](#group-based-context).
-
-You can filter notification channels using `only` and `except` parameters of `notify()` method:
+Filter channels using `only` and `except` parameters:
 
 ```php
 <?php
@@ -108,27 +101,23 @@ You can filter notification channels using `only` and `except` parameters of `no
 use Faustoff\Contextify\Facades\Contextify;
 
 Contextify::error('Payment processing failed', ['order_id' => 456])->notify();
-// [2025-01-01 12:00:00] local.ERROR: Payment processing failed {"order_id":456} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Http/Controllers/Api/OrderController.php:133"}
+// [2025-01-01 12:00:00] local.ERROR: Payment processing failed {"order_id":456} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Http/Controllers/Api/OrderController.php:133","class":"App\\Http\\Controllers\\Api\\OrderController"}
 // Notification with context {"order_id":456} and extra context sent to all configured notification channels
 
 Contextify::critical('Database connection lost')->notify(only: ['mail']);
-// [2025-01-01 12:00:00] local.CRITICAL: Database connection lost  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/MonitorCommand.php:71"}
+// [2025-01-01 12:00:00] local.CRITICAL: Database connection lost  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Console/Commands/MonitorCommand.php:71","class":"App\\Console\\Commands\\MonitorCommand"}
 // Notification with extra context sent to a mail channel only
 
 Contextify::alert('Security breach detected')->notify(except: ['telegram']);
-// [2025-01-01 12:00:00] local.ALERT: Security breach detected  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Providers/AppServiceProvider.php:25"}
+// [2025-01-01 12:00:00] local.ALERT: Security breach detected  {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Providers/AppServiceProvider.php:25","class":"App\\Providers\\AppServiceProvider"}
 // Notification with extra context sent to all configured notification channels except a Telegram channel
 ```
 
 ### Exception Notifications
 
-The package can automatically send notifications when exceptions occur in your application. This feature is enabled by default and uses Laravel's exception handler to catch and report exceptions.
+Exceptions are automatically reported via notifications (enabled by default). Notifications include exception details (message and stack trace) and extra context from [Context Providers](#context-providers) configured [for notifications](#group-based-context).
 
-When an exception is reported through Laravel's exception handler, a notification is automatically sent with:
-- **exception details** (full exception message and stack trace)
-- **extra context**, provided by [Context Providers](#context-providers) configured [for notifications](#group-based-context)
-
-Exception notifications are sent using the `ExceptionNotification` class configured in `config/contextify.php`. You can customize this by creating your own notification class:
+Customize by extending `ExceptionNotification`:
 
 ```php
 <?php
@@ -143,7 +132,7 @@ class CustomExceptionNotification extends ExceptionNotification
 }
 ```
 
-Then update the configuration:
+Update configuration:
 
 ```php
 'notifications' => [
@@ -152,24 +141,24 @@ Then update the configuration:
 ],
 ```
 
-To disable automatic exception notifications, set the `reportable` option to `null` in your configuration:
+To disable automatic exception notifications, set `reportable` to `null`:
 
 ```php
 'notifications' => [
-    'reportable' => null, // Disable automatic exception notifications
+    'reportable' => null,
     // ... other notifications settings
 ],
 ```
 
-> **Note:** The package uses `ExceptionNotificationFailedException` to prevent infinite loops when exception notifications themselves fail. This exception signals to Laravel's exception handler that it should not attempt to report the notification failure again.
+> **Note:** `ExceptionNotificationFailedException` prevents infinite loops when exception notifications fail.
 
 ## Context Providers
 
-Context Providers add extra contextual data to your logs and notifications. The package includes several built-in providers.
+Context Providers add contextual data to logs and notifications.
 
 ### Static Context Providers
 
-Static providers return data that remains constant throughout the application request/process lifecycle. They implement `StaticContextProviderInterface`.
+Static providers return data that remains constant throughout the request/process lifecycle. They implement `StaticContextProviderInterface`.
 
 Built-in:
 - [ProcessIdContextProvider](src/Context/Providers/ProcessIdContextProvider.php): Adds the current PHP process ID (`pid`)
@@ -179,7 +168,7 @@ Built-in:
 
 #### Refreshing Static Context
 
-By default, static providers' context is retrieved once during application boot and cached. However, you can manually refresh static context using the `touch()` method. This is particularly useful when a process is forked (e.g., in queue workers), where you might want to generate a new trace ID for the forked process.
+Static context is cached during application boot. Use `touch()` to refresh it manually, useful when a process is forked (e.g., queue workers) to generate a new trace ID:
 
 ```php
 <?php
@@ -187,25 +176,25 @@ By default, static providers' context is retrieved once during application boot 
 use Faustoff\Contextify\Facades\Contextify;
 use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 
-// Refresh a specific static provider's context (e.g., generate a new trace ID)
+// Refresh specific provider (e.g., generate new trace ID)
 Contextify::touch(TraceIdContextProvider::class);
 
-// Refresh all static providers' context
+// Refresh all static providers
 Contextify::touch();
 ```
 
 ### Dynamic Context Providers
 
-Dynamic providers return data refreshed on each log call. They implement `DynamicContextProviderInterface`.
+Dynamic providers refresh data on each log call. They implement `DynamicContextProviderInterface`.
 
 Built-in:
-- [CallContextProvider](src/Context/Providers/CallContextProvider.php): Adds the file path and line number of the calling code (`caller`)
+- [CallContextProvider](src/Context/Providers/CallContextProvider.php): Adds the file path and line number (`file`) and class name (`class`) of the calling code
 - [PeakMemoryUsageContextProvider](src/Context/Providers/PeakMemoryUsageContextProvider.php): Adds the peak memory usage in bytes (`peak_memory_usage`)
 - [DateTimeContextProvider](src/Context/Providers/DateTimeContextProvider.php): Adds the current date and time in Laravel log format (`datetime`)
 
 ### Creating Custom Context Providers
 
-Create your own Context Provider by implementing one of the interfaces: `StaticContextProviderInterface` or `DynamicContextProviderInterface`:
+Implement `StaticContextProviderInterface` or `DynamicContextProviderInterface`:
 
 ```php
 <?php
@@ -227,7 +216,7 @@ class CustomContextProvider implements StaticContextProviderInterface
 
 ### Registering Custom Providers
 
-Add your custom providers to the `config/contextify.php` configuration file:
+Add custom providers to `config/contextify.php`:
 
 ```php
 <?php
@@ -274,16 +263,13 @@ return [
 
 ### Group-Based Context
 
-You can define independent sets of Context Providers for logs and notifications.
+Define separate Context Providers for logs and notifications. If a provider appears in both sets, the same context data is used for both.
 
-The context data returned by each provider is shared between logs and notifications. If a provider appears in both sets, the same provided context data will be used both in log record and notification.
+Configure in `config/contextify.php`:
+- `logs.providers` — providers for log entries
+- `notifications.providers` — providers for notifications
 
-Inside the `config/contextify.php` configuration file you can define:
-
-- `logs.providers` — providers that will enrich log entries
-- `notifications.providers` — providers that will enrich notifications
-
-You can configure it like this:
+Example:
 
 ```php
 <?php
@@ -322,23 +308,21 @@ return [
 
 ## Notifications
 
-The package supports **mail** and **telegram** notification channels out of the box. Mail notifications work immediately after installation, while Telegram requires installing and configuring the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package.
+Supports **mail** and **telegram** channels out of the box. Mail works immediately; Telegram requires the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package.
 
 ### Configuration
 
-Configure notification channels in `config/contextify.php`:
+Configure channels in `config/contextify.php`:
 
 ```php
 'notifications' => [
     /*
-     * Notification channels to use for sending notifications.
-     *
-     * You can use extended syntax like ['mail' => 'queue'] for queued
-     * notifications to override the "default" queue for a specific channel.
-    */
+     * Use associative array format ['channel' => 'queue'] to specify
+     * queue per channel. Simple array ['channel'] uses 'default' queue.
+     */
     'channels' => [
-        'mail' => 'queue',
-        'slack' => 'notifications',
+        'mail' => 'mail-queue',
+        'telegram' => 'telegram-queue',
     ],
     
     'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
@@ -347,12 +331,33 @@ Configure notification channels in `config/contextify.php`:
 ],
 ```
 
-If you use the simple array format (e.g., `['mail']`), Laravel will route
-notifications on the `default` queue. The explicit per-channel queue mapping applies when using the associative array format.
-
 ### Custom Notification Channels
 
-You can create a custom notifiable class to add support for additional notification channels like Slack:
+For example, to add [Slack notifications](https://laravel.com/docs/12.x/notifications#slack-notifications), you need to:
+
+1. Create a custom notification class with a `toSlack()` method [implemented](https://laravel.com/docs/12.x/notifications#formatting-slack-notifications):
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use Faustoff\Contextify\Notifications\LogNotification;
+use Illuminate\Notifications\Messages\SlackMessage;
+
+class CustomLogNotification extends LogNotification
+{
+    public function toSlack($notifiable): SlackMessage
+    {
+        // See https://laravel.com/docs/12.x/notifications#formatting-slack-notifications
+        
+        return (new SlackMessage())
+            ->content(ucfirst($this->level) . ': ' . $this->message);
+    }
+}
+```
+
+2. Create a custom notifiable class with a `routeNotificationForSlack()` method [implemented](https://laravel.com/docs/12.x/notifications#routing-slack-notifications):
 
 ```php
 <?php
@@ -363,73 +368,42 @@ use Faustoff\Contextify\Notifications\Notifiable;
 
 class CustomNotifiable extends Notifiable
 {
-    /**
-     * Get the Slack webhook URL for notifications.
-     *
-     * @return string Slack webhook URL
-     */
-    public function routeNotificationForSlack(): string
+    public function routeNotificationForSlack($notification): string
     {
-        return config('contextify.notifications.slack_webhook_url');
+        // See https://laravel.com/docs/12.x/notifications#routing-slack-notifications
+    
+        return config('services.slack.notifications.channel');
     }
-    
-    // You can add routing methods for other channels too
-    // public function routeNotificationForDiscord(): string { ... }
 }
 ```
 
-Then update the configuration file:
+3. [Configure Slack](https://laravel.com/docs/12.x/notifications#slack-prerequisites) in `config/services.php`.
 
-```php
-'notifications' => [
-    'notifiable' => \App\Notifications\CustomNotifiable::class,
-    
-    // Add Slack webhook URL configuration
-    'slack_webhook_url' => env('CONTEXTIFY_SLACK_WEBHOOK_URL'),
-
-    // ... other notifications settings
-],
-```
-
-Add the Slack webhook URL to your `.env` file:
-
-```env
-CONTEXTIFY_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-```
-
-Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
-
-### Custom Notification Class
-
-You can create a custom notification class by extending `LogNotification`:
-
-```php
-<?php
-
-namespace App\Notifications;
-
-use Faustoff\Contextify\Notifications\LogNotification;
-
-class CustomLogNotification extends LogNotification
-{
-    // Override methods as needed
-}
-```
-
-Then update the configuration:
+4. Update `config/contextify.php`:
 
 ```php
 'notifications' => [
     'class' => \App\Notifications\CustomLogNotification::class,
+    'notifiable' => \App\Notifications\CustomNotifiable::class,
+    'channels' => [
+        'mail',
+        'telegram',
+        'slack'
+    ],
+    
     // ... other notifications settings
 ],
 ```
+
+> **Note:** For exception notifications, extend `ExceptionNotification` and add the `toSlack()` method similarly.
+
+Want more notification channels? You are welcome to [Laravel Notifications Channels](https://laravel-notification-channels.com/).
 
 ## Console Commands
 
 ### Tracking
 
-Also, you can track console command execution by using `Faustoff\Contextify\Console\Trackable` trait. It adds additional debug log entries when console commands starts and finish with execution time.
+Use `Faustoff\Contextify\Console\Trackable` trait to log command start, finish, and execution time:
 
 ```php
 <?php
@@ -461,14 +435,14 @@ class SyncData extends Command
 Log:
 
 ```
-[2025-01-01 12:00:00] local.DEBUG: Run with arguments {"command":"data:sync"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
-[2025-01-01 12:00:00] local.NOTICE: Data was synced {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
-[2025-01-01 12:00:00] local.DEBUG: Execution time: 1 second {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
+[2025-01-01 12:00:00] local.DEBUG: Run with arguments {"command":"data:sync"} {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Console/Commands/SyncData.php:42","class":"App\\Console\\Commands\\SyncData"}
+[2025-01-01 12:00:00] local.NOTICE: Data was synced {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Console/Commands/SyncData.php:42","class":"App\\Console\\Commands\\SyncData"}
+[2025-01-01 12:00:00] local.DEBUG: Execution time: 1 second {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Console/Commands/SyncData.php:42","class":"App\\Console\\Commands\\SyncData"}
 ```
 
 ### Output Capturing
 
-Also, you can capture [native Laravel console command output](https://laravel.com/docs/12.x/artisan#writing-output), produced by `info()`-like methods, and store it to logs by using `Faustoff\Contextify\Console\Outputable` trait:
+Use `Faustoff\Contextify\Console\Outputable` trait to capture [Laravel console output](https://laravel.com/docs/12.x/artisan#writing-output) from `info()`-like methods and store it in logs:
 
 ```php
 <?php
@@ -499,17 +473,15 @@ class SyncData extends Command
 Log:
 
 ```
-[2025-01-01 12:00:00] local.NOTICE: Data was synced {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/SyncData:42"}
+[2025-01-01 12:00:00] local.NOTICE: Data was synced {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Console/Commands/SyncData.php:42","class":"App\\Console\\Commands\\SyncData"}
 ```
 
 ### Handling Shutdown Signals
 
-You can handle shutdown signals (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful shutdown command execution by using trait:
-- `Faustoff\Contextify\Console\TerminatableV62` for `symfony/console:<6.3` (Laravel 9, 10)
-- `Faustoff\Contextify\Console\TerminatableV63` for `symfony/console:^6.3` (Laravel 9, 10)
-- `Faustoff\Contextify\Console\TerminatableV70` for `symfony/console:^7.0` (Laravel 11+)
-
-and `Symfony\Component\Console\Command\SignalableCommandInterface` interface together with trait.
+Handle shutdown signals (`SIGQUIT`, `SIGINT`, `SIGTERM` by default) for graceful shutdown. Use the appropriate trait with `SignalableCommandInterface`:
+- `TerminatableV62` for `symfony/console:<6.3` (Laravel 9, 10)
+- `TerminatableV63` for `symfony/console:^6.3` (Laravel 9, 10)
+- `TerminatableV70` for `symfony/console:^7.0` (Laravel 11+)
 
 ```php
 <?php
@@ -544,7 +516,7 @@ class ConsumeStats extends Command implements SignalableCommandInterface
 Log:
 
 ```
-[2025-01-01 12:00:00] local.WARNING: Received SIGTERM (15) shutdown signal {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","caller":"app/Console/Commands/ConsumeStats:42"}
+[2025-01-01 12:00:00] local.WARNING: Received SIGTERM (15) shutdown signal {"pid":12345,"trace_id":"4f9c2a1bd3e7a8f0","file":"app/Console/Commands/ConsumeStats.php:42","class":"App\\Console\\Commands\\ConsumeStats"}
 ```
 
 ## License

@@ -48,7 +48,7 @@ return [
         /*
          * Notification channels to send notifications.
          *
-         * You can use the extended syntax ['mail' => 'queue'] for queued
+         * You can use the extended syntax ['channel' => 'queue'] for queued
          * notifications to override the "default" queue for a specific channel.
          */
         'channels' => ['mail'],
