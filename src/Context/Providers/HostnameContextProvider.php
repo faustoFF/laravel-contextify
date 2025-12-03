@@ -11,9 +11,6 @@ use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
  */
 class HostnameContextProvider implements StaticContextProviderInterface
 {
-    /**
-     * @return array{hostname: string} Current machine hostname
-     */
     public function getContext(): array
     {
         return [

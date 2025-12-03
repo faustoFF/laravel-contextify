@@ -19,8 +19,6 @@ class Reportable
 {
     /**
      * Returns a callable that handles exception reporting.
-     *
-     * @return callable(\Throwable): void Exception handler callable
      */
     public function __invoke(): callable
     {

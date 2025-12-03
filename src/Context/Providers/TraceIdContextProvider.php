@@ -11,9 +11,6 @@ use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
  */
 class TraceIdContextProvider implements StaticContextProviderInterface
 {
-    /**
-     * @return array{trace_id: string} 16-character hexadecimal trace identifier
-     */
     public function getContext(): array
     {
         return [

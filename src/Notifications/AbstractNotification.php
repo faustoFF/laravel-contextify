@@ -26,8 +26,6 @@ abstract class AbstractNotification extends Notification
      * Get the notification delivery channels.
      *
      * Returns configured channels filtered by onlyChannels and exceptChannels.
-     *
-     * @return array<string> Array of channel names
      */
     public function via(mixed $notifiable): array
     {
@@ -50,8 +48,6 @@ abstract class AbstractNotification extends Notification
 
     /**
      * Get the queue connections for each channel.
-     *
-     * @return array<string, string> Associative array of [channel => queue]
      */
     public function viaQueues(): array
     {
@@ -64,9 +60,6 @@ abstract class AbstractNotification extends Notification
         return $queues;
     }
 
-    /**
-     * Specify which channels should receive the notification.
-     */
     public function only(array $channels): static
     {
         $this->onlyChannels = $channels;
@@ -74,9 +67,6 @@ abstract class AbstractNotification extends Notification
         return $this;
     }
 
-    /**
-     * Specify which channels should not receive the notification.
-     */
     public function except(array $channels): static
     {
         $this->exceptChannels = $channels;
@@ -89,10 +79,6 @@ abstract class AbstractNotification extends Notification
      *
      * If the value is already a string, it is returned as-is. Otherwise, it is
      * JSON-encoded with pretty printing for better readability in notifications.
-     *
-     * @param mixed $value The context value to format
-     *
-     * @return string Formatted string representation of the value
      */
     protected function formatContext(mixed $value): string
     {

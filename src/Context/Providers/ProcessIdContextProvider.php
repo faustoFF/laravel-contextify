@@ -11,9 +11,6 @@ use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
  */
 class ProcessIdContextProvider implements StaticContextProviderInterface
 {
-    /**
-     * @return array{pid: int} Current PHP process identifier
-     */
     public function getContext(): array
     {
         return [

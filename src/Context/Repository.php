@@ -24,8 +24,6 @@ class Repository
 
     /**
      * Retrieve all context data from all providers.
-     *
-     * @return array<string, array> Provider class name => context data
      */
     public function all(): array
     {

@@ -22,9 +22,6 @@ class Contextify
 
     public function __construct(protected Manager $manager) {}
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function debug(string $message, mixed $context = []): static
     {
         $this->handle('debug', $message, $context);
@@ -32,9 +29,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function info(string $message, mixed $context = []): static
     {
         $this->handle('info', $message, $context);
@@ -42,9 +36,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function notice(string $message, mixed $context = []): static
     {
         $this->handle('notice', $message, $context);
@@ -52,9 +43,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function warning(string $message, mixed $context = []): static
     {
         $this->handle('warning', $message, $context);
@@ -62,9 +50,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function error(string $message, mixed $context = []): static
     {
         $this->handle('error', $message, $context);
@@ -72,9 +57,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function critical(string $message, mixed $context = []): static
     {
         $this->handle('critical', $message, $context);
@@ -82,9 +64,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function alert(string $message, mixed $context = []): static
     {
         $this->handle('alert', $message, $context);
@@ -92,9 +71,6 @@ class Contextify
         return $this;
     }
 
-    /**
-     * @param mixed $context Additional context data (array or single value)
-     */
     public function emergency(string $message, mixed $context = []): static
     {
         $this->handle('emergency', $message, $context);
@@ -104,9 +80,6 @@ class Contextify
 
     /**
      * Send a notification for the last logged message.
-     *
-     * @param array $only Channels to include exclusively
-     * @param array $except Channels to exclude
      */
     public function notify(array $only = [], array $except = []): void
     {
@@ -131,8 +104,6 @@ class Contextify
 
     /**
      * Manually refresh context from static provider(s).
-     *
-     * @param string|null $providerClass Provider class name to refresh, or null to refresh all static providers
      */
     public function touch(?string $providerClass = null): void
     {
@@ -141,9 +112,6 @@ class Contextify
 
     /**
      * Updates dynamic context, writes log entry, and stores data for notifications.
-     *
-     * @param string $level Log level (debug, info, notice, warning, error, critical, alert, emergency)
-     * @param mixed $context Additional context data (array or single value)
      */
     protected function handle(string $level, string $message, mixed $context = []): void
     {

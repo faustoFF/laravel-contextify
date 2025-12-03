@@ -11,9 +11,6 @@ use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
  */
 class PeakMemoryUsageContextProvider implements DynamicContextProviderInterface
 {
-    /**
-     * @return array{peak_memory_usage: int} Peak memory usage in bytes
-     */
     public function getContext(): array
     {
         return [

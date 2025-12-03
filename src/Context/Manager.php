@@ -64,8 +64,6 @@ class Manager
 
     /**
      * Update the repository with data from static provider(s).
-     *
-     * @param string|null $providerClass Provider class name to refresh, or null to refresh all static providers
      */
     public function updateStaticContext(?string $providerClass = null): void
     {
@@ -95,8 +93,6 @@ class Manager
 
     /**
      * Retrieve merged context data for a specific group.
-     *
-     * @return array<string, mixed> Merged context data from all providers in the group
      */
     public function getContext(string $group): array
     {

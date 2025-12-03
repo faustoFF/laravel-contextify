@@ -11,9 +11,6 @@ use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
  */
 class CallContextProvider implements DynamicContextProviderInterface
 {
-    /**
-     * @return array{file: string|null, class: string|null} Returns file path with line number (relative to base path) and class name
-     */
     public function getContext(): array
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
@@ -36,8 +33,6 @@ class CallContextProvider implements DynamicContextProviderInterface
 
     /**
      * Finds the first relevant call file frame in the backtrace.
-     *
-     * @return array|null First relevant call file frame or null if not found
      */
     private function findCallFile(array $trace): ?array
     {
@@ -60,8 +55,6 @@ class CallContextProvider implements DynamicContextProviderInterface
 
     /**
      * Finds the first relevant call class frame in the backtrace.
-     *
-     * @return array|null First relevant call class frame or null if not found
      */
     private function findCallClass(array $trace): ?array
     {

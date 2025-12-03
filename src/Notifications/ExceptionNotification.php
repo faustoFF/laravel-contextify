@@ -19,9 +19,6 @@ use NotificationChannels\Telegram\TelegramMessage;
  */
 class ExceptionNotification extends AbstractNotification
 {
-    /**
-     * String representation of the exception.
-     */
     public string $exception;
 
     public function __construct(\Throwable $exception, public mixed $extraContext = [])
@@ -69,15 +66,12 @@ class ExceptionNotification extends AbstractNotification
      * Logs the failure and throws a special exception that prevents infinite loops
      * when exception notifications themselves fail.
      *
-     * @param \Throwable $e The exception that caused the notification to fail
-     *
      * @throws ExceptionNotificationFailedException Always throws to prevent infinite loops
      */
     public function failed(\Throwable $e)
     {
         Contextify::error('Exception notification failed', $e);
 
-        // To prevent infinite loop of exception notification
         throw new ExceptionNotificationFailedException('Exception notification failed', 0, $e);
     }
 }

@@ -11,9 +11,6 @@ use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
  */
 class EnvironmentContextProvider implements StaticContextProviderInterface
 {
-    /**
-     * @return array{environment: string} Current application environment name
-     */
     public function getContext(): array
     {
         return [

@@ -9,8 +9,5 @@ namespace Faustoff\Contextify\Context\Contracts;
  */
 interface ContextProviderInterface
 {
-    /**
-     * @return array<string, mixed> Context data as associative array
-     */
     public function getContext(): array;
 }
