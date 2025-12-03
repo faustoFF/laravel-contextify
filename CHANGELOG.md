@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.0.0] - 2025-12-01
+## [4.0.0] - 2025-12-03
 
 This release is a complete redesign of the package concept and implementation. The v4 series introduces a context provider architecture, a fluent API, and first-class notification integration while removing legacy traits and console helpers.
 
