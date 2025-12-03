@@ -9,12 +9,12 @@
 
 ![Showcode](docs/images/showcode.jpg)
 
-**Laravel Contextify** enhances Laravel's logging with two features:
+**Laravel Contextify** enhances Laravel's logging with two main features:
 
 1. **Inline Notifications** — [send notifications alongside logging](#sending-notifications) without splitting code.
 2. **Automatic Context Enrichment** — logs and notifications include extra contextual data from configured [Context Providers](#context-providers) (built-in: [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php), and more).
 
-Provides [`Contextify` facade](src/Facades/Contextify.php) compatible with Laravel's [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages): same methods (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`) with identical parameters, plus a chainable `notify()` method. 
+Provides [`Contextify`](src/Facades/Contextify.php) facade compatible with Laravel's [`Log`](https://laravel.com/docs/12.x/logging#writing-log-messages) facade: same methods (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`) with identical parameters, plus a chainable `notify()` method. 
 
 > **Name origin:** “Contextify” combines **Context** and **Notify**, reflecting its dual purpose — to enrich logs with contextual data and to send notifications for log events.
 
@@ -70,7 +70,7 @@ CONTEXTIFY_TELEGRAM_CHAT_ID=123456789
 
 ### Writing Logs
 
-Use the [`Contextify` facade](src/Facades/Contextify.php) like Laravel's [`Log` facade](https://laravel.com/docs/12.x/logging#writing-log-messages). Logs automatically include extra context from [Context Providers](#context-providers) configured [for logging](#group-based-context):
+Use the [`Contextify`](src/Facades/Contextify.php) facade like Laravel's [`Log`](https://laravel.com/docs/12.x/logging#writing-log-messages) facade. Logs automatically include extra context from [Context Providers](#context-providers) configured [for logging](#group-based-context):
 
 ```php
 <?php
@@ -113,11 +113,35 @@ Contextify::alert('Security breach detected')->notify(except: ['telegram']);
 // Notification with extra context sent to all configured notification channels except a Telegram channel
 ```
 
+If necessary, you can override the default implementation of the `LogNotification`:
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use Faustoff\Contextify\Notifications\LogNotification;
+
+class CustomLogNotification extends LogNotification
+{
+    // Override methods as needed
+}
+```
+
+Update configuration:
+
+```php
+'notifications' => [
+    'class' => \App\Notifications\CustomLogNotification::class,
+    // ... other notifications settings
+],
+```
+
 ### Exception Notifications
 
 Exceptions are automatically reported via notifications (enabled by default). Notifications include exception details (message and stack trace) and extra context from [Context Providers](#context-providers) configured [for notifications](#group-based-context).
 
-Customize by extending `ExceptionNotification`:
+If necessary, you can override the default implementation of the `ExceptionNotification`:
 
 ```php
 <?php
@@ -154,7 +178,7 @@ To disable automatic exception notifications, set `reportable` to `null`:
 
 ## Context Providers
 
-Context Providers add contextual data to logs and notifications.
+Context Providers add extra contextual data to logs and notifications.
 
 ### Static Context Providers
 
