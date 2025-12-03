@@ -12,7 +12,7 @@
 **Laravel Contextify** enhances Laravel's logging with two main features:
 
 1. **Inline Notifications** — [send notifications alongside logging](#sending-notifications) without splitting code.
-2. **Automatic Context Enrichment** — logs and notifications include extra contextual data from configured [Context Providers](#context-providers) (built-in: [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php), and more).
+2. **Automatic Context Enrichment** — logs and notifications include extra contextual data from configured [Context Providers](#context-providers) (built-in: [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php), and more), helping you keep messages short and clean by moving additional context out of the message itself into a separate context area.
 
 Provides [`Contextify`](src/Facades/Contextify.php) facade compatible with Laravel's [`Log`](https://laravel.com/docs/12.x/logging#writing-log-messages) facade: same methods (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`) with identical parameters, plus a chainable `notify()` method. 
 
@@ -178,7 +178,7 @@ To disable automatic exception notifications, set `reportable` to `null`:
 
 ## Context Providers
 
-Context Providers add extra contextual data to logs and notifications.
+Context Providers add extra contextual data to logs and notifications, helping you keep log entry and notification messages short and clean by moving additional context out of the message itself into a separate context area. The contextual data is still present in the log entry or notification, but it's separated from the message itself—keeping the message focused while preserving all information for searching and analysis. You no longer need to worry about explicitly passing the required contextual data each time, as it will be added automatically. 
 
 ### Static Context Providers
 
