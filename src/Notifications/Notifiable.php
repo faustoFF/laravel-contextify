@@ -18,7 +18,7 @@ class Notifiable
         return config('contextify.notifications.mail_addresses');
     }
 
-    public function routeNotificationForTelegram(): null|int|string
+    public function routeNotificationForTelegram(): int|string|null
     {
         return config('contextify.notifications.telegram_chat_id');
     }

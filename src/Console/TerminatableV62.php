@@ -20,4 +20,3 @@ trait TerminatableV62
         $this->processSignal($signal);
     }
 }
-

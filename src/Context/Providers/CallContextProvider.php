@@ -64,7 +64,7 @@ class CallContextProvider implements DynamicContextProviderInterface
                     continue;
                 }
 
-                if ($frame['class'] === 'Illuminate\Support\Facades\Facade') {
+                if ('Illuminate\Support\Facades\Facade' === $frame['class']) {
                     continue;
                 }
             }

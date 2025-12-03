@@ -22,4 +22,3 @@ trait TerminatableV63
         return false;
     }
 }
-

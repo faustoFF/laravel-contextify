@@ -18,4 +18,3 @@ class PeakMemoryUsageContextProvider implements DynamicContextProviderInterface
         ];
     }
 }
-

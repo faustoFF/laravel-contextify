@@ -18,4 +18,3 @@ class DateTimeContextProvider implements DynamicContextProviderInterface
         ];
     }
 }
-
