@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Console;
 
+use Faustoff\Contextify\Facades\Contextify;
+
+/**
+ * Trait for capturing console command output and storing it in logs.
+ *
+ * This trait extends the base `Illuminate\Console\Command` class to capture
+ * output produced by `info()`-like methods and store it in logs using the
+ * `Contextify` facade.
+ */
 trait Outputable
 {
-    use Loggable;
-
     public function line($string, $style = null, $verbosity = null): void
     {
-        if (!config('contextify.enabled')) {
-            parent::line($string, $style, $verbosity);
-
-            return;
-        }
+        parent::line($string, $style, $verbosity);
 
         if (null === $style) {
             $string = strip_tags($string);
@@ -22,22 +25,22 @@ trait Outputable
 
         switch ($style) {
             case 'info':
-                $this->logSuccess($string);
+                Contextify::notice($string);
 
                 break;
 
             case 'warning':
-                $this->logWarning($string);
+                Contextify::warning($string);
 
                 break;
 
             case 'error':
-                $this->logError($string);
+                Contextify::error($string);
 
                 break;
 
             default:
-                $this->logInfo($string);
+                Contextify::info($string);
         }
     }
 }

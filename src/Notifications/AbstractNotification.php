@@ -5,44 +5,85 @@ declare(strict_types=1);
 namespace Faustoff\Contextify\Notifications;
 
 use Illuminate\Notifications\Notification;
+use Monolog\Utils;
 
-class AbstractNotification extends Notification
+/**
+ * Abstract base class for Contextify notifications.
+ */
+abstract class AbstractNotification extends Notification
 {
-    protected array $exceptChannels = [];
+    /**
+     * @var array<string> Channels to include exclusively
+     */
+    public array $onlyChannels = [];
 
+    /**
+     * @var array<string> Channels to exclude
+     */
+    public array $exceptChannels = [];
+
+    /**
+     * Get the notification delivery channels.
+     *
+     * Returns configured channels filtered by onlyChannels and exceptChannels.
+     */
     public function via(mixed $notifiable): array
     {
-        $via = [];
-        foreach (config('contextify.notifications.list.' . static::class) as $channel => $queue) {
-            $ch = is_string($channel) ? $channel : $queue;
+        $channels = [];
 
-            if (!in_array($ch, $this->exceptChannels)) {
-                $via[] = $ch;
-            }
+        foreach (config('contextify.notifications.channels') as $channel => $queue) {
+            $channels[] = is_string($channel) ? $channel : $queue;
         }
 
-        return $via;
+        if ($this->onlyChannels) {
+            $channels = array_intersect($channels, $this->onlyChannels);
+        }
+
+        if ($this->exceptChannels) {
+            $channels = array_diff($channels, $this->exceptChannels);
+        }
+
+        return $channels;
     }
 
+    /**
+     * Get the queue connections for each channel.
+     */
     public function viaQueues(): array
     {
-        $viaQueues = [];
-        foreach (config('contextify.notifications.list.' . static::class) as $channel => $queue) {
-            $viaQueues[$channel] = is_string($channel) ? $queue : 'default';
+        $queues = [];
+
+        foreach (config('contextify.notifications.channels') as $channel => $queue) {
+            $queues[$channel] = is_string($channel) ? $queue : 'default';
         }
 
-        return $viaQueues;
+        return $queues;
     }
 
-    public function shouldSend(Notifiable $notifiable, string $channel): bool
+    public function only(array $channels): static
     {
-        return config('contextify.notifications.enabled');
-    }
-
-    public function exceptChannels(array $channels): static
-    {
-        $this->exceptChannels[] = $channels;
+        $this->onlyChannels = $channels;
 
         return $this;
+    }
+
+    public function except(array $channels): static
+    {
+        $this->exceptChannels = $channels;
+
+        return $this;
+    }
+
+    /**
+     * Convert context values to string for notification output.
+     *
+     * If the value is already a string, it is returned as-is. Otherwise, it is
+     * JSON-encoded with pretty printing for better readability in notifications.
+     */
+    protected function formatContext(mixed $value): string
+    {
+        return is_string($value)
+            ? $value
+            : Utils::jsonEncode($value, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT);
     }
 }

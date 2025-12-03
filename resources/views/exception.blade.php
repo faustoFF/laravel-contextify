@@ -1,14 +1,4 @@
-<?php
-/**
- * @var string $hostname
- * @var string $env
- * @var \Carbon\Carbon $datetime
- * @var ?int $pid
- * @var ?string $command
- * @var array $server
- * @var string $exception
- */
-?>
+@php use Monolog\Utils; @endphp
 
 @extends('contextify::layout')
 
@@ -16,11 +6,7 @@
     <pre>{{ $exception }}</pre>
 
     <p>
-        <b>Hostname:</b> {{ $hostname }}<br>
-        <b>ENV:</b> {{ $env }}<br>
-        <b>Datetime:</b> {{ $datetime->toDateTimeString() }}<br>
-        <b>PID:</b> {{ $pid }}<br>
-        <b>Command:</b> {{ $command }}<br>
-        <b>Server:</b> {!! nl2br(var_export($server, true)) !!}<br>
+        <b>Extra context:</b><br>
+        <pre>{{ Utils::jsonEncode($extraContext, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT) }}</pre>
     </p>
 @endsection

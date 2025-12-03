@@ -4,28 +4,39 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Exceptions;
 
-use Faustoff\Contextify\Contextify;
-use Faustoff\Contextify\Notifications\ExceptionOccurredNotification;
-use Faustoff\Contextify\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
+use Faustoff\Contextify\Context\Manager;
+use Faustoff\Contextify\Facades\Contextify;
+use Faustoff\Contextify\Notifications\ExceptionNotification;
 
+/**
+ * Reportable exception handler for sending exception notifications.
+ *
+ * This class provides a callable that can be registered with Laravel's exception handler
+ * to automatically send notifications when exceptions occur. It retrieves extra context
+ * from configured context providers and includes it in the notification.
+ */
 class Reportable
 {
+    /**
+     * Returns a callable that handles exception reporting.
+     */
     public function __invoke(): callable
     {
         return function (\Throwable $e) {
             try {
-                if ($notification = Contextify::getExceptionOccurredNotificationClass()) {
-                    /** @var Notifiable $notifiable */
-                    $notifiable = app(config('contextify.notifications.notifiable'));
+                $notifiable = app(config('contextify.notifications.notifiable'));
 
-                    /** @var ExceptionOccurredNotification $notification */
-                    $notification = new $notification($e);
+                $manager = app(Manager::class);
+                $manager->updateDynamicContext();
+                $extraContext = $manager->getContext('notification');
 
-                    $notifiable->notify($notification);
-                }
+                $notificationClass = config('contextify.notifications.exception_class', ExceptionNotification::class);
+
+                $notification = new $notificationClass($e, $extraContext);
+
+                $notifiable->notify($notification);
             } catch (\Throwable $e) {
-                Log::error("Unable to send exception occurred notification: {$e}");
+                Contextify::error('Exception notification failed', $e);
             }
         };
     }

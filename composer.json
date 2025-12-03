@@ -1,11 +1,16 @@
 {
     "name": "faustoff/laravel-contextify",
-    "description": "Contextual logging in Laravel",
+    "description": "Contextual logging with inline notifications for Laravel.",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
             "Faustoff\\Contextify\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Faustoff\\Contextify\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -16,12 +21,17 @@
     ],
     "require": {
         "php": "^8.0",
-        "nesbot/carbon": "^2.0|^3.0",
-        "monolog/monolog": "^2.0|^3.0",
-        "illuminate/log": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/notifications": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
-        "vlucas/phpdotenv": "^5.4.1"
+        "illuminate/contracts": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/log": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/notifications": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+        "monolog/monolog": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "laravel-notification-channels/telegram": "*",
+        "phpunit/phpunit": "^9.6 || ^10.0 || ^11.0",
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9.0 || ^10.0"
     },
     "extra": {
         "laravel": {
@@ -30,16 +40,20 @@
             ]
         }
     },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.22",
-        "laravel-notification-channels/telegram": "^2.0"
-    },
     "scripts": {
         "cs": "php-cs-fixer fix --dry-run --diff",
-        "cs:fix": "php-cs-fixer fix"
+        "cs:fix": "php-cs-fixer fix",
+        "test": "phpunit --testdox"
     },
     "suggest": {
-        "ext-pcntl": "Allows to use Faustoff\\Contextify\\Console\\Terminatable trait",
-        "laravel-notification-channels/telegram": "Allows to send Telegram notifications"
+        "ext-pcntl": "Allows to use Console Terminatable trait",
+        "laravel-notification-channels/telegram": "Allows sending notifications to Telegram"
+    },
+    "config": {
+        "audit": {
+            "ignore": {
+                "PKSA-8qx3-n5y5-vvnd": "Support for old laravel versions"
+            }
+        }
     }
 }

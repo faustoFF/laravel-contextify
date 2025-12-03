@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true">
+    <testsuites>
+        <testsuite name="Contextify Test Suite">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Coverage/source configuration is omitted for broad compatibility across PHPUnit 9-11 -->
+
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <env name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="/>
+        <env name="APP_ENV" value="testing"/>
+    </php>
+</phpunit>
+
+

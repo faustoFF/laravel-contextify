@@ -1,0 +1,108 @@
+name: tests
+
+on:
+  push:
+    branches: [ main, v4 ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '8.0', '8.1', '8.2', '8.3', '8.4' ]
+        laravel: [ '9', '10', '11', '12' ]
+        exclude:
+          # Laravel 9: target PHP 8.1–8.2 only (PHP 8.0 not supported in newer Laravel 9 versions cause of symfony dependencies)
+          - php: '8.0'
+            laravel: '9'
+          - php: '8.3'
+            laravel: '9'
+          - php: '8.4'
+            laravel: '9'
+          # Laravel 10: target PHP 8.1–8.3
+          - php: '8.0'
+            laravel: '10'
+          - php: '8.4'
+            laravel: '10'
+          # Laravel 11: target PHP 8.2–8.4
+          - php: '8.0'
+            laravel: '11'
+          - php: '8.1'
+            laravel: '11'
+          # Laravel 12: target PHP 8.2–8.4
+          - php: '8.0'
+            laravel: '12'
+          - php: '8.1'
+            laravel: '12'
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, dom, json, ctype, tokenizer, xml, pdo, sqlite3
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.laravel }}-
+            ${{ runner.os }}-composer-
+
+      - name: Configure dependencies for Laravel ${{ matrix.laravel }}
+        run: |
+          set -euxo pipefail
+          case "${{ matrix.laravel }}" in
+            9)
+              TESTBENCH=^7.0
+              PHPUNIT=^9.6
+              ;;
+            10)
+              TESTBENCH=^8.0
+              PHPUNIT=""
+              ;;
+            11)
+              TESTBENCH=^9.0
+              PHPUNIT=""
+              ;;
+            12)
+              TESTBENCH=^10.0
+              PHPUNIT=""
+              ;;
+            *)
+              echo "Unsupported Laravel version" >&2; exit 1;
+              ;;
+          esac
+          composer require --no-interaction --no-update \
+            illuminate/support:^${{ matrix.laravel }} \
+            illuminate/log:^${{ matrix.laravel }} \
+            illuminate/notifications:^${{ matrix.laravel }} \
+            orchestra/testbench:${TESTBENCH}
+          if [ -n "${PHPUNIT}" ]; then
+            composer require --no-interaction --no-update phpunit/phpunit:${PHPUNIT}
+          fi
+
+      - name: Install dependencies
+        run: |
+          composer update --prefer-dist --no-interaction --no-progress --ansi
+
+      - name: Run PHPUnit
+        run: |
+          vendor/bin/phpunit --colors=always
+
+

@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Console;
 
+use Faustoff\Contextify\Facades\Contextify;
+use Faustoff\Contextify\Loggable;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Trait for tracking console command execution and storing it in logs.
+ *
+ * This trait extends the base `Illuminate\Console\Command` class to track
+ * command execution and store it in logs using the `Contextify` facade.
+ */
 trait Trackable
 {
     use Loggable;
@@ -15,14 +23,10 @@ trait Trackable
     {
         parent::initialize($input, $output);
 
-        if (!config('contextify.enabled')) {
-            return;
-        }
-
         $this->logStart();
 
-        register_shutdown_function([$this, 'logFinish']);
+        Contextify::debug('Run with arguments', $this->arguments());
 
-        $this->logDebug('Run with arguments: ' . json_encode($this->arguments()));
+        register_shutdown_function([$this, 'logFinish']);
     }
 }

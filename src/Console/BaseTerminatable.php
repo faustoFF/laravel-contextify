@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Console;
 
+use Faustoff\Contextify\Facades\Contextify;
+
+/**
+ * Base trait for handling shutdown signals in console commands.
+ *
+ * This trait provides a base implementation for handling shutdown signals
+ * (`SIGQUIT`, `SIGINT` and `SIGTERM` by default) from Console Command to graceful
+ * shutdown command execution.
+ */
 trait BaseTerminatable
 {
-    use Loggable;
-
     protected bool $shouldTerminate = false;
 
     protected ?\Closure $terminateCallback = null;
@@ -28,12 +35,13 @@ trait BaseTerminatable
             SIGQUIT => 'SIGQUIT',
             SIGINT => 'SIGINT',
             SIGTERM => 'SIGTERM',
+            default => $signal
         };
 
         try {
-            $this->logWarning("Received {$signalName} ({$signal}) shutdown signal");
+            Contextify::warning("Received {$signalName} ({$signal}) shutdown signal");
         } catch (\Throwable) {
-            // We should continue even if exceptions occurs (no space left on device for example)
+            // We should continue even if an exception occurs (no space left on device for example)
         }
 
         $this->shouldTerminate = true;

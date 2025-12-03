@@ -4,39 +4,24 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Notifications;
 
-use Carbon\Carbon;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-use Monolog\Utils;
 use NotificationChannels\Telegram\TelegramMessage;
 
+/**
+ * Notification for sending log messages through Laravel notification channels.
+ *
+ * Supports filtering channels using only() and except() methods.
+ */
 class LogNotification extends AbstractNotification
 {
-    public const ERROR = 'error';
-    public const WARNING = 'warning';
-    public const SUCCESS = 'success';
-    public const INFO = 'info';
-    public const DEBUG = 'debug';
-
-    public string $hostname;
-    public string $env;
-    public Carbon $datetime;
-
     public function __construct(
-        public string $callContext,
-        public ?int $callContextPid,
-        public ?string $callContextCommand,
-        public string $callContextUid,
-        public string $message,
         public string $level,
-        public mixed $context = []
+        public string $message,
+        public mixed $context = [],
+        public mixed $extraContext = []
     ) {
-        $this->hostname = app(config('contextify.notifications.hostname'))();
-        $this->env = App::environment();
-        $this->datetime = Carbon::now();
         $this->context = $context instanceof \Throwable ? "{$context}" : $context;
-        // TODO: add memory usage
     }
 
     public function toMail(mixed $notifiable): MailMessage
@@ -44,45 +29,39 @@ class LogNotification extends AbstractNotification
         return (new MailMessage())
             ->subject(ucfirst($this->level) . ': ' . $this->message)
             ->view('contextify::log', [
-                'hostname' => $this->hostname,
-                'env' => $this->env,
-                'datetime' => $this->datetime,
-                'callContext' => $this->callContext,
-                'callContextPid' => $this->callContextPid,
-                'callContextCommand' => $this->callContextCommand,
-                'callContextUid' => $this->callContextUid,
-                'msg' => $this->message,
                 'level' => $this->level,
+                'msg' => $this->message,
                 'context' => $this->context,
+                'extraContext' => $this->extraContext,
             ])
         ;
     }
 
     public function toTelegram(mixed $notifiable): TelegramMessage
     {
-        return TelegramMessage::create(
-            Str::limit($this->message, 512)
-            . "\n\nHostname: {$this->hostname}"
-            . "\nENV: {$this->env}"
-            . "\nLevel: {$this->level}"
-            . "\nDatetime: {$this->datetime}"
-            . "\nLog context: {$this->callContext}"
-            . "\nPID: {$this->callContextPid}"
-            . "\nCommand: {$this->callContextCommand}"
-            . "\nUID: {$this->callContextUid}"
-            . Str::limit(
-                $this->context
-                    ? "\nContext: " . (
-                        is_string($this->context)
-                        ? $this->context
-                        : Utils::jsonEncode($this->context, Utils::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT)
-                    )
-                    : '',
-                512
-            )
-        )->options([
-            'parse_mode' => '',
-            'disable_web_page_preview' => true,
-        ]);
+        $sections = [];
+
+        $sections[] = strtoupper($this->level) . ': ' . Str::limit($this->message, 512);
+
+        if (!empty($this->context)) {
+            $sections[] = 'Context:';
+            $sections[] = $this->formatContext($this->context);
+        }
+
+        if (!empty($this->extraContext)) {
+            $sections[] = 'Extra context:';
+            $sections[] = $this->formatContext($this->extraContext);
+        }
+
+        return TelegramMessage::create()
+            ->content(implode(PHP_EOL . PHP_EOL, $sections))
+            ->options([
+                'parse_mode' => '',
+                'disable_web_page_preview' => true,
+            ])
+            // Works from laravel-notification-channels/telegram:^4.0.0 (requires Laravel 10+)
+            // https://github.com/laravel-notification-channels/telegram/releases/tag/4.0.0
+            // ->chunk(2048)
+        ;
     }
 }
