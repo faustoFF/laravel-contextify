@@ -11,8 +11,8 @@
 
 **Laravel Contextify** enhances Laravel's logging with two main features:
 
-1. **Inline Notifications** — [send notifications alongside logging](#sending-notifications) without splitting code.
-2. **Automatic Context Enrichment** — logs and notifications include extra contextual data from configured [Context Providers](#context-providers) (built-in: [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php), and more), helping you keep messages short and clean by moving additional context out of the message itself into a separate context area.
+1. **Inline Notifications** — [send notifications alongside logging](#sending-notifications) without splitting code into multiple lines for logging and notifying.
+2. **Automatic Context Enrichment** — logs and notifications include extra contextual data from configured [Context Providers](#context-providers) (built-in: [Trace ID](src/Context/Providers/TraceIdContextProvider.php), [Process ID](src/Context/Providers/ProcessIdContextProvider.php), [Hostname](src/Context/Providers/HostnameContextProvider.php), [Call file and line](src/Context/Providers/CallContextProvider.php), and more), helping you keep messages short and clean by moving additional context out of the message itself into a separate area.
 
 Provides [`Contextify`](src/Facades/Contextify.php) facade compatible with Laravel's [`Log`](https://laravel.com/docs/12.x/logging#writing-log-messages) facade: same methods (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`) with identical parameters, plus a chainable `notify()` method. 
 
