@@ -7,7 +7,14 @@
 
 > **Contextual logging with inline notifications for Laravel.**
 
-![Showcode](docs/images/showcode.jpg)
+```php
+<?php
+
+use Faustoff\Contextify\Facades\Contextify;
+
+Contextify::notice('Order created', ['id' => $id])->notify(['mail']);
+// [2025-01-01 12:00:00] production.NOTICE: Order created {"id":1} {"trace_id":"4f9c2a1b"}
+```
 
 **Laravel Contextify** enhances Laravel's logging with two main features:
 
