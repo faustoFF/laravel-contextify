@@ -81,9 +81,9 @@ class Contextify
     /**
      * Send a notification for the last logged message.
      */
-    public function notify(array $only = [], array $except = []): void
+    public function notify(array $only = [], array $except = [], bool $shouldNotify = true): void
     {
-        if (!$this->lastLogData) {
+        if (!$this->lastLogData || !$shouldNotify) {
             return;
         }
 

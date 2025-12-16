@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0] - 2025-12-16
+
+### Added
+
+- Added `shouldNotify` parameter to `notify()` method for conditional notification sending
+  - Allows controlling notification sending based on external conditions
+  - Defaults to `true` for backward compatibility
+  - Example: `Contextify::error('Payment failed')->notify(shouldNotify: App::isProduction())`
+  - When set to `false`, the log entry is still written but no notification is sent
+
+---
+
 ## [4.0.0] - 2025-12-03
 
 This release is a complete redesign of the package concept and implementation. The v4 series introduces a context provider architecture, a fluent API, and first-class notification integration while removing legacy traits and console helpers.

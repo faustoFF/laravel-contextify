@@ -120,6 +120,17 @@ Contextify::alert('Security breach detected')->notify(except: ['telegram']);
 // Notification with extra context sent to all configured notification channels except a Telegram channel
 ```
 
+Control notification sending conditionally using the `shouldNotify` parameter:
+
+```php
+<?php
+
+use Illuminate\Support\Facades\App;
+use Faustoff\Contextify\Facades\Contextify;
+
+Contextify::error('Payment processing failed')->notify(shouldNotify: App::isProduction());
+```
+
 If necessary, you can override the default implementation of the `LogNotification`:
 
 ```php

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static self critical(string $message, mixed $context = [])
  * @method static self alert(string $message, mixed $context = [])
  * @method static self emergency(string $message, mixed $context = [])
- * @method static void notify(array $only = [], array $except = [])
+ * @method static void notify(array $only = [], array $except = [], bool $shouldNotify = true)
  * @method static void touch(?string $providerClass = null)
  *
  * @example
