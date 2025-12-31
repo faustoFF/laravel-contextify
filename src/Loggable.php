@@ -25,6 +25,12 @@ trait Loggable
         // Freeing reserved memory before script termination
         $this->reservedMemory = null;
 
+        // Prevent fatal error if app flush earlier (typical for testing):
+        // Fatal error: Uncaught ReflectionException: Class "config" does not exist
+        if (!app()->bound('config')) {
+            return;
+        }
+
         $executionTime = round(microtime(true) - $this->timeStarted, 3);
         Contextify::debug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
     }
