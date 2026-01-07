@@ -31,7 +31,7 @@ Provides [`Contextify`](src/Facades/Contextify.php) facade compatible with Larav
 - 🔄 [Static & Dynamic Providers](#static-context-providers): Static (cached) and dynamic (refreshed on each call) providers
 - 🎯 [Group-Based Context](#group-based-context): Separate Context Providers for logs and notifications
 - 📊 [PSR-3 Log Levels](#writing-logs): All standard log levels (debug, info, notice, warning, error, critical, alert, emergency)
-- 🎨 [Custom Notifications](#custom-notification-class): Extend notification classes and add custom channels
+- 🎨 [Custom Notifications](#sending-notifications): Extend notification classes and add custom channels
 - 🔔 [Channel Filtering](#sending-notifications): Filter channels with `only` and `except` parameters
 - 🔄 [Fluent API](#usage): Chain methods for readable code
 - ⚡ [Monolog Integration](https://github.com/Seldaek/monolog/blob/main/doc/02-handlers-formatters-processors.md#processors): Integrates with Laravel's logging via Monolog processors
