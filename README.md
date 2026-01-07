@@ -8,8 +8,6 @@
 > **Contextual logging with inline notifications for Laravel.**
 
 ```php
-<?php
-
 use Faustoff\Contextify\Facades\Contextify;
 
 Contextify::notice('Order created', ['id' => $id])->notify(['mail']);
@@ -80,8 +78,6 @@ CONTEXTIFY_TELEGRAM_CHAT_ID=123456789
 Use the [`Contextify`](src/Facades/Contextify.php) facade like Laravel's [`Log`](https://laravel.com/docs/12.x/logging#writing-log-messages) facade. Logs automatically include extra context from [Context Providers](#context-providers) configured [for logging](#group-based-context):
 
 ```php
-<?php
-
 use Faustoff\Contextify\Facades\Contextify;
 
 Contextify::debug('Debug message', ['key' => 'value']);
@@ -103,8 +99,6 @@ Chain `notify()` after any [logging method](#writing-logs) to send notifications
 Filter channels using `only` and `except` parameters:
 
 ```php
-<?php
-
 use Faustoff\Contextify\Facades\Contextify;
 
 Contextify::error('Payment processing failed', ['order_id' => 456])->notify();
@@ -123,8 +117,6 @@ Contextify::alert('Security breach detected')->notify(except: ['telegram']);
 Control notification sending conditionally using the `shouldNotify` parameter:
 
 ```php
-<?php
-
 use Illuminate\Support\Facades\App;
 use Faustoff\Contextify\Facades\Contextify;
 
@@ -134,8 +126,6 @@ Contextify::error('Payment processing failed')->notify(shouldNotify: App::isProd
 If necessary, you can override the default implementation of the `LogNotification`:
 
 ```php
-<?php
-
 namespace App\Notifications;
 
 use Faustoff\Contextify\Notifications\LogNotification;
@@ -151,7 +141,6 @@ Update configuration:
 ```php
 'notifications' => [
     'class' => \App\Notifications\CustomLogNotification::class,
-    // ... other notifications settings
 ],
 ```
 
@@ -162,8 +151,6 @@ Exceptions are automatically reported via notifications (enabled by default). No
 If necessary, you can override the default implementation of the `ExceptionNotification`:
 
 ```php
-<?php
-
 namespace App\Notifications;
 
 use Faustoff\Contextify\Notifications\ExceptionNotification;
@@ -179,7 +166,6 @@ Update configuration:
 ```php
 'notifications' => [
     'exception_class' => \App\Notifications\CustomExceptionNotification::class,
-    // ... other notifications settings
 ],
 ```
 
@@ -188,7 +174,6 @@ To disable automatic exception notifications, set `reportable` to `null`:
 ```php
 'notifications' => [
     'reportable' => null,
-    // ... other notifications settings
 ],
 ```
 
@@ -213,8 +198,6 @@ Built-in:
 Static context is cached during application boot. Use `touch()` to refresh it manually, useful when a process is forked (e.g., queue workers) to generate a new trace ID:
 
 ```php
-<?php
-
 use Faustoff\Contextify\Facades\Contextify;
 use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 
@@ -239,8 +222,6 @@ Built-in:
 Implement `StaticContextProviderInterface` or `DynamicContextProviderInterface`:
 
 ```php
-<?php
-
 namespace App\Context\Providers;
 
 use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
@@ -261,44 +242,25 @@ class CustomContextProvider implements StaticContextProviderInterface
 Add custom providers to `config/contextify.php`:
 
 ```php
-<?php
-
 use App\Context\Providers\CustomContextProvider;
-use Faustoff\Contextify\Context\Providers\CallContextProvider;
-use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
-use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
-use Faustoff\Contextify\Context\Providers\ProcessIdContextProvider;
-use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 
 return [
     'logs' => [
         'providers' => [
-            // Built-in providers
-            ProcessIdContextProvider::class,
-            TraceIdContextProvider::class,
-            CallContextProvider::class,
+            // Built-in providers...
             
             // Custom providers
             CustomContextProvider::class,
         ],
-        
-        // ... other logs settings
     ],
 
     'notifications' => [
         'providers' => [
-            // Built-in providers
-            HostnameContextProvider::class,
-            ProcessIdContextProvider::class,
-            TraceIdContextProvider::class,
-            EnvironmentContextProvider::class,
-            CallContextProvider::class,
+            // Built-in providers...
             
             // Custom providers
             CustomContextProvider::class,
         ],
-        
-        // ... other notifications settings
     ],
 ];
 ```
@@ -314,36 +276,23 @@ Configure in `config/contextify.php`:
 Example:
 
 ```php
-<?php
-
 use Faustoff\Contextify\Context\Providers\CallContextProvider;
 use Faustoff\Contextify\Context\Providers\EnvironmentContextProvider;
-use Faustoff\Contextify\Context\Providers\HostnameContextProvider;
-use Faustoff\Contextify\Context\Providers\PeakMemoryUsageContextProvider;
-use Faustoff\Contextify\Context\Providers\ProcessIdContextProvider;
 use Faustoff\Contextify\Context\Providers\TraceIdContextProvider;
 
 return [
     'logs' => [
         'providers' => [
-            ProcessIdContextProvider::class,         // Shared
-            TraceIdContextProvider::class,           // Shared
-            CallContextProvider::class,              // Logs only
-            PeakMemoryUsageContextProvider::class,   // Logs only
+            TraceIdContextProvider::class,     // Shared
+            CallContextProvider::class,        // Logs only
         ],
-        
-        // ... other logs settings
     ],
 
     'notifications' => [
         'providers' => [
-            HostnameContextProvider::class,          // Notifications only
-            EnvironmentContextProvider::class,       // Notifications only
-            ProcessIdContextProvider::class,         // Shared
-            TraceIdContextProvider::class,           // Shared
+            TraceIdContextProvider::class,     // Shared
+            EnvironmentContextProvider::class, // Notifications only
         ],
-        
-        // ... other notifications settings
     ],
 ];
 ```
@@ -369,7 +318,7 @@ Configure channels in `config/contextify.php`:
     
     'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', '')),
     
-    // ... other notifications settings
+    'telegram_chat_id' => env('CONTEXTIFY_TELEGRAM_CHAT_ID'),
 ],
 ```
 
@@ -380,8 +329,6 @@ For example, to add [Slack notifications](https://laravel.com/docs/12.x/notifica
 1. Create a custom notification class with a `toSlack()` method [implemented](https://laravel.com/docs/12.x/notifications#formatting-slack-notifications):
 
 ```php
-<?php
-
 namespace App\Notifications;
 
 use Faustoff\Contextify\Notifications\LogNotification;
@@ -402,8 +349,6 @@ class CustomLogNotification extends LogNotification
 2. Create a custom notifiable class with a `routeNotificationForSlack()` method [implemented](https://laravel.com/docs/12.x/notifications#routing-slack-notifications):
 
 ```php
-<?php
-
 namespace App\Notifications;
 
 use Faustoff\Contextify\Notifications\Notifiable;
@@ -426,14 +371,14 @@ class CustomNotifiable extends Notifiable
 ```php
 'notifications' => [
     'class' => \App\Notifications\CustomLogNotification::class,
+    
     'notifiable' => \App\Notifications\CustomNotifiable::class,
+    
     'channels' => [
         'mail',
         'telegram',
         'slack'
     ],
-    
-    // ... other notifications settings
 ],
 ```
 
@@ -448,8 +393,6 @@ Want more notification channels? You are welcome to [Laravel Notifications Chann
 Use `Faustoff\Contextify\Console\Trackable` trait to log command start, finish, and execution time:
 
 ```php
-<?php
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -487,8 +430,6 @@ Log:
 Use `Faustoff\Contextify\Console\Outputable` trait to capture [Laravel console output](https://laravel.com/docs/12.x/artisan#writing-output) from `info()`-like methods and store it in logs:
 
 ```php
-<?php
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -526,8 +467,6 @@ Handle shutdown signals (`SIGQUIT`, `SIGINT`, `SIGTERM` by default) for graceful
 - `TerminatableV70` for `symfony/console:^7.0` (Laravel 11+)
 
 ```php
-<?php
-
 namespace App\Console\Commands;
 
 use Faustoff\Contextify\Console\TerminatableV62;
