@@ -13,8 +13,31 @@ use Faustoff\Contextify\Notifications\LogNotification;
 use Faustoff\Contextify\Notifications\Notifiable;
 
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configure how Contextify enriches log entries with contextual data.
+    |
+    */
+
     'logs' => [
-        // The context providers to enrich log entries.
+
+        /*
+        |--------------------------------------------------------------------------
+        | Log Context Providers
+        |--------------------------------------------------------------------------
+        |
+        | Context providers enrich log entries with additional data (trace IDs,
+        | process IDs, memory usage, etc.), keeping log messages short and clean
+        | by moving contextual data into a separate area. Static providers (e.g.,
+        | TraceIdContextProvider) are cached at boot, while dynamic providers
+        | (e.g., CallContextProvider) refresh on each log call.
+        |
+        */
+
         'providers' => [
             ProcessIdContextProvider::class,
             TraceIdContextProvider::class,
@@ -25,8 +48,31 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configure how Contextify sends notifications for log events and exceptions.
+    | You may customize providers, channels, and recipients to match your
+    | monitoring and alerting requirements.
+    |
+    */
+
     'notifications' => [
-        // The context providers to enrich notifications.
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notification Context Providers
+        |--------------------------------------------------------------------------
+        |
+        | Context providers for notifications, separate from log providers. You may
+        | configure different providers for logs and notifications (Group-Based
+        | Context). If a provider appears in both lists, the same context data is
+        | shared between logs and notifications.
+        |
+        */
+
         'providers' => [
             HostnameContextProvider::class,
             ProcessIdContextProvider::class,
@@ -39,42 +85,102 @@ return [
             // Add your custom context providers here...
         ],
 
-        // The notification class to send log notifications.
+        /*
+        |--------------------------------------------------------------------------
+        | Log Notification Class
+        |--------------------------------------------------------------------------
+        |
+        | This class is instantiated when you call the notify() method after
+        | logging. It receives the log level, message, and context data. You may
+        | extend LogNotification to customize the notification format.
+        |
+        */
+
         'class' => LogNotification::class,
 
-        // The notification class to send exception notifications.
+        /*
+        |--------------------------------------------------------------------------
+        | Exception Notification Class
+        |--------------------------------------------------------------------------
+        |
+        | This class handles notifications for uncaught exceptions. It receives
+        | the exception instance and context data. You may extend
+        | ExceptionNotification to customize the exception notification format.
+        |
+        */
+
         'exception_class' => ExceptionNotification::class,
 
         /*
-         * Notification channels to send notifications.
-         *
-         * You can use the extended syntax ['channel' => 'queue'] for queued
-         * notifications to override the "default" queue for a specific channel.
-         */
+        |--------------------------------------------------------------------------
+        | Notification Channels
+        |--------------------------------------------------------------------------
+        |
+        | Laravel notification channels for delivering notifications. Mail and
+        | Telegram are supported out of the box (Telegram requires the
+        | laravel-notification-channels/telegram package). Use associative array
+        | format ['channel' => 'queue'] to specify a queue per channel; simple
+        | array format ['channel'] uses the "default" queue.
+        |
+        */
+
         'channels' => ['mail'],
 
-        // The notifiable entity that receives notifications.
+        /*
+        |--------------------------------------------------------------------------
+        | Notifiable Class
+        |--------------------------------------------------------------------------
+        |
+        | This class receives all notifications and routes them to the appropriate
+        | channels. The default Notifiable class reads recipients from the
+        | mail_addresses and telegram_chat_id options below. You may provide
+        | a custom class to implement your own routing logic.
+        |
+        */
+
         'notifiable' => Notifiable::class,
 
-        // The reportable class that registers an exception handler to send exception notifications.
-        // Set to null to disable automatic exception notifications.
+        /*
+        |--------------------------------------------------------------------------
+        | Exception Reporter Class
+        |--------------------------------------------------------------------------
+        |
+        | This class registers a reportable callback with Laravel's exception
+        | handler to automatically send notifications for uncaught exceptions.
+        | Set to null to disable automatic exception notifications.
+        |
+        */
+
         'reportable' => Reportable::class,
 
         /*
-         * Email addresses that receive notifications.
-         *
-         * You can specify multiple addresses separated by commas in the
-         * CONTEXTIFY_MAIL_ADDRESSES environment variable.
-         */
+        |--------------------------------------------------------------------------
+        | Mail Recipients
+        |--------------------------------------------------------------------------
+        |
+        | Email addresses that will receive notifications when using the mail
+        | channel. Multiple addresses can be specified by separating them with
+        | commas in the CONTEXTIFY_MAIL_ADDRESSES environment variable.
+        |
+        */
+
         'mail_addresses' => explode(',', env('CONTEXTIFY_MAIL_ADDRESSES', 'your@example.com')),
 
         /*
-         * Telegram chat ID that receive notifications.
-         *
-         * Requires the laravel-notification-channels/telegram package to be installed.
-         *
-         * @see https://laravel-notification-channels.com/telegram/#installation
-         */
+        |--------------------------------------------------------------------------
+        | Telegram Chat ID
+        |--------------------------------------------------------------------------
+        |
+        | The Telegram chat ID where notifications will be sent when using the
+        | telegram channel. This requires the laravel-notification-channels/telegram
+        | package to be installed and configured.
+        |
+        | @see https://laravel-notification-channels.com/telegram/#installation
+        |
+        */
+
         'telegram_chat_id' => env('CONTEXTIFY_TELEGRAM_CHAT_ID'),
+
     ],
+
 ];
