@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.0] - 2026-02-11
+
+### Added
+
+- Added `notifications.enabled` config option and `CONTEXTIFY_NOTIFICATIONS_ENABLED` environment variable to disable all notifications (both inline `notify()` and automatic exception reporting). When disabled, the reportable handler is not registered.
+
 ## [4.1.0] - 2025-12-16
 
 ### Added

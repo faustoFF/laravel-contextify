@@ -63,6 +63,19 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Enable Notifications
+        |--------------------------------------------------------------------------
+        |
+        | When false, no notifications are sent: neither from notify() after
+        | logging nor from automatic exception reporting (reportable is not
+        | registered).
+        |
+        */
+
+        'enabled' => env('CONTEXTIFY_NOTIFICATIONS_ENABLED', true),
+
+        /*
+        |--------------------------------------------------------------------------
         | Notification Context Providers
         |--------------------------------------------------------------------------
         |

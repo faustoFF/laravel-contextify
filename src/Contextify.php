@@ -83,7 +83,7 @@ class Contextify
      */
     public function notify(array $only = [], array $except = [], bool $shouldNotify = true): void
     {
-        if (!$this->lastLogData || !$shouldNotify) {
+        if (!config('contextify.notifications.enabled', true) || !$this->lastLogData || !$shouldNotify) {
             return;
         }
 
