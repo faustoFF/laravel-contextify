@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Tests\Contextify;
 
-use Faustoff\Contextify\Context\Manager;
 use Faustoff\Contextify\Contextify;
 use Faustoff\Contextify\Notifications\LogNotification;
 use Faustoff\Contextify\Tests\TestCase;
@@ -30,6 +29,17 @@ class ContextifyTest extends TestCase
         Notification::fake();
 
         app(Contextify::class)->error('failure')->notify(shouldNotify: false);
+        Notification::assertNothingSent();
+    }
+
+    public function testNotifyDoesNotSendWhenNotificationsDisabled(): void
+    {
+        Notification::fake();
+
+        $this->app['config']->set('contextify.notifications.enabled', false);
+
+        app(Contextify::class)->error('failure')->notify();
+
         Notification::assertNothingSent();
     }
 

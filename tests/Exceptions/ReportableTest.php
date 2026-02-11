@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify\Tests\Exceptions;
 
+use Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface;
+use Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface;
 use Faustoff\Contextify\Context\Manager;
 use Faustoff\Contextify\Exceptions\Reportable;
 use Faustoff\Contextify\Notifications\ExceptionNotification;
@@ -49,11 +51,26 @@ class ReportableTest extends TestCase
         Notification::assertSentOnDemand(ExceptionNotification::class);
     }
 
+    public function testCallableDoesNotSendWhenNotificationsDisabled(): void
+    {
+        Notification::fake();
+
+        $this->app['config']->set('contextify.notifications.enabled', false);
+
+        $reportable = new Reportable();
+        $callable = $reportable();
+        $exception = new \RuntimeException('Test exception');
+
+        $callable($exception);
+
+        Notification::assertNothingSent();
+    }
+
     public function testCallableUpdatesDynamicContext(): void
     {
         Notification::fake();
 
-        $dynamicProvider = new class implements \Faustoff\Contextify\Context\Contracts\DynamicContextProviderInterface {
+        $dynamicProvider = new class implements DynamicContextProviderInterface {
             public function getContext(): array
             {
                 return ['microtime' => microtime(true)];
@@ -89,7 +106,7 @@ class ReportableTest extends TestCase
     {
         Notification::fake();
 
-        $testProvider = new class implements \Faustoff\Contextify\Context\Contracts\StaticContextProviderInterface {
+        $testProvider = new class implements StaticContextProviderInterface {
             public function getContext(): array
             {
                 return ['key' => 'value'];
@@ -117,7 +134,7 @@ class ReportableTest extends TestCase
             return isset($notification->extraContext)
                 && is_array($notification->extraContext)
                 && isset($notification->extraContext['key'])
-                && $notification->extraContext['key'] === 'value';
+                && 'value' === $notification->extraContext['key'];
         });
     }
 
@@ -131,7 +148,7 @@ class ReportableTest extends TestCase
 
         $callable($exception);
 
-        Notification::assertSentOnDemand(ExceptionNotification::class, function (ExceptionNotification $notification) use ($exception) {
+        Notification::assertSentOnDemand(ExceptionNotification::class, function (ExceptionNotification $notification) {
             return str_contains($notification->exception, 'RuntimeException')
                 && str_contains($notification->exception, 'Test exception');
         });
@@ -186,7 +203,8 @@ class ReportableTest extends TestCase
     {
         Notification::fake();
         Notification::shouldReceive('send')
-            ->andThrow(new \RuntimeException('Notification send failed'));
+            ->andThrow(new \RuntimeException('Notification send failed'))
+        ;
 
         $reportable = new Reportable();
         $callable = $reportable();
@@ -213,4 +231,3 @@ class CustomExceptionNotificationForTesting extends ExceptionNotification
 {
     // Custom notification class for testing
 }
-

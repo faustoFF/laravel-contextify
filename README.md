@@ -62,12 +62,15 @@ This creates `config/contextify.php` for configuring [Context Providers](#contex
 
 ### Environment Variables
 
-Add to `.env` to configure notification recipients:
+Add to `.env` to configure notification recipients and toggles:
 
 ```env
 CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
 CONTEXTIFY_TELEGRAM_CHAT_ID=123456789
+CONTEXTIFY_NOTIFICATIONS_ENABLED=true
 ```
+
+Set `CONTEXTIFY_NOTIFICATIONS_ENABLED=false` to disable all notifications (both inline `notify()` and automatic exception notifications).
 
 > **Note:** Telegram notifications require the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package to be installed manually.
 
@@ -307,6 +310,8 @@ Configure channels in `config/contextify.php`:
 
 ```php
 'notifications' => [
+    'enabled' => env('CONTEXTIFY_NOTIFICATIONS_ENABLED', true),
+
     /*
      * Use associative array format ['channel' => 'queue'] to specify
      * queue per channel. Simple array ['channel'] uses 'default' queue.
