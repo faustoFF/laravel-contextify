@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Faustoff\Contextify;
 
-use Carbon\CarbonInterval;
 use Faustoff\Contextify\Facades\Contextify;
 
 trait Loggable
@@ -31,7 +30,33 @@ trait Loggable
             return;
         }
 
-        $executionTime = round(microtime(true) - $this->timeStarted, 3);
-        Contextify::debug('Execution time: ' . CarbonInterval::seconds($executionTime)->cascade());
+        Contextify::debug('Execution time: ' . $this->formatDuration(microtime(true) - $this->timeStarted));
+    }
+
+    private function formatDuration(float $microtime): string
+    {
+        $totalMilliseconds = (int) (round($microtime, 3) * 1000);
+
+        $hours = intdiv($totalMilliseconds, 3_600_000);
+        $minutes = intdiv($totalMilliseconds % 3_600_000, 60_000);
+        $secs = intdiv($totalMilliseconds % 60_000, 1000);
+        $ms = $totalMilliseconds % 1000;
+
+        $parts = [];
+
+        if ($hours) {
+            $parts[] = "{$hours}h";
+        }
+        if ($minutes) {
+            $parts[] = "{$minutes}m";
+        }
+        if ($secs) {
+            $parts[] = "{$secs}s";
+        }
+        if ($ms || empty($parts)) {
+            $parts[] = "{$ms}ms";
+        }
+
+        return implode(' ', $parts);
     }
 }
