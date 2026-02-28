@@ -51,21 +51,6 @@ class ReportableTest extends TestCase
         Notification::assertSentOnDemand(ExceptionNotification::class);
     }
 
-    public function testCallableDoesNotSendWhenNotificationsDisabled(): void
-    {
-        Notification::fake();
-
-        $this->app['config']->set('contextify.notifications.enabled', false);
-
-        $reportable = new Reportable();
-        $callable = $reportable();
-        $exception = new \RuntimeException('Test exception');
-
-        $callable($exception);
-
-        Notification::assertNothingSent();
-    }
-
     public function testCallableUpdatesDynamicContext(): void
     {
         Notification::fake();

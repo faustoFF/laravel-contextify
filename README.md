@@ -58,19 +58,24 @@ Optionally, publish the configuration file:
 php artisan vendor:publish --tag=contextify-config
 ```
 
-This creates `config/contextify.php` for configuring [Context Providers](#context-providers) and [notifications](#notifications).
+This creates `config/contextify.php` for configuring [enable/disable](#environment-variables), [Context Providers](#context-providers) and [notifications](#notifications).
 
 ### Environment Variables
 
 Add to `.env` to configure notification recipients and toggles:
 
 ```env
+CONTEXTIFY_ENABLED=true
+CONTEXTIFY_NOTIFICATIONS_ENABLED=true
 CONTEXTIFY_MAIL_ADDRESSES=admin@example.com,team@example.com
 CONTEXTIFY_TELEGRAM_CHAT_ID=123456789
-CONTEXTIFY_NOTIFICATIONS_ENABLED=true
 ```
 
+Set `CONTEXTIFY_ENABLED=false` to fully disable Contextify: no context providers are booted, the Monolog processor is not registered, exception reporting is not hooked, `notify()` calls are ignored, and `touch()` becomes a no-op. Logging methods (`debug`, `info`, etc.) still forward messages to Laravel's Log facade, but without any context enrichment. This is useful for disabling Contextify during testing to eliminate its influence on the code under test.
+
 Set `CONTEXTIFY_NOTIFICATIONS_ENABLED=false` to disable all notifications (both inline `notify()` and automatic exception notifications).
+
+> **Note:** `CONTEXTIFY_ENABLED` disables the entire package. `CONTEXTIFY_NOTIFICATIONS_ENABLED` only disables notifications while keeping context enrichment active.
 
 > **Note:** Telegram notifications require the [laravel-notification-channels/telegram](https://github.com/laravel-notification-channels/telegram) package to be installed manually.
 
