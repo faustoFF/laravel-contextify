@@ -13,14 +13,16 @@ use Illuminate\Support\Facades\Facade;
  * with contextual information (trace IDs, process IDs, hostnames, etc.) from
  * configured providers. Supports all standard log levels and can send notifications.
  *
- * @method static self debug(string $message, mixed $context = [])
- * @method static self info(string $message, mixed $context = [])
- * @method static self notice(string $message, mixed $context = [])
- * @method static self warning(string $message, mixed $context = [])
- * @method static self error(string $message, mixed $context = [])
- * @method static self critical(string $message, mixed $context = [])
- * @method static self alert(string $message, mixed $context = [])
- * @method static self emergency(string $message, mixed $context = [])
+ * @method static bool isEnabled()
+ * @method static bool isNotificationsEnabled()
+ * @method static \Faustoff\Contextify\Contextify debug(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify info(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify notice(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify warning(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify error(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify critical(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify alert(string $message, mixed $context = [])
+ * @method static \Faustoff\Contextify\Contextify emergency(string $message, mixed $context = [])
  * @method static void notify(array $only = [], array $except = [], bool $shouldNotify = true)
  * @method static void touch(?string $providerClass = null)
  *
@@ -28,6 +30,7 @@ use Illuminate\Support\Facades\Facade;
  * Contextify::info('User logged in', ['user_id' => 123]);
  * Contextify::error('Payment failed', ['order_id' => 456])->notify();
  * Contextify::error('Critical failure')->notify(['email'], ['slack']);
+ * if (Contextify::isEnabled()) { ... }
  */
 class Contextify extends Facade
 {
