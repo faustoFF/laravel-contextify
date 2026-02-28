@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Faustoff\Contextify\Tests;
 
 use Faustoff\Contextify\Loggable;
-use PHPUnit\Framework\Attributes\DataProvider;
 
 class LoggableTest extends TestCase
 {
@@ -25,7 +24,9 @@ class LoggableTest extends TestCase
         };
     }
 
-    #[DataProvider('durationProvider')]
+    /**
+     * @dataProvider durationProvider
+     */
     public function testFormatDuration(float $input, string $expected): void
     {
         $this->assertEquals($expected, $this->loggable->publicFormatDuration($input));
