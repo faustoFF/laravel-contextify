@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.4.0] - 2026-02-28
+
+### Added
+
+- Added `enabled` config option and `CONTEXTIFY_ENABLED` environment variable to fully disable Contextify. When disabled:
+  - No context providers are booted
+  - Monolog processor is not registered
+  - Exception reporting is not hooked
+  - `notify()` calls are ignored
+  - `touch()` becomes a no-op
+  - Logging methods (`debug`, `info`, etc.) still forward messages to Laravel's Log facade, but without any context enrichment
+- Added `Contextify::isEnabled()` and `Contextify::isNotificationsEnabled()` static methods for checking package state
+
+### Changed
+
+- Reportable handler is now registered only when both `enabled` and `notifications.enabled` are true
+- Moved notification/reportable checks from `Reportable` class to `ContextifyServiceProvider` for earlier short-circuit
+
+## [4.3.0] - 2026-02-27
+
+### Changed
+
+- Optimized duration formatting in `Loggable` trait (`formatDuration` method)
+
 ## [4.2.0] - 2026-02-11
 
 ### Added
@@ -123,4 +147,6 @@ Update `config/contextify.php`:
 Legacy series with traits and console helpers. See the repository history for details.
 
 [4.0.0]: https://github.com/faustoff/laravel-contextify/compare/main...v4
+[4.3.0]: https://github.com/faustoff/laravel-contextify/compare/v4.2.0...v4.3.0
+[4.4.0]: https://github.com/faustoff/laravel-contextify/compare/v4.3.0...v4.4.0
 

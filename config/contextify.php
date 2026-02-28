@@ -16,6 +16,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enable Contextify
+    |--------------------------------------------------------------------------
+    |
+    | When set to false, Contextify is fully disabled: no context providers are
+    | booted, the Monolog processor is not registered, exception reporting is
+    | not hooked, notify() calls are ignored, and touch() becomes a no-op.
+    | Logging methods (debug, info, etc.) still forward messages to Laravel's
+    | Log facade, but without any context enrichment.
+    |
+    | This is useful for disabling Contextify during testing to eliminate its
+    | influence on the code under test.
+    |
+    */
+    'enabled' => env('CONTEXTIFY_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Log Settings
     |--------------------------------------------------------------------------
     |

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Log;
  *
  * Provides a fluent interface for logging with contextual information (trace IDs,
  * process IDs, etc.) and supports sending notifications based on logged events.
+ *
+ * @internal
  */
 class Contextify
 {
@@ -21,6 +23,16 @@ class Contextify
     protected ?array $lastLogData = null;
 
     public function __construct(protected Manager $manager) {}
+
+    public static function isEnabled(): bool
+    {
+        return config('contextify.enabled', true);
+    }
+
+    public static function isNotificationsEnabled(): bool
+    {
+        return config('contextify.notifications.enabled', true);
+    }
 
     public function debug(string $message, mixed $context = []): static
     {
@@ -83,7 +95,11 @@ class Contextify
      */
     public function notify(array $only = [], array $except = [], bool $shouldNotify = true): void
     {
-        if (!config('contextify.notifications.enabled', true) || !$this->lastLogData || !$shouldNotify) {
+        if (!self::isEnabled() || !self::isNotificationsEnabled()) {
+            return;
+        }
+
+        if (!$this->lastLogData || !$shouldNotify) {
             return;
         }
 
@@ -107,6 +123,10 @@ class Contextify
      */
     public function touch(?string $providerClass = null): void
     {
+        if (!self::isEnabled()) {
+            return;
+        }
+
         $this->manager->updateStaticContext($providerClass);
     }
 
@@ -115,7 +135,9 @@ class Contextify
      */
     protected function handle(string $level, string $message, mixed $context = []): void
     {
-        $this->manager->updateDynamicContext();
+        if (self::isEnabled()) {
+            $this->manager->updateDynamicContext();
+        }
 
         Log::log(
             $level,
@@ -123,12 +145,14 @@ class Contextify
             is_array($context) ? $context : [$context]
         );
 
-        $this->lastLogData = [
-            'level' => $level,
-            'message' => $message,
-            'context' => $context,
-            'extraLogContext' => $this->manager->getContext('log'),
-            'extraNotificationContext' => $this->manager->getContext('notification'),
-        ];
+        if (self::isEnabled()) {
+            $this->lastLogData = [
+                'level' => $level,
+                'message' => $message,
+                'context' => $context,
+                'extraLogContext' => $this->manager->getContext('log'),
+                'extraNotificationContext' => $this->manager->getContext('notification'),
+            ];
+        }
     }
 }

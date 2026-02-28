@@ -24,10 +24,6 @@ class Reportable
     {
         return function (\Throwable $e) {
             try {
-                if (!config('contextify.notifications.enabled', true)) {
-                    return;
-                }
-
                 $notifiable = app(config('contextify.notifications.notifiable'));
 
                 $manager = app(Manager::class);
