@@ -1,3 +1,5 @@
+
+
 [![Packagist Version](https://img.shields.io/packagist/v/faustoff/laravel-contextify?style=for-the-badge)](https://packagist.org/packages/faustoff/laravel-contextify)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/faustoff/laravel-contextify?style=for-the-badge)](https://packagist.org/packages/faustoff/laravel-contextify)
 [![Packagist License](https://img.shields.io/packagist/l/faustoff/laravel-contextify?style=for-the-badge)](https://github.com/faustoff/laravel-contextify/blob/master/LICENSE)
@@ -39,7 +41,7 @@ Provides [`Contextify`](src/Facades/Contextify.php) facade compatible with Larav
 ## Requirements
 
 - PHP 8.0 or higher
-- Laravel 8.0 or higher
+- Laravel 9.0 or higher
 - Monolog 2.0 or higher
 
 ## Installation
